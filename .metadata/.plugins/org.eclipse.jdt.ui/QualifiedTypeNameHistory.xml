@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="org.springframework.ws.server.endpoint.annotation.Endpoint"/>
+<fullyQualifiedTypeName name="org.springframework.stereotype.Component"/>
+<fullyQualifiedTypeName name="java.util.Map"/>
+<fullyQualifiedTypeName name="io.spring.guides.gs_producing_web_service.Country"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="javax.annotation.PostConstruct"/>
+<fullyQualifiedTypeName name="io.spring.guides.gs_producing_web_service.Currency"/>
+<fullyQualifiedTypeName name="org.springframework.util.Assert"/>
+<fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
+<fullyQualifiedTypeName name="org.springframework.ws.server.endpoint.annotation.PayloadRoot"/>
+<fullyQualifiedTypeName name="org.springframework.ws.server.endpoint.annotation.ResponsePayload"/>
+<fullyQualifiedTypeName name="io.spring.guides.gs_producing_web_service.GetCountryResponse"/>
+<fullyQualifiedTypeName name="org.springframework.ws.server.endpoint.annotation.RequestPayload"/>
+<fullyQualifiedTypeName name="io.spring.guides.gs_producing_web_service.GetCountryRequest"/>
+</qualifiedTypeNameHistroy>

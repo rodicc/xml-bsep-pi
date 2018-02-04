@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete 4 elements from project &apos;centralnaBanka&apos;&#x0D;&#x0A;- Original project: &apos;centralnaBanka&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     CountryEndpoint.java&#x0D;&#x0A;     CountryRepository.java&#x0D;&#x0A;     WebServiceConfig.java&#x0D;&#x0A;     jaxb2" description="Delete elements" element1="target/jaxb2" element2="/src\/main\/java&lt;{CountryEndpoint.java" element3="/src\/main\/java&lt;{CountryRepository.java" element4="/src\/main\/java&lt;{WebServiceConfig.java" elements="3" flags="589830" id="org.eclipse.jdt.ui.delete" resources="1" stamp="1517653170739" subPackages="false" version="1.0"/>
+</session>
