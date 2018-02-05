@@ -1,1 +1,42 @@
-<h3>hello</h3>
+<!DOCTYPE html>
+<html ng-app="app"  lang="en">
+<head>
+<meta charset="utf-8">
+ 
+		<!-- AngularJS -->
+		<script src="//code.angularjs.org/1.5.9/angular.js"></script>
+		<script src="//code.angularjs.org/1.5.9/angular-messages.js"></script>
+		<script src="//code.angularjs.org/1.5.9/angular-route.js"></script>
+		<script src="//code.angularjs.org/1.5.9/angular-resource.js"></script>
+		<script	src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.8/angular-ui-router.js"></script>
+		
+		 <!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+		<!-- jQuery library -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		
+		<!-- Latest compiled JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> 
+		
+		<script src="app.js"></script>
+		<script src="js/controllers/izvodController.js"></script>
+		<script src="js/controllers/nalogController.js"></script>
+		<script src="js/controllers/fakturaController.js"></script>
+		
+</head>
+
+<body>
+<nav class="nav navbar-default">
+<div class="container-fluid">
+	<ul class="nav navbar-nav">		
+		<li><a style="padding:10px;" href="#/faktura">Slanje fakture</a></li>
+		<li><a style="padding:10px;" href="#/nalog">Slanje naloga za plaćanje</a></li>
+		<li><a style="padding:10px;" href="#/izvod">Preuzimanje izvoda</a></li>
+	</ul>
+</div>
+</nav>
+	<div ui-view class='container'></div>
+</body>
+
+</html>
