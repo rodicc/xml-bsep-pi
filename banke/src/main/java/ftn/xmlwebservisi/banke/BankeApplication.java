@@ -2,8 +2,12 @@ package ftn.xmlwebservisi.banke;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages= {"service, helpers"})
+@EnableJpaRepositories("respository")
+@EntityScan("model")
 public class BankeApplication {
 
 	public static void main(String[] args) {
