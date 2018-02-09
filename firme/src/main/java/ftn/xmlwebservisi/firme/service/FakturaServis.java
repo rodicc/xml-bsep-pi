@@ -16,13 +16,18 @@ public class FakturaServis {
 	@Autowired
 	private FakturaRepozitorijum fakturaRepozitorijum;
 	
-	public void novaFaktura(Faktura faktura){
-		fakturaRepozitorijum.save(faktura);
-	}
-	
-	public List<Faktura> nadjiSveFakture(){
-		List<Faktura> fakture = new ArrayList<Faktura>();
+	public List<Faktura> nadjiSveFakture() {
+		List<Faktura> fakture = new ArrayList<>();
 		fakturaRepozitorijum.findAll().forEach(fakture::add);
 		return fakture;
-}
+	}
+	
+	public Faktura nadjiFakturu(Integer id) {
+		return fakturaRepozitorijum.findOne(id);
+	}
+	
+	public Faktura novaFaktura(Faktura faktura) {
+		return fakturaRepozitorijum.save(faktura);
+	}
+	
 }
