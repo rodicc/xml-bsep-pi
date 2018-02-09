@@ -1,56 +1,55 @@
 package ftn.xmlwebservisi.firme.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 public class StavkaFakture {
 
 	@Id
-	private int id;
-	private String idFakture;
-	private int redniBroj;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
+	private BigDecimal redniBroj;
 	private String nazivRobeIliUsluge;
-	private double kolicina;
+	private BigDecimal kolicina;
 	private String jedinicaMere;
-	private double jedinicnaCena;
-	private double vrednost;
-	private double procenatRabata;
-	private double iznosRabata;
-	private double umanjenoZaRabat;
-	private double ukupanPorez;
-	
-	public StavkaFakture(){
-		
+	private BigDecimal jedinicnaCena;
+	private BigDecimal vrednost;
+	private BigDecimal procenatRabata;
+	private BigDecimal iznosRabata;
+	private BigDecimal umanjenoZaRabat;
+	private BigDecimal ukupanPorez;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "faktura_id")
+	@JsonBackReference
+	private Faktura faktura;
+
+	public StavkaFakture() {
 	}
 
-	
-	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-
-
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
-
-
-	public String getIdFakture(){
-		return idFakture;
-	}
-	
-	public void setIdFakture(String idFakture){
-		this.idFakture = idFakture;
-	}
-	
-	public int getRedniBroj() {
+	public BigDecimal getRedniBroj() {
 		return redniBroj;
 	}
 
-	public void setRedniBroj(int redniBroj) {
+	public void setRedniBroj(BigDecimal redniBroj) {
 		this.redniBroj = redniBroj;
 	}
 
@@ -62,11 +61,11 @@ public class StavkaFakture {
 		this.nazivRobeIliUsluge = nazivRobeIliUsluge;
 	}
 
-	public double getKolicina() {
+	public BigDecimal getKolicina() {
 		return kolicina;
 	}
 
-	public void setKolicina(double kolicina) {
+	public void setKolicina(BigDecimal kolicina) {
 		this.kolicina = kolicina;
 	}
 
@@ -78,51 +77,60 @@ public class StavkaFakture {
 		this.jedinicaMere = jedinicaMere;
 	}
 
-	public double getJedinicnaCena() {
+	public BigDecimal getJedinicnaCena() {
 		return jedinicnaCena;
 	}
 
-	public void setJedinicnaCena(double jedinicnaCena) {
+	public void setJedinicnaCena(BigDecimal jedinicnaCena) {
 		this.jedinicnaCena = jedinicnaCena;
 	}
 
-	public double getVrednost() {
+	public BigDecimal getVrednost() {
 		return vrednost;
 	}
 
-	public void setVrednost(double vrednost) {
+	public void setVrednost(BigDecimal vrednost) {
 		this.vrednost = vrednost;
 	}
 
-	public double getProcenatRabata() {
+	public BigDecimal getProcenatRabata() {
 		return procenatRabata;
 	}
 
-	public void setProcenatRabata(double procenatRabata) {
+	public void setProcenatRabata(BigDecimal procenatRabata) {
 		this.procenatRabata = procenatRabata;
 	}
 
-	public double getIznosRabata() {
+	public BigDecimal getIznosRabata() {
 		return iznosRabata;
 	}
 
-	public void setIznosRabata(double iznosRabata) {
+	public void setIznosRabata(BigDecimal iznosRabata) {
 		this.iznosRabata = iznosRabata;
 	}
 
-	public double getUmanjenoZaRabat() {
+	public BigDecimal getUmanjenoZaRabat() {
 		return umanjenoZaRabat;
 	}
 
-	public void setUmanjenoZaRabat(double umanjenoZaRabat) {
+	public void setUmanjenoZaRabat(BigDecimal umanjenoZaRabat) {
 		this.umanjenoZaRabat = umanjenoZaRabat;
 	}
 
-	public double getUkupanPorez() {
+	public BigDecimal getUkupanPorez() {
 		return ukupanPorez;
 	}
 
-	public void setUkupanPorez(double ukupanPorez) {
+	public void setUkupanPorez(BigDecimal ukupanPorez) {
 		this.ukupanPorez = ukupanPorez;
-}
+	}
+
+	public Faktura getFaktura() {
+		return faktura;
+	}
+
+	public void setFaktura(Faktura faktura) {
+		this.faktura = faktura;
+	}
+
 }

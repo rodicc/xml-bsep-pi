@@ -1,17 +1,24 @@
 package ftn.xmlwebservisi.firme.model;
 
-import java.time.LocalDate;
-import java.util.HashMap;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Faktura {
-	
 
 	@Id
-	private int id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 	private String idPoruke;
 	private String nazivDobavljaca;
 	private String adresaDobavljaca;
@@ -19,36 +26,33 @@ public class Faktura {
 	private String nazivKupca;
 	private String adresaKupca;
 	private String pibKupca;
-	private int brojRacuna;
-	private LocalDate datumRacuna;
-	private double vrednostRobe;
-	private double vrednostUsluga;
-	private double ukupnoRobaIUsluge;
-	private double ukupanRabat;
-	private double ukupanPorez;
+	private BigDecimal brojRacuna;
+	private Date datumRacuna;
+	private BigDecimal vrednostRobe;
+	private BigDecimal vrednostUsluga;
+	private BigDecimal ukupnoRobaIUsluge;
+	private BigDecimal ukupanRabat;
+	private BigDecimal ukupanPorez;
 	private String oznakaValute;
-	private double iznosZaUplatu;
+	private BigDecimal iznosZaUplatu;
 	private String uplataNaRacun;
-	private LocalDate datumValute;
-	private HashMap<Integer, StavkaFakture> stavkeFakture;
-	
-	private Faktura(){
-		stavkeFakture = new HashMap<Integer, StavkaFakture>();
+	private Date datumValute;
+
+	@OneToMany(mappedBy = "faktura", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<StavkaFakture> stavkeFakture;
+
+	private Faktura() {
+
 	}
 
-	
-	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-
-
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
-
-
 
 	public String getIdPoruke() {
 		return idPoruke;
@@ -102,63 +106,59 @@ public class Faktura {
 		return pibKupca;
 	}
 
-	public void setPibKupca(String pibKupca) {
-		this.pibKupca = pibKupca;
-	}
-
-	public int getBrojRacuna() {
+	public BigDecimal getBrojRacuna() {
 		return brojRacuna;
 	}
 
-	public void setBrojRacuna(int brojRacuna) {
+	public void setBrojRacuna(BigDecimal brojRacuna) {
 		this.brojRacuna = brojRacuna;
 	}
 
-	public LocalDate getDatumRacuna() {
+	public Date getDatumRacuna() {
 		return datumRacuna;
 	}
 
-	public void setDatumRacuna(LocalDate datumRacuna) {
+	public void setDatumRacuna(Date datumRacuna) {
 		this.datumRacuna = datumRacuna;
 	}
 
-	public double getVrednostRobe() {
+	public BigDecimal getVrednostRobe() {
 		return vrednostRobe;
 	}
 
-	public void setVrednostRobe(double vrednostRobe) {
+	public void setVrednostRobe(BigDecimal vrednostRobe) {
 		this.vrednostRobe = vrednostRobe;
 	}
 
-	public double getVrednostUsluga() {
+	public BigDecimal getVrednostUsluga() {
 		return vrednostUsluga;
 	}
 
-	public void setVrednostUsluga(double vrednostUsluga) {
+	public void setVrednostUsluga(BigDecimal vrednostUsluga) {
 		this.vrednostUsluga = vrednostUsluga;
 	}
 
-	public double getUkupnoRobaIUsluge() {
+	public BigDecimal getUkupnoRobaIUsluge() {
 		return ukupnoRobaIUsluge;
 	}
 
-	public void setUkupnoRobaIUsluge(double ukupnoRobaIUsluge) {
+	public void setUkupnoRobaIUsluge(BigDecimal ukupnoRobaIUsluge) {
 		this.ukupnoRobaIUsluge = ukupnoRobaIUsluge;
 	}
 
-	public double getUkupanRabat() {
+	public BigDecimal getUkupanRabat() {
 		return ukupanRabat;
 	}
 
-	public void setUkupanRabat(double ukupanRabat) {
+	public void setUkupanRabat(BigDecimal ukupanRabat) {
 		this.ukupanRabat = ukupanRabat;
 	}
 
-	public double getUkupanPorez() {
+	public BigDecimal getUkupanPorez() {
 		return ukupanPorez;
 	}
 
-	public void setUkupanPorez(double ukupanPorez) {
+	public void setUkupanPorez(BigDecimal ukupanPorez) {
 		this.ukupanPorez = ukupanPorez;
 	}
 
@@ -170,11 +170,11 @@ public class Faktura {
 		this.oznakaValute = oznakaValute;
 	}
 
-	public double getIznosZaUplatu() {
+	public BigDecimal getIznosZaUplatu() {
 		return iznosZaUplatu;
 	}
 
-	public void setIznosZaUplatu(double iznosZaUplatu) {
+	public void setIznosZaUplatu(BigDecimal iznosZaUplatu) {
 		this.iznosZaUplatu = iznosZaUplatu;
 	}
 
@@ -186,21 +186,24 @@ public class Faktura {
 		this.uplataNaRacun = uplataNaRacun;
 	}
 
-	public LocalDate getDatumValute() {
+	public Date getDatumValute() {
 		return datumValute;
 	}
 
-	public void setDatumValute(LocalDate datumValute) {
+	public void setDatumValute(Date datumValute) {
 		this.datumValute = datumValute;
 	}
 
-	public HashMap<Integer, StavkaFakture> getStavkeFakture() {
+	public List<StavkaFakture> getStavkeFakture() {
 		return stavkeFakture;
 	}
 
-	public void setStavkeFakture(HashMap<Integer, StavkaFakture> stavkeFakture) {
+	public void setStavkeFakture(List<StavkaFakture> stavkeFakture) {
 		this.stavkeFakture = stavkeFakture;
 	}
 
-	
+	public void setPibKupca(String pibKupca) {
+		this.pibKupca = pibKupca;
+	}
+
 }
