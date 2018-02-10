@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://www.example.org/soap" xmlns:tns="http://www.example.org/soap"
+	targetNamespace="http://www.ftn.xml/centralnabanka" xmlns:tns="http://www.ftn.xml/centralnabanka"
 	elementFormDefault="qualified">
 	<xs:complexType name="MT103">
 		<xs:sequence>
