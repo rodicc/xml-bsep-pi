@@ -20,12 +20,15 @@ public class NalogZaPlacanje {
 	private String primalacPoverilac;
 	private Date datumNaloga;
 	private Date datumValute;
+	
 	private String racunDuznika;
 	private Integer modelZaduzenja;
 	private String pozivNaBrojZaduzenja;
 	private String racunPoverioca;
 	private Integer modelOdobrenja;
 	private String pozivNaBrojOdobrenja;
+	
+	private Integer sifraPlacanja;
 	private BigDecimal iznos;
 	private String oznakaValute;
 	private Boolean hitno;
@@ -36,6 +39,24 @@ public class NalogZaPlacanje {
 
 	public Integer getId() {
 		return id;
+	}
+
+	
+	
+	public Integer getSifraPlacanja() {
+		return sifraPlacanja;
+	}
+
+	public void setSifraPlacanja(Integer sifraPlacanja) {
+		this.sifraPlacanja = sifraPlacanja;
+	}
+
+	public void setModelZaduzenja(Integer modelZaduzenja) {
+		this.modelZaduzenja = modelZaduzenja;
+	}
+
+	public void setModelOdobrenja(Integer modelOdobrenja) {
+		this.modelOdobrenja = modelOdobrenja;
 	}
 
 	public void setId(Integer id) {
