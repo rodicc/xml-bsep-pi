@@ -7,7 +7,7 @@ import java.util.Random;
 
 import javax.xml.datatype.DatatypeFactory;
 
-import org.example.soap.PojedinacnoPlacanjeMT102;
+import xml.ftn.centralnabanka.PojedinacnoPlacanjeMT102;
 import org.springframework.stereotype.Service;
 
 import model.MT102;
@@ -17,9 +17,9 @@ import model.ZaglavljeMT102;
 @Service
 public class Mapper {
 
-	public org.example.soap.MT103 MT103EntityToSoap(MT103 mt103) {
+	public xml.ftn.centralnabanka.MT103 MT103EntityToSoap(MT103 mt103) {
 		try {
-			org.example.soap.MT103 result = new org.example.soap.MT103();
+			xml.ftn.centralnabanka.MT103 result = new xml.ftn.centralnabanka.MT103();
 			result.setIdPoruke(mt103.getIdPoruke());
 			result.setSwiftKodBankeDuznika(mt103.getSwiftKodBankeDuznika());
 			result.setObracunskiRacunBankeDuznika(mt103.getObracunskiRacunBankeDuznika());
@@ -47,7 +47,7 @@ public class Mapper {
 		}	
 	}
 	
-	public MT103 MT103SoapToEntity(org.example.soap.MT103 mt103) {
+	public MT103 MT103SoapToEntity(xml.ftn.centralnabanka.MT103 mt103) {
 		MT103 result = new MT103();
 		result.setIdPoruke(mt103.getIdPoruke());
 		result.setSwiftKodBankeDuznika(mt103.getSwiftKodBankeDuznika());
@@ -70,7 +70,7 @@ public class Mapper {
 		return result;
 	}
 
-	public MT102 MT102SoapToEntity(org.example.soap.MT102 mt102) {
+	public MT102 MT102SoapToEntity(xml.ftn.centralnabanka.MT102 mt102) {
 		MT102 result = new MT102();
 		ZaglavljeMT102 zaglavlje = new ZaglavljeMT102();
 		zaglavlje.setSwiftKodBankeDuznika(mt102.getZaglavljeMT102().getSwiftKodBankeDuznika());
