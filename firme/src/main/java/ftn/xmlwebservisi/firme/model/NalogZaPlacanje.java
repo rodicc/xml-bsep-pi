@@ -1,47 +1,46 @@
 package ftn.xmlwebservisi.firme.model;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+
 @Entity
 public class NalogZaPlacanje {
-	
+
 	@Id
-	private int id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 	private String idPoruke;
 	private String duznikNalogodavac;
 	private String svrhaPlacanja;
 	private String primalacPoverilac;
-	private LocalDate datumNaloga;
-	private LocalDate datumValute;
+	private Date datumNaloga;
+	private Date datumValute;
 	private String racunDuznika;
-	private int modelZaduzenja;
+	private Integer modelZaduzenja;
 	private String pozivNaBrojZaduzenja;
 	private String racunPoverioca;
-	private int modelOdobrenja;
+	private Integer modelOdobrenja;
 	private String pozivNaBrojOdobrenja;
-	private double iznos;
+	private BigDecimal iznos;
 	private String oznakaValute;
 	private Boolean hitno;
-	
-	public NalogZaPlacanje(){
-		
+
+	public NalogZaPlacanje() {
+
 	}
 
-	
-	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-
-
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
-
-
 
 	public String getIdPoruke() {
 		return idPoruke;
@@ -75,19 +74,19 @@ public class NalogZaPlacanje {
 		this.primalacPoverilac = primalacPoverilac;
 	}
 
-	public LocalDate getDatumNaloga() {
+	public Date getDatumNaloga() {
 		return datumNaloga;
 	}
 
-	public void setDatumNaloga(LocalDate datumNaloga) {
+	public void setDatumNaloga(Date datumNaloga) {
 		this.datumNaloga = datumNaloga;
 	}
 
-	public LocalDate getDatumValute() {
+	public Date getDatumValute() {
 		return datumValute;
 	}
 
-	public void setDatumValute(LocalDate datumValute) {
+	public void setDatumValute(Date datumValute) {
 		this.datumValute = datumValute;
 	}
 
@@ -139,11 +138,11 @@ public class NalogZaPlacanje {
 		this.pozivNaBrojOdobrenja = pozivNaBrojOdobrenja;
 	}
 
-	public double getIznos() {
+	public BigDecimal getIznos() {
 		return iznos;
 	}
 
-	public void setIznos(double iznos) {
+	public void setIznos(BigDecimal iznos) {
 		this.iznos = iznos;
 	}
 
@@ -161,5 +160,5 @@ public class NalogZaPlacanje {
 
 	public void setHitno(Boolean hitno) {
 		this.hitno = hitno;
-}
+	}
 }
