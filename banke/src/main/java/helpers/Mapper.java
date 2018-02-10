@@ -8,7 +8,7 @@ import model.ZahtevZaIzvod;
 @Service
 public class Mapper {
 
-	public NalogZaPlacanje NalogZaPlacanjeSoapToEntity(org.example.soap.NalogZaPlacanje nalog) {
+	public NalogZaPlacanje NalogZaPlacanjeSoapToEntity(xml.ftn.banke.NalogZaPlacanje nalog) {
 		NalogZaPlacanje result = new NalogZaPlacanje();
 		result.setIdPoruke(nalog.getIdPoruke());
 		result.setDuznikNalogodavac(nalog.getDuznikNalogodavac());
@@ -28,7 +28,7 @@ public class Mapper {
 		return result;
 	}
 	
-	public ZahtevZaIzvod zahtevZaIzvodSoapToEntity(org.example.soap.ZahtevZaIzvod zahtev) {
+	public ZahtevZaIzvod zahtevZaIzvodSoapToEntity(xml.ftn.banke.ZahtevZaIzvod zahtev) {
 		ZahtevZaIzvod result = new ZahtevZaIzvod();
 		result.setBrojRacuna(zahtev.getBrojRacuna());
 		result.setDatum(zahtev.getDatum().toGregorianCalendar().getTime());

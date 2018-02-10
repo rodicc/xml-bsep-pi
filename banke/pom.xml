@@ -37,7 +37,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web-services</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>wsdl4j</groupId>
+			<artifactId>wsdl4j</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -90,7 +93,7 @@
 					<generatePackage>soap</generatePackage>
 					<schemas>
 						<schema>
-							<url>http://localhost:8082/ws/soap.wsdl</url>
+							<url>http://localhost:8083/ws/soap.wsdl</url>
 						</schema>
 					</schemas>
 				</configuration>

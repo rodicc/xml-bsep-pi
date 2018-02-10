@@ -12,8 +12,8 @@ public class SoapClient extends WebServiceGatewaySupport {
 
 	public void sendMT103() {
 		SendMT103Request request = new SendMT103Request();
-		SendMT103Response response = (SendMT103Response)getWebServiceTemplate().marshalSendAndReceive("http://localhost:8082/ws", request,
-				new SoapActionCallback("http://localhost:8082/ws/sendMT103"));
+		SendMT103Response response = (SendMT103Response)getWebServiceTemplate().marshalSendAndReceive("http://localhost:8083/ws", request,
+				new SoapActionCallback("http://localhost:8083/ws/sendMT103"));
 		System.out.println(response);
 	}
 }

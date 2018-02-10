@@ -23,12 +23,12 @@ public class WebServiceConfig extends WsConfigurerAdapter {
 		return new ServletRegistrationBean(servlet, "/ws/*");
 	}
 
-	@Bean(name = "soap")
+	@Bean(name = "banke")
 	public DefaultWsdl11Definition defaultWsdl11Definition(XsdSchema soapSchema) {
 		DefaultWsdl11Definition wsdl11Definition = new DefaultWsdl11Definition();
-		wsdl11Definition.setPortTypeName("SoapPort");
+		wsdl11Definition.setPortTypeName("BankePort");
 		wsdl11Definition.setLocationUri("/ws");
-		wsdl11Definition.setTargetNamespace("http://www.example.org/soap");
+		wsdl11Definition.setTargetNamespace("http://www.ftn.xml/banke");
 		wsdl11Definition.setSchema(soapSchema);
 		return wsdl11Definition;
 	}
