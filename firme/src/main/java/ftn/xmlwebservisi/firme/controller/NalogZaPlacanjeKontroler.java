@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ftn.xmlwebservisi.firme.SoapClient;
 import ftn.xmlwebservisi.firme.model.NalogZaPlacanje;
 import ftn.xmlwebservisi.firme.service.NalogZaPlacanjeServis;
 
@@ -18,6 +19,8 @@ public class NalogZaPlacanjeKontroler {
 	
 	@Autowired
 	NalogZaPlacanjeServis nalogZaPlacanjeServis;
+	@Autowired
+	SoapClient client;
 	
 	@GetMapping
 	public List<NalogZaPlacanje> nadjiSveNaloge() {
@@ -25,8 +28,9 @@ public class NalogZaPlacanjeKontroler {
 	}
 	
 	@PostMapping
-	public NalogZaPlacanje dodajNalog(@RequestBody NalogZaPlacanje nalog) {
-		return nalogZaPlacanjeServis.dodajNalogZaPlacanje(nalog);
+	public void dodajNalog(@RequestBody NalogZaPlacanje nalog) {
+		System.out.println(nalog);
+		client.posaljiNalogZaPlacanje(nalog);
 	}
 	
 }
