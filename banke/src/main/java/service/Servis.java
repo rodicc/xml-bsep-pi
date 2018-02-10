@@ -15,9 +15,14 @@ import xml.ftn.banke.ZahtevZaIzvod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ftn.xmlwebservisi.banke.SoapClient;
 import helpers.Mapper;
 import repository.NalogZaPlacanjeRepository;
 import repository.ZahtevZaIzvodRepository;
+import soap.MT102;
+import soap.MT102Response;
+import soap.MT103;
+import soap.MT103Response;
 
 @Service
 public class Servis {
@@ -28,11 +33,30 @@ public class Servis {
 	private NalogZaPlacanjeRepository nalogZaPlacanjeRepository;
 	@Autowired
 	private ZahtevZaIzvodRepository zahtevZaIzvodRepository;
+	@Autowired
+	private SoapClient client;
 
 	public void regulisiNalogZaPlacanje(NalogZaPlacanje nalog) {
 		nalogZaPlacanjeRepository.save(mapper.NalogZaPlacanjeSoapToEntity(nalog));
+		if(nalog.isHitno() || nalog.getIznos().doubleValue() >= 250000) {
+			MT103 mt103 = kreirajMT103(nalog); 
+			MT103Response odgovor = client.sendMT103(mt103);
+		}else {
+			MT102 mt102 = kreirajMT102(nalog);
+			MT102Response odgovor = client.sendMT102(mt102);
+		}
 	}
 
+	private MT103 kreirajMT103(NalogZaPlacanje nalog) {
+		MT103 mt103 = new MT103();
+		return mt103;
+	}
+	
+	private MT102 kreirajMT102(NalogZaPlacanje nalog) {
+		MT102 mt102 = new MT102();
+		return mt102;
+	}
+	
 	public Presek regulisiZahtevZaIzvod(ZahtevZaIzvod zahtev) {
 		try {
 			zahtevZaIzvodRepository.save(mapper.zahtevZaIzvodSoapToEntity(zahtev));

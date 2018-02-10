@@ -17,9 +17,9 @@ public class SoapClient extends WebServiceGatewaySupport {
 		NalogZaPlacanje nalogSoap = maper.nalogZaPlacanjeEntityToSoap(nalog);
 		PosaljiNalogZaPlacanjeRequest posaljiNalog = new PosaljiNalogZaPlacanjeRequest();
 		posaljiNalog.setNalogZaPlacanje(nalogSoap);
-		
+		System.out.println("ovde");
 		this.getWebServiceTemplate().marshalSendAndReceive("http://localhost:8082/ws", posaljiNalog,
-				new SoapActionCallback("http://www.ftn.xml/banke/posaljiNalogZaPlacanje"));
+				new SoapActionCallback("http://www.ftn.xml/banke/posaljiNalogZaPlacanjeRequest"));
 	}
 	
 }	
