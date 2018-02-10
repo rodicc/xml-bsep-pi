@@ -1,5 +1,5 @@
 angular.module('app')
-.controller('fakturaController', ['$scope', function($scope){
+.controller('fakturaController', ['$scope', 'fakturaService', function($scope, fakturaService){
 	
 	$scope.stavke = [];
 	
@@ -7,7 +7,7 @@ angular.module('app')
 	
 	$scope.vrednostRobe = 0;
 	
-	$scope.ukupnoRabat = 0;
+	$scope.ukupanRabat = 0;
 	
 	$scope.iznosZaUplatu = 0;
 	
@@ -15,10 +15,13 @@ angular.module('app')
 	
 	$scope.selektovanaStavka = [];
 	
+	$scope.faktura = {};
+	
 	
 	$scope.dodajStavku = function(){
 		
 		var stavkaZaDodavanje = {	
+				redniBroj : $scope.stavke.length + 1,
 				naziv : $scope.naziv, 
 				kolicina : $scope.kolicina, 
 				jedinicnaCena: $scope.jedinicnaCena,
@@ -26,18 +29,36 @@ angular.module('app')
 				vrednost: Math.round($scope.kolicina * $scope.jedinicnaCena * 100)/100,
 				rabat: $scope.rabat,
 				iznosRabata : Math.round($scope.kolicina * $scope.jedinicnaCena * $scope.rabat)/100 ,
-				umanjenoZaRabat : $scope.jedinicnaCena - ($scope.kolicina * $scope.jedinicnaCena * $scope.rabat/100),
+				umanjenoZaRabat : $scope.jedinicnaCena - ($scope.jedinicnaCena * $scope.rabat/100),
 				ukupno : $scope.kolicina * $scope.jedinicnaCena -  $scope.kolicina * $scope.jedinicnaCena * $scope.rabat / 100
 		};
 		
 		$scope.stavke.push(stavkaZaDodavanje);
-		
-		$scope.vrednostRobe = $scope.vrednostRobe + stavkaZaDodavanje.ukupno;
-		$scope.ukupnoRabat = $scope.ukupnoRabat + stavkaZaDodavanje.iznosRabata;
-		$scope.iznosZaUplatu = $scope.iznosZaUplatu + stavkaZaDodavanje.ukupno;
 		$scope.stavkeSize = $scope.stavke.length;
+		
+		$scope.vrednostRobe = Math.round(($scope.vrednostRobe + stavkaZaDodavanje.ukupno)*100)/100;
+		$scope.ukupanRabat = Math.round(($scope.ukupanRabat + stavkaZaDodavanje.iznosRabata)*100)/100;
+		$scope.iznosZaUplatu = Math.round(($scope.iznosZaUplatu + stavkaZaDodavanje.ukupno)*100)/100;
+		
+		/*$scope.naziv = "";
+		$scope.kolicina = "";
+		$scope.jedinicnaCena = "";
+		$scope.jedinicaMere = "";
+		
+		*/
+		
 	}
 	
-	
+	$scope.posaljiFakturu = function(){
+		console.log("kontroler");
+		$scope.faktura.vrednostRobe = $scope.vrednostRobe;
+		$scope.faktura.ukupanRabat = $scope.ukupanRabat;
+		$scope.faktura.iznosZaUplatu = $scope.iznosZaUplatu;
+		$scope.faktura.stavkeFakture = $scope.stavke;
+		fakturaService.posaljiFakturu($scope.faktura).then(function(response){
+			
+		});
+		$scope.faktura = {};
+	}
 	
 }]);

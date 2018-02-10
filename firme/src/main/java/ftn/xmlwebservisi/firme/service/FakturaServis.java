@@ -27,6 +27,7 @@ public class FakturaServis {
 	}
 	
 	public Faktura novaFaktura(Faktura faktura) {
+		
 		return fakturaRepozitorijum.save(faktura);
 	}
 	

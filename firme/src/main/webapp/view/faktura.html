@@ -5,52 +5,57 @@
 				<div class="form-group row">
 					<label class="control-label col-sm-2">Naziv Dobavljaca</label> 
 					<div class="col-sm-10">
-						<input  class="form-control" ng-model="nazivDobavljaca" required></div>
+						<input  class="form-control" ng-model="faktura.nazivDobavljaca" required></div>
 				</div>
 				<div class="form-group row">
 					<label class="control-label col-sm-2">Adresa dobavljaca</label> 
 					<div class="col-sm-10">
-						<input  class="form-control" ng-model="adresaDobavljaca" required></div>
+						<input  class="form-control" ng-model="faktura.adresaDobavljaca" required></div>
 				</div>
 				<div class="form-group row">	
 					<label class="control-label col-sm-2">PIB dobavljaca</label>
 					<div class="col-sm-10">
-						<input  class="form-control" ng-model="pibDobavljaca" required type="number"></div>
+						<input  class="form-control" ng-model="faktura.pibDobavljaca" required type="number"></div>
 				</div>
 				<div class="form-group row">
 					<label class="control-label col-sm-2">Naziv kupca</label>
 					<div class="col-sm-10">
-						<input  class="form-control" ng-model="nazivKupca" required></div>
+						<input  class="form-control" ng-model="faktura.nazivKupca" required></div>
 				</div>
 				<div class="form-group row">
 					<label class="control-label col-sm-2">Adresa kupca</label>		
 					<div class="col-sm-10">
-						<input class="form-control" ng-model="adresaKupca" ng-readonly="true"></div>
+						<input class="form-control" ng-model="faktura.adresaKupca"></div>
 				</div>
 				<div class="form-group row">		
 					<label class="control-label col-sm-2">PIB kupca</label>
 					<div class="col-sm-10">
-						<input class="form-control" ng-model="pibKupca" required type="number"></div>
+						<input class="form-control" ng-model="faktura.pibKupca" required type="number"></div>
 				</div>
 				<div class="form-group row">
 					<label class="control-label col-sm-2">Broj racuna</label>
 					<div class="col-sm-10">
-						<input class="form-control" ng-model="brojRacuna" required></div>
+						<input class="form-control" ng-model="faktura.brojRacuna" required></div>
 				</div>
 				<div class="form-group row">		
 					<label class="control-label col-sm-2">Uplata na racun</label> 
 					<div class="col-sm-10">
-						<input class="form-control" ng-model="uplataNaRacun" required></div>
+						<input class="form-control" ng-model="faktura.uplataNaRacun" required></div>
 				</div>
 				<div class="form-group row">
 					<div class="col-sm-2">			
 						<label class="control-label">Datum racuna</label></div>
 					<div class="col-sm-4">
-						<input class="form-control" type="date" ng-model="datumRacuna"  size="8"></div>
+						<input class="form-control" type="date" ng-model="faktura.datumRacuna"  size="8"></div>
 					<div class="col-sm-2">		
 						<label class="control-label">Datum valute</label></div>
-					<div class="col-sm-4"><input class="form-control" type="date" ng-model="datumValute"  size="8"></div>
+					<div class="col-sm-4"><input class="form-control" type="date" ng-model="faktura.datumValute"  size="8"></div>
 					
+				</div>
+				<div class="form-group row">		
+					<label class="control-label col-sm-2">Oznaka valute</label> 
+					<div class="col-sm-10">
+						<input class="form-control" ng-model="faktura.oznakaValute" required></div>
 				</div>
 		</form>		
 		<hr>
@@ -121,18 +126,18 @@
 		</table>
 		<hr>
 		<div>
-			<b> <label style="padding: 10px;">Vrednost robe:
-					{{vrednostRobe}}</label> <label style="padding: 10px;">Ukupno porez:
-					{{ukupnoPorez}}</label> <label style="padding: 10px;">Ukupno rabat:
-					{{ukupnoRabat}}</label> <label style="padding: 10px;">Oznaka valute:
-					{{oznakaValute}}</label> <label style="padding: 10px;">Iznos za uplatu: {{iznosZaUplatu}}</label>
+			<b> <label style="padding: 10px;">Vrednost robe:{{vrednostRobe}}
+			<label style="padding: 10px;">Ukupan rabat:{{ukupanRabat}}</label> 
+			<label style="padding: 10px;">Oznaka valute:{{faktura.oznakaValute}}</label> 
+			<label style="padding: 10px;">Iznos za uplatu: {{iznosZaUplatu}}</label>
 	
 			</b>
 		</div>
 	
 		<md-toolbar class="md-hue-2">
 		<div class="md-toolbar-tools">
-			<button type="submit" ng-click=>Posalji</button>
+			<button ng-click="posaljiFakturu()">Posalji</button>
+	
 		</div>
 		</md-toolbar>
 		

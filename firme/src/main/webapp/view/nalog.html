@@ -1,12 +1,12 @@
 <h1>nalog</h1>
 
 <form>
-<div class="container-fluid">
+
 	<div class="row">
-		<div class="md-col-6"  style="padding:20px;">
+		<div class="col-md-6"  style="padding:20px;">
 			
 			<div><label>Duznik- nalogodavac</label></div>
-			<div><textarea style="resize:none" rows="2" cols="25" 
+			<div><textarea  style="resize:none" rows="2" cols="25" 
 			ng-model="duznikNalogodavac"></textarea></div>
 			
 			<div><label>Svrha uplate</label></div>
@@ -18,11 +18,11 @@
 			ng-model="poverilacPrimalac"></textarea></div>
 			
 			<div class="row">
-				<div style="padding:20px">
+				<div style="padding:20px" class="col-md-3">
 					<div><label>Datum uplate</label></div>
 					<div><input type="date" ng-model="datumUplate" size="8"></div>
 				</div>
-				<div style="padding:20px">
+				<div style="padding:20px" class="col-md-3">
 					<div><label>Datum valute</label></div>
 					<div><input type="date" ng-model="datumValute"  size="8"></div>
 				</div>	
@@ -30,50 +30,50 @@
 		</div>
 		
 		
-		<div class="md-col-6"  style="padding:20px;">	
+		<div class="col-md-6"  style="padding:20px;">	
 		<div class="row">
-			<div style="padding:5px;">
-				<div class="md-col-2" ><label>Sifra</label></div>
+			<div style="padding:5px;" class="col-md-2">
+				<div ><label>Sifra</label></div>
 				<div><input ng-model="sifraPlacanja" size="3" ></div>
 			</div>
-			<div style="padding:5px;">	
-				<div class="md-col-2"><label>Valuta</label></div>
+			<div style="padding:5px;" class="col-md-2">	
+				<div ><label>Valuta</label></div>
 				<div><input ng-model="valuta"size="3" ></div>
 			</div>
-			<div style="padding:5px;">
-				<div class="md-col-2"><label>Iznos</label></div>
+			<div style="padding:5px;" class="col-md-2">
+				<div ><label>Iznos</label></div>
 				<div><input ng-model="iznos"  size="15" ></div>
 			</div>		
 		</div>	
 		
-		<div>
+		<div class="row">
 			<div><label>Racun duznika-nalogodavca</label></div>
 			<div><input ng-model="racunDuznika" size="30"></div>	
 		</div>		
 		
 	
 		<div class="row">
-				<div style="padding:5px;">
+				<div style="padding:5px;" class="col-md-2">
 					<div><label>Model</label></div>
-					<div><input ng-model="modelDuznik" size="3"></div>
+					<div><input ng-model="modelDuznik" size="3" type="number"></div>
 				</div>
-				<div style="padding:5px;">
+				<div style="padding:5px;" class="col-md-4">
 					<div><label>Poziv na broj (zaduzenje)</label></div>
 					<div><input ng-model="pnbZaduzenje" size="23"></div>
 				</div>
 		</div>
 		
 			
-		<div>	
+		<div class="row">	
 			<div><label>Racun poverioca-primaoca</label></div>
 			<div><input ng-model="racunPoverioca" size="30"></div>
 		</div>
 			<div class="row">
-				<div style="padding:5px;">
+				<div style="padding:5px;" class="col-md-2">
 					<div><label>Model</label></div>
 					<div><input ng-model="modelPoverilac" size="3"></div>
 				</div>
-				<div style="padding:5px;">
+				<div style="padding:5px;" class="col-md-4">
 					<div><label>Poziv na broj (odobrenje)</label></div>
 					<div><input ng-model="pnbOdobrenje" size="23"></div>
 				</div>
@@ -96,5 +96,5 @@
 		</div>	
 			
 	</div>
-</div>
+
 </form>
