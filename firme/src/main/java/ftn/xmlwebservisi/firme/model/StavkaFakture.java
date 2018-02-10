@@ -18,16 +18,15 @@ public class StavkaFakture {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
-	private BigDecimal redniBroj;
-	private String nazivRobeIliUsluge;
+	private Integer redniBroj;
+	private String naziv;
 	private BigDecimal kolicina;
 	private String jedinicaMere;
 	private BigDecimal jedinicnaCena;
 	private BigDecimal vrednost;
-	private BigDecimal procenatRabata;
+	private BigDecimal Rabat;
 	private BigDecimal iznosRabata;
 	private BigDecimal umanjenoZaRabat;
-	private BigDecimal ukupanPorez;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "faktura_id")
@@ -45,20 +44,20 @@ public class StavkaFakture {
 		this.id = id;
 	}
 
-	public BigDecimal getRedniBroj() {
+	public Integer getRedniBroj() {
 		return redniBroj;
 	}
 
-	public void setRedniBroj(BigDecimal redniBroj) {
+	public void setRedniBroj(Integer redniBroj) {
 		this.redniBroj = redniBroj;
 	}
 
-	public String getNazivRobeIliUsluge() {
-		return nazivRobeIliUsluge;
+	public String getNaziv() {
+		return naziv;
 	}
 
-	public void setNazivRobeIliUsluge(String nazivRobeIliUsluge) {
-		this.nazivRobeIliUsluge = nazivRobeIliUsluge;
+	public void setNaziv(String nazivRobeIliUsluge) {
+		this.naziv = nazivRobeIliUsluge;
 	}
 
 	public BigDecimal getKolicina() {
@@ -93,12 +92,12 @@ public class StavkaFakture {
 		this.vrednost = vrednost;
 	}
 
-	public BigDecimal getProcenatRabata() {
-		return procenatRabata;
+	public BigDecimal getRabat() {
+		return Rabat;
 	}
 
-	public void setProcenatRabata(BigDecimal procenatRabata) {
-		this.procenatRabata = procenatRabata;
+	public void setRabat(BigDecimal procenatRabata) {
+		this.Rabat = procenatRabata;
 	}
 
 	public BigDecimal getIznosRabata() {
@@ -117,13 +116,6 @@ public class StavkaFakture {
 		this.umanjenoZaRabat = umanjenoZaRabat;
 	}
 
-	public BigDecimal getUkupanPorez() {
-		return ukupanPorez;
-	}
-
-	public void setUkupanPorez(BigDecimal ukupanPorez) {
-		this.ukupanPorez = ukupanPorez;
-	}
 
 	public Faktura getFaktura() {
 		return faktura;

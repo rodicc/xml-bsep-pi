@@ -1,92 +1,93 @@
-<h1>nalog</h1>
+<h1>Nalog</h1>
 
 <form>
-<div class="container-fluid">
+
 	<div class="row">
-		<div class="md-col-6"  style="padding:20px;">
+		<div class="col-md-6"  style="padding:20px;">
 			
 			<div><label>Duznik- nalogodavac</label></div>
-			<div><textarea style="resize:none" rows="2" cols="25" 
-			ng-model="duznikNalogodavac"></textarea></div>
+			<div><textarea  style="resize:none" rows="2" cols="25" 
+			ng-model="nalog.duznikNalogodavac" class="form-control"></textarea></div>
 			
 			<div><label>Svrha uplate</label></div>
 			<div><textarea style="resize:none" rows="2" cols="25" 
-			ng-model="svrhaUplate"></textarea></div>
+			ng-model="nalog.svrhaPlacanja" class="form-control"></textarea></div>
 			
 			<div><label>Poverilac-primalac</label></div>
 			<div><textarea style="resize:none" rows="2" cols="25" 
-			ng-model="poverilacPrimalac"></textarea></div>
+			ng-model="nalog.primalacPoverilac" class="form-control"></textarea></div>
 			
 			<div class="row">
-				<div style="padding:20px">
+				<div style="padding:20px" class="col-md-4">
 					<div><label>Datum uplate</label></div>
-					<div><input type="date" ng-model="datumUplate" size="8"></div>
+					<div><input type="date" ng-model="nalog.datumNaloga" size="8" class="form-control"></div>
 				</div>
-				<div style="padding:20px">
+				<div style="padding:20px" class="col-md-4">
 					<div><label>Datum valute</label></div>
-					<div><input type="date" ng-model="datumValute"  size="8"></div>
+					<div><input type="date" ng-model="nalog.datumValute"  size="8" class="form-control"></div>
+				</div>
+				<div style="padding:40px;" class="col-md-4">
+					<label>Hitno</label>
+					<input type="checkbox" ng-model="nalog.hitno" class="checkbox-inline">
 				</div>	
 			</div>		
 		</div>
 		
 		
-		<div class="md-col-6"  style="padding:20px;">	
+		<div class="col-md-6"  style="padding:20px;">	
 		<div class="row">
-			<div style="padding:5px;">
-				<div class="md-col-2" ><label>Sifra</label></div>
-				<div><input ng-model="sifraPlacanja" size="3" ></div>
+			<div style="padding-left:5px;" class="col-md-2">
+				<div ><label>Sifra</label></div>
+				<div><input ng-model="nalog.sifraPlacanja" size="3" class="form-control"></div>
 			</div>
-			<div style="padding:5px;">	
-				<div class="md-col-2"><label>Valuta</label></div>
-				<div><input ng-model="valuta"size="3" ></div>
+			<div style="padding-left:5px;" class="col-md-2">	
+				<div ><label>Valuta</label></div>
+				<div><input ng-model="nalog.oznakaValute"size="3" class="form-control"></div>
 			</div>
-			<div style="padding:5px;">
-				<div class="md-col-2"><label>Iznos</label></div>
-				<div><input ng-model="iznos"  size="15" ></div>
+			<div style="padding-left:5px; padding-right:0px" class="col-md-8">
+				<div ><label>Iznos</label></div>
+				<div><input ng-model="nalog.iznos"  class="form-control"></div>
 			</div>		
 		</div>	
 		
-		<div>
+		<div class="row" style="padding-left:5px;">
 			<div><label>Racun duznika-nalogodavca</label></div>
-			<div><input ng-model="racunDuznika" size="30"></div>	
+			<div><input ng-model="nalog.racunDuznika" size="30" class="form-control"></div>	
 		</div>		
 		
 	
 		<div class="row">
-				<div style="padding:5px;">
+				<div style="padding-left:5px;" class="col-md-2">
 					<div><label>Model</label></div>
-					<div><input ng-model="modelDuznik" size="3"></div>
+					<div><input ng-model="nalog.modelZaduzenja" size="3" class="form-control"></div>
 				</div>
-				<div style="padding:5px;">
+				<div style="padding-left:5px; padding-right:0px" class="col-md-10">
 					<div><label>Poziv na broj (zaduzenje)</label></div>
-					<div><input ng-model="pnbZaduzenje" size="23"></div>
+					<div><input ng-model="nalog.pozivNaBrojZaduzenja" size="23" class="form-control"></div>
 				</div>
 		</div>
 		
 			
-		<div>	
+		<div class="row" style="padding-left:5px;" >	
 			<div><label>Racun poverioca-primaoca</label></div>
-			<div><input ng-model="racunPoverioca" size="30"></div>
+			<div><input ng-model="nalog.racunPoverioca" size="30" class="form-control"></div>
 		</div>
 			<div class="row">
-				<div style="padding:5px;">
+				<div style="padding-left:5px;" class="col-md-2">
 					<div><label>Model</label></div>
-					<div><input ng-model="modelPoverilac" size="3"></div>
+					<div><input ng-model="nalog.modelOdobrenja" size="3" class="form-control"></div>
 				</div>
-				<div style="padding:5px;">
+				<div style="padding-left:5px; padding-right:0px" class="col-md-10">
 					<div><label>Poziv na broj (odobrenje)</label></div>
-					<div><input ng-model="pnbOdobrenje" size="23"></div>
+					<div><input ng-model="nalog.pozivNaBrojOdobrenja" size="23" class="form-control"></div>
 				</div>
 			</div>
 		
 		<div class="row">
-			<div style="padding:10px;">
-				<label>Hitno</label>
-				<input type="checkbox" ng-model="hitno">
-			</div>
+			
 			
 			<div style="padding:10px; padding-left:165px; float:right;">
-				<button type="submit">Posalji</button>
+				<button ng-click="posaljiNalog()" class="btn">Posalji</button>
 			</div>
 			
 		</div>	
@@ -96,5 +97,5 @@
 		</div>	
 			
 	</div>
-</div>
+
 </form>

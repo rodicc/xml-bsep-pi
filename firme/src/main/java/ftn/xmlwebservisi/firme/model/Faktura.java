@@ -17,9 +17,11 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public class Faktura {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue
 	private Integer id;
+	
 	private String idPoruke;
+	
 	private String nazivDobavljaca;
 	private String adresaDobavljaca;
 	private String pibDobavljaca;
@@ -27,16 +29,16 @@ public class Faktura {
 	private String adresaKupca;
 	private String pibKupca;
 	private BigDecimal brojRacuna;
-	private Date datumRacuna;
-	private BigDecimal vrednostRobe;
-	private BigDecimal vrednostUsluga;
-	private BigDecimal ukupnoRobaIUsluge;
-	private BigDecimal ukupanRabat;
-	private BigDecimal ukupanPorez;
-	private String oznakaValute;
-	private BigDecimal iznosZaUplatu;
 	private String uplataNaRacun;
+	private Date datumRacuna;
 	private Date datumValute;
+	private String oznakaValute;
+	
+	private BigDecimal vrednostRobe;
+	private BigDecimal ukupanRabat;
+	private BigDecimal iznosZaUplatu;
+	
+	
 
 	@OneToMany(mappedBy = "faktura", cascade = CascadeType.ALL)
 	@JsonManagedReference
@@ -130,21 +132,6 @@ public class Faktura {
 		this.vrednostRobe = vrednostRobe;
 	}
 
-	public BigDecimal getVrednostUsluga() {
-		return vrednostUsluga;
-	}
-
-	public void setVrednostUsluga(BigDecimal vrednostUsluga) {
-		this.vrednostUsluga = vrednostUsluga;
-	}
-
-	public BigDecimal getUkupnoRobaIUsluge() {
-		return ukupnoRobaIUsluge;
-	}
-
-	public void setUkupnoRobaIUsluge(BigDecimal ukupnoRobaIUsluge) {
-		this.ukupnoRobaIUsluge = ukupnoRobaIUsluge;
-	}
 
 	public BigDecimal getUkupanRabat() {
 		return ukupanRabat;
@@ -154,13 +141,6 @@ public class Faktura {
 		this.ukupanRabat = ukupanRabat;
 	}
 
-	public BigDecimal getUkupanPorez() {
-		return ukupanPorez;
-	}
-
-	public void setUkupanPorez(BigDecimal ukupanPorez) {
-		this.ukupanPorez = ukupanPorez;
-	}
 
 	public String getOznakaValute() {
 		return oznakaValute;
