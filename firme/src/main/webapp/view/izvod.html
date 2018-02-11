@@ -1,35 +1,117 @@
-<br>
-<div class="row">
+<div style="margin:30px;">
 
-	<div class="col-md-3 panel panel-default" style="padding-left:30px; padding-right:30px;">
-	<h3>Novi nalog za izvod</h3>
-	 	<div class="row">
-			<div><label>Broj racuna</label></div>
-			<div><input ng-model="izvod.brojRacuna" class="form-control"></div>
-		</div>
-		
-		<div class="row">
-			<div class="col-md-7" style="padding-left:0px;">
-				<div><label>Datum</label></div>
-				<div><input type="date" ng-model="izvod.datum" class="form-control"></div>
-			</div>	
-			<div class="col-md-5" style="padding-right:0px;">
-				<div><label>R.br. preseka</label></div>
-				<div><input type="number" ng-model="izvod.redniBrojPreseka" class="form-control"></div>
+	<div class="row">
+	
+		<div class="col-md-3 panel panel-default" style="padding-left:30px; padding-right:30px;">
+		<h3>Novi nalog za presek</h3>
+		 	<div class="row">
+				<div><label>Broj racuna</label></div>
+				<div><input ng-model="izvod.brojRacuna" class="form-control"></div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-7" style="padding-left:0px;">
+					<div><label>Datum</label></div>
+					<div><input type="date" ng-model="izvod.datum" class="form-control"></div>
+				</div>	
+				<div class="col-md-5" style="padding-right:0px;">
+					<div><label>R.br. preseka</label></div>
+					<div><input type="number" ng-model="izvod.redniBrojPreseka" class="form-control"></div>
+				</div>
+			</div>
+			
+			<div class="row" style="float:right; padding-top:15px; padding-bottom:15px">
+			<button ng-click="posaljiZahtevZaIzvod()" class="btn btn-md">Posalji</button>
 			</div>
 		</div>
 		
-		<div class="row" style="float:right; padding-top:15px; padding-bottom:15px">
-		<button ng-click="posaljiZahtevZaIzvod()" class="btn btn-md">Posalji</button>
-		</div>
-	</div>
-	
-	
-	
-	<div class="col-md-9">
-		<div class="panel panel-default" ng-repeat="presek in preseci">
-			
 		
+		
+		<div class="col-md-9">
+			<div class="panel panel-default" ng-repeat="presek in preseci" style="padding:20px;">
+			<!-- 
+			<div class="row">
+				<div class="col-md-4"><label>Broj racuna: <b>{{presek.brojRacuna}}</b></label></div>
+				<div class="col-md-4"><label>Datum: <b>{{presek.datumNaloga}}</b></label></div>
+				<div class="col-md-4"><label>R.br. preseka: <b>{{presek.brojPreseka}}</b></label></div>
+			</div>	
+			<div class="row">
+				<div class="col-md-4"><label>Prethodno stanje: <b>{{presek.prethodnoStanje}}</b></label></div>
+				<div class="col-md-4"><label>Broj promena na teret: <b>{{presek.brojPromenaNaTeret}}</b></label></div>
+				<div class="col-md-4"><label>Ukupno na teret: <b>{{presek.ukupnoNaTeret}}</b></label></div>
+			</div>
+			<div class="row">
+				<div class="col-md-4"><label>Novo stanje: <b>{{presek.novoStanje}}</b></label></div>
+				<div class="col-md-4"><label>Broj promena u korist: <b>{{presek.brojPromenaUKorist}}</b></label></div>
+				<div class="col-md-4"><label>Ukupno u korist: <b>{{presek.ukupnoUKorist}}</b></label></div>
+			</div>
+			 -->
+			 <div class="row" align="left" style="margin-left:10px;"><h3>Redni broj preseka: {{presek.brojPreseka}}</h3></div>
+			 <table class="table table-striped" multiple >
+				<thead class="thead-default">
+					<tr>
+						<th class="col-sm-1"style="padding: 10px;">Br. racuna</th>
+						<th class="col-sm-1" style="padding: 10px;">Br. promena na teret</th>
+						<th class="col-sm-1" style="padding: 10px;">Ukupno na teret</th>
+						<th class="col-sm-1" style="padding: 10px;">Br. promena u korist</th>
+						<th class="col-sm-1" style="padding: 10px;">Ukupno u korist</th>
+						<th class="col-sm-1" style="padding: 10px;">Prethodno stanje</th>
+						<th class="col-sm-1" style="padding: 10px;">Novo stanje</th>
+						<th class="col-sm-1" style="padding: 10px;">Datum preseka</th>
+					</tr>
+				</thead>
+				<tbody >
+					<tr md-select="stavka">
+						<td>{{presek.brojRacuna}}</td>
+						<td align="center">{{presek.brojPromenaNaTeret}}</td>
+						<td align="center">{{presek.ukupnoNaTeret}}</td>
+						<td align="center">{{presek.brojPromenaUKorist}}</td>
+						<td align="center">{{presek.ukupnoUKorist}}</td>
+						<td align="center">{{presek.prethodnoStanje}}</td>
+						<td align="center">{{presek.novoStanje}}</td>
+						<td align="center">{{presek.datumNaloga}}</td>
+					</tr>
+				</tbody>
+			</table>
+			 
+			 
+			<hr>
+			<table class="table table-striped" multiple >
+				<thead class="thead-default">
+					<tr>
+						<th class="col-sm-3"style="padding: 10px;"><span>Svrha placanja</span></th>
+						<th class="col-sm-1" style="padding: 10px;"><span>Duznik/ Nalogodavac</span></th>
+						<th class="col-sm-1" style="padding: 10px;">Racun duznika</th>
+						<th class="col-sm-1" style="padding: 10px;">Model zadzuenja</th>
+						<th class="col-sm-1" style="padding: 10px;">Poziv na br. zaduzenja</th>
+						<th class="col-sm-1" style="padding: 10px;">Primalac/ Poverilac</th>
+						<th class="col-sm-1" style="padding: 10px;">Racun primaoca</th>
+						<th class="col-sm-1" style="padding: 10px;">Model odobrenja</th>
+						<th class="col-sm-1" style="padding: 10px;">Poziv na br. odobrenja</th>
+						<th class="col-sm-1" style="padding: 10px;">Datum naloga</th>
+						<th class="col-sm-1" style="padding: 10px;">Datum valute</th>
+						<th class="col-sm-1" style="padding: 10px;">Iznos</th>
+					</tr>
+				</thead>
+				<tbody >
+					<tr md-select="stavka" ng-repeat="stavka in presek.stavkePreseka">
+						<td>{{stavka.svrhaPlacanja}}</td>
+						<td align="center">{{stavka.duznikNalogodavac}}</td>
+						<td align="center">{{stavka.racunDuznika}}</td>
+						<td align="center">{{stavka.modelZaduzenja}}</td>
+						<td align="center">{{stavka.pozivNaBrojZaduzenja}}</td>
+						<td align="center">{{stavka.primalacPoverilac}}</td>
+						<td align="center">{{stavka.racunPoverioca}}</td>
+						<td align="center">{{stavka.modelOdobrenja}}</td>
+						<td align="center">{{stavka.pozivNaBrojOdobrenja}}</td>
+						<td align="center">{{stavka.datumNaloga}}</td>
+						<td align="center">{{stavka.datumValute}}</td>
+						<td align="center">{{stavka.iznos}}</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			</div>
 		</div>
 	</div>
 </div>
