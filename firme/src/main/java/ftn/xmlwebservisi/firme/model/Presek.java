@@ -1,7 +1,10 @@
 package ftn.xmlwebservisi.firme.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,7 +14,7 @@ public class Presek {
 	@Id
 	private int idPreseka;
 	private String brojRacuna;
-	private LocalDate datumNaloga;
+	private Date datumNaloga;
 	private int brojPreseka;
 	private double prethodnoStanje;
 	private int brojPromenaUKorist;
@@ -19,10 +22,10 @@ public class Presek {
 	private int brojPromenaNaTeret;
 	private double ukupnoNaTeret;
 	private double novoStanje;
-	private HashMap<Integer, StavkaPreseka> stavkePreseka;
+	private List<StavkaPreseka> stavkePreseka;
 	
 	public Presek(){
-		stavkePreseka = new HashMap<Integer, StavkaPreseka>();
+		stavkePreseka = new ArrayList<StavkaPreseka>();
 	}
 
 	public int getIdPreseka() {
@@ -41,11 +44,11 @@ public class Presek {
 		this.brojRacuna = brojRacuna;
 	}
 
-	public LocalDate getDatumNaloga() {
+	public Date getDatumNaloga() {
 		return datumNaloga;
 	}
 
-	public void setDatumNaloga(LocalDate datumNaloga) {
+	public void setDatumNaloga(Date datumNaloga) {
 		this.datumNaloga = datumNaloga;
 	}
 
@@ -105,11 +108,13 @@ public class Presek {
 		this.novoStanje = novoStanje;
 	}
 
-	public HashMap<Integer, StavkaPreseka> getStavkePreseka() {
+	public List<StavkaPreseka> getStavkePreseka() {
 		return stavkePreseka;
 	}
 
-	public void setStavkePreseka(HashMap<Integer, StavkaPreseka> stavkePreseka) {
+	public void setStavkePreseka(List<StavkaPreseka> stavkePreseka) {
 		this.stavkePreseka = stavkePreseka;
-}
+	}
+
+	
 }

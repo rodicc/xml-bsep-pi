@@ -1,6 +1,7 @@
 package ftn.xmlwebservisi.firme.model;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -13,8 +14,8 @@ public class StavkaPreseka {
 	private String duznikNalogodavac;
 	private String svrhaPlacanja;
 	private String primalacPoverilac;
-	private LocalDate datumNaloga;
-	private LocalDate datumValute;
+	private Date datumNaloga;
+	private Date datumValute;
 	private String racunDuznika;
 	private int modelZaduzenja;
 	private String pozivNaBrojZaduzenja;
@@ -78,19 +79,19 @@ public class StavkaPreseka {
 		this.primalacPoverilac = primalacPoverilac;
 	}
 
-	public LocalDate getDatumNaloga() {
+	public Date getDatumNaloga() {
 		return datumNaloga;
 	}
 
-	public void setDatumNaloga(LocalDate datumNaloga) {
+	public void setDatumNaloga(Date datumNaloga) {
 		this.datumNaloga = datumNaloga;
 	}
 
-	public LocalDate getDatumValute() {
+	public Date getDatumValute() {
 		return datumValute;
 	}
 
-	public void setDatumValute(LocalDate datumValute) {
+	public void setDatumValute(Date datumValute) {
 		this.datumValute = datumValute;
 	}
 
