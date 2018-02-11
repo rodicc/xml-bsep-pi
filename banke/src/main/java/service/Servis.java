@@ -67,19 +67,29 @@ public class Servis {
 		Firma firmaKojaPlaca = firmaRepository.findByBrojRacuna(nalog.getRacunDuznika());
 		rezervisiNovac(firmaKojaPlaca, nalog.getIznos());
 		firmaRepository.save(firmaKojaPlaca);
+		
+		// centralna banka prebacuje sredstva izmedju banaka
 		MT103Response odgovor = client.sendMT103(mt103);
 		if(odgovor.getMT103() != null && odgovor.getMT900() != null && odgovor.getMT910() != null) {
 			mt900Repository.save(mapper.mt900SoapToEntity(odgovor.getMT900()));
 			mt910Repository.save(mapper.mt910SoapToEntity(odgovor.getMT910()));
+			
 			double iznosNaloga = nalog.getIznos().doubleValue();
+			// skidanje rezervisanog novca
 			firmaKojaPlaca.setRezervisanNovac(new BigDecimal(firmaKojaPlaca.getRezervisanNovac().doubleValue() - iznosNaloga));
 			firmaRepository.save(firmaKojaPlaca);
+			
+			// dodavanje iznosa firmi kojoj se placa
 			Firma firmaKojojSePlaca = firmaRepository.findByBrojRacuna(nalog.getRacunPrimaoca());
 			firmaKojojSePlaca.setStanjeRacuna(new BigDecimal(firmaKojojSePlaca.getStanjeRacuna().doubleValue() + iznosNaloga));
 			firmaRepository.save(firmaKojojSePlaca);
+			
+			// banka prebacuje sredstva od klijenta sebi
 			Banka bankaDuznika = bankaRepository.findBySwiftKodBanke(odgovor.getMT900().getSwiftKodBankeDuznika());
 			bankaDuznika.setStanjeRacuna(new BigDecimal(bankaDuznika.getStanjeRacuna().doubleValue() + iznosNaloga));
 			bankaRepository.save(bankaDuznika);
+			
+			// banka prebacuje na racun klijenta
 			Banka bankaPoverioca = bankaRepository.findBySwiftKodBanke(odgovor.getMT910().getSwiftKodBankePoverioca());
 			bankaPoverioca.setStanjeRacuna(new BigDecimal(bankaPoverioca.getStanjeRacuna().doubleValue() - iznosNaloga));
 			bankaRepository.save(bankaPoverioca);
@@ -93,14 +103,17 @@ public class Servis {
 	
 	private MT103 kreirajMT103(NalogZaPlacanje nalog) {
 		MT103 mt103 = new MT103();
-		Random random = new Random(1000000);
-		mt103.setIdPoruke(random.toString());
+		Random random = new Random();
+		mt103.setIdPoruke(Integer.toString(random.nextInt(1000000)));
+		
 		Banka bankaDuznika = bankaRepository.findByOznakaBanke(nalog.getRacunDuznika().substring(0, 3));
 		mt103.setSwiftKodBankeDuznika(bankaDuznika.getSwiftKodBanke());
 		mt103.setObracunskiRacunBankeDuznika(bankaDuznika.getObracunskiRacun());
+		
 		Banka bankaPoverioca = bankaRepository.findByOznakaBanke(nalog.getRacunPrimaoca().substring(0, 3));
 		mt103.setSwiftKodBankePoverioca(bankaPoverioca.getSwiftKodBanke());
 		mt103.setObracunskiRacunBankePoverioca(bankaPoverioca.getObracunskiRacun());
+		
 		mt103.setDuznikNalogodavac(nalog.getDuznikNalogodavac());
 		mt103.setSvrhaPlacanja(nalog.getSvrhaPlacanja());
 		mt103.setPrimalacPoverilac(nalog.getPrimalacPoverilac());
@@ -114,6 +127,7 @@ public class Servis {
 		mt103.setPozivNaBrojOdobrenja(nalog.getPozivNaBrojOdobrenja());
 		mt103.setIznos(nalog.getIznos());
 		mt103.setSifraValute(nalog.getOznakaValute());
+		
 		return mt103;
 	}
 	

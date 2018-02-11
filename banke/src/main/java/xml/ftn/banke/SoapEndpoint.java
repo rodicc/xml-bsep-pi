@@ -19,8 +19,8 @@ public class SoapEndpoint {
 	private Servis servis;
 	
 	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "posaljiNalogZaPlacanjeRequest")
-	@ResponsePayload
 	public void posaljiNalogZaPlacanje(@RequestPayload PosaljiNalogZaPlacanjeRequest request) {
+		System.out.println("ovde");
 		servis.regulisiNalogZaPlacanje(request.getNalogZaPlacanje());
 	}
 	

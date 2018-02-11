@@ -29,6 +29,7 @@ public class Mapper {
 		nalogSoap.setModelZaduzenja(nalogEntity.getModelZaduzenja());
 		nalogSoap.setPozivNaBrojZaduzenja(nalogEntity.getPozivNaBrojZaduzenja());
 		
+		nalogSoap.setPrimalacPoverilac(nalogEntity.getPrimalacPoverilac());
 		nalogSoap.setRacunPrimaoca(nalogEntity.getRacunPoverioca());
 		nalogSoap.setModelOdobrenja(nalogEntity.getModelOdobrenja());
 		nalogSoap.setPozivNaBrojOdobrenja(nalogEntity.getPozivNaBrojOdobrenja());
