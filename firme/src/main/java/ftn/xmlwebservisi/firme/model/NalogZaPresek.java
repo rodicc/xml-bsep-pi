@@ -1,58 +1,38 @@
 package ftn.xmlwebservisi.firme.model;
 
-import java.time.LocalDate;
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+public class NalogZaPresek {
 
-@Entity
-public class ZahtevZaIzvod {
-	@Id
-	private int id;
 	private String brojRacuna;
 	private Date datum;
-	private int redniBrojPreseka;
-	
-	public ZahtevZaIzvod(){
-		
-	}
-
+	private Integer redniBrojPreseka;
 	
 	
-	public int getId() {
-		return id;
+	
+	public NalogZaPresek() {
+		super();
 	}
-
-
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-
-
+	
 	public String getBrojRacuna() {
 		return brojRacuna;
 	}
-
 	public void setBrojRacuna(String brojRacuna) {
 		this.brojRacuna = brojRacuna;
 	}
-
 	public Date getDatum() {
 		return datum;
 	}
-
 	public void setDatum(Date datum) {
 		this.datum = datum;
 	}
-
-	public int getRedniBrojPreseka() {
+	public Integer getRedniBrojPreseka() {
 		return redniBrojPreseka;
 	}
-
-	public void setRedniBrojPreseka(int redniBrojPreseka) {
+	public void setRedniBrojPreseka(Integer redniBrojPreseka) {
 		this.redniBrojPreseka = redniBrojPreseka;
-}
+	}
+	
+	
+	
 }

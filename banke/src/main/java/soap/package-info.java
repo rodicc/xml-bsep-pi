@@ -5,5 +5,5 @@
 // Generated on: 2018.02.06 at 09:22:33 PM CET 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.example.org/soap", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.ftn.xml/centralnabanka", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package soap;

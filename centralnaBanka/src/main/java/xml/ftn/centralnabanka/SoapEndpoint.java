@@ -23,6 +23,7 @@ public class SoapEndpoint {
 	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "sendMT103Request")
 	@ResponsePayload
 	public SendMT103Response sendMT103(@RequestPayload SendMT103Request request) {
+		System.out.println("centralna banka");
 		SendMT103Response response = new SendMT103Response();
 		response.setMT103Response(servis.regulisiMT103(request.getMT103()));
 		return response;

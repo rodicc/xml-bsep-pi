@@ -1,1 +1,35 @@
-<h1>izvod</h1>
+<br>
+<div class="row">
+
+	<div class="col-md-3 panel panel-default" style="padding-left:30px; padding-right:30px;">
+	<h3>Novi nalog za izvod</h3>
+	 	<div class="row">
+			<div><label>Broj racuna</label></div>
+			<div><input ng-model="izvod.brojRacuna" class="form-control"></div>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-7" style="padding-left:0px;">
+				<div><label>Datum</label></div>
+				<div><input type="date" ng-model="izvod.datum" class="form-control"></div>
+			</div>	
+			<div class="col-md-5" style="padding-right:0px;">
+				<div><label>R.br. preseka</label></div>
+				<div><input type="number" ng-model="izvod.redniBrojPreseka" class="form-control"></div>
+			</div>
+		</div>
+		
+		<div class="row" style="float:right; padding-top:15px; padding-bottom:15px">
+		<button ng-click="posaljiZahtevZaIzvod()" class="btn btn-md">Posalji</button>
+		</div>
+	</div>
+	
+	
+	
+	<div class="col-md-9">
+		<div class="panel panel-default" ng-repeat="presek in preseci">
+			
+		
+		</div>
+	</div>
+</div>

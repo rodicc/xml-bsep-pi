@@ -1,32 +1,58 @@
 package ftn.xmlwebservisi.firme.model;
 
-import java.time.LocalDate;
-import java.util.HashMap;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Presek {
 	@Id
-	private int idPreseka;
+	private Integer idPreseka;
 	private String brojRacuna;
-	private LocalDate datumNaloga;
-	private int brojPreseka;
-	private double prethodnoStanje;
-	private int brojPromenaUKorist;
-	private double ukupnoUKorist;
-	private int brojPromenaNaTeret;
-	private double ukupnoNaTeret;
-	private double novoStanje;
-	private HashMap<Integer, StavkaPreseka> stavkePreseka;
+	private Date datumNaloga;
+	private Integer brojPreseka;
+	private BigDecimal prethodnoStanje;
+	private Integer brojPromenaUKorist;
+	private BigDecimal ukupnoUKorist;
+	private Integer brojPromenaNaTeret;
+	private BigDecimal ukupnoNaTeret;
+	private BigDecimal novoStanje;
+	
+	
+	@OneToMany(mappedBy = "presek", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<StavkaPreseka> stavkePreseka;
 	
 	public Presek(){
-		stavkePreseka = new HashMap<Integer, StavkaPreseka>();
+		stavkePreseka = new ArrayList<StavkaPreseka>();
 	}
 
 	public int getIdPreseka() {
 		return idPreseka;
+	}
+
+	public void setIdPreseka(Integer idPreseka) {
+		this.idPreseka = idPreseka;
+	}
+
+	public void setBrojPreseka(Integer brojPreseka) {
+		this.brojPreseka = brojPreseka;
+	}
+
+	public void setBrojPromenaUKorist(Integer brojPromenaUKorist) {
+		this.brojPromenaUKorist = brojPromenaUKorist;
+	}
+
+	public void setBrojPromenaNaTeret(Integer brojPromenaNaTeret) {
+		this.brojPromenaNaTeret = brojPromenaNaTeret;
 	}
 
 	public void setIdPreseka(int idPreseka) {
@@ -41,11 +67,11 @@ public class Presek {
 		this.brojRacuna = brojRacuna;
 	}
 
-	public LocalDate getDatumNaloga() {
+	public Date getDatumNaloga() {
 		return datumNaloga;
 	}
 
-	public void setDatumNaloga(LocalDate datumNaloga) {
+	public void setDatumNaloga(Date datumNaloga) {
 		this.datumNaloga = datumNaloga;
 	}
 
@@ -57,11 +83,11 @@ public class Presek {
 		this.brojPreseka = brojPreseka;
 	}
 
-	public double getPrethodnoStanje() {
+	public BigDecimal getPrethodnoStanje() {
 		return prethodnoStanje;
 	}
 
-	public void setPrethodnoStanje(double prethodnoStanje) {
+	public void setPrethodnoStanje(BigDecimal prethodnoStanje) {
 		this.prethodnoStanje = prethodnoStanje;
 	}
 
@@ -73,11 +99,11 @@ public class Presek {
 		this.brojPromenaUKorist = brojPromenaUKorist;
 	}
 
-	public double getUkupnoUKorist() {
+	public BigDecimal getUkupnoUKorist() {
 		return ukupnoUKorist;
 	}
 
-	public void setUkupnoUKorist(double ukupnoUKorist) {
+	public void setUkupnoUKorist(BigDecimal ukupnoUKorist) {
 		this.ukupnoUKorist = ukupnoUKorist;
 	}
 
@@ -89,27 +115,27 @@ public class Presek {
 		this.brojPromenaNaTeret = brojPromenaNaTeret;
 	}
 
-	public double getUkupnoNaTeret() {
+	public BigDecimal getUkupnoNaTeret() {
 		return ukupnoNaTeret;
 	}
 
-	public void setUkupnoNaTeret(double ukupnoNaTeret) {
+	public void setUkupnoNaTeret(BigDecimal ukupnoNaTeret) {
 		this.ukupnoNaTeret = ukupnoNaTeret;
 	}
 
-	public double getNovoStanje() {
+	public BigDecimal getNovoStanje() {
 		return novoStanje;
 	}
 
-	public void setNovoStanje(double novoStanje) {
+	public void setNovoStanje(BigDecimal novoStanje) {
 		this.novoStanje = novoStanje;
 	}
 
-	public HashMap<Integer, StavkaPreseka> getStavkePreseka() {
+	public List<StavkaPreseka> getStavkePreseka() {
 		return stavkePreseka;
 	}
 
-	public void setStavkePreseka(HashMap<Integer, StavkaPreseka> stavkePreseka) {
+	public void setStavkePreseka(List<StavkaPreseka> stavkePreseka) {
 		this.stavkePreseka = stavkePreseka;
 }
 }

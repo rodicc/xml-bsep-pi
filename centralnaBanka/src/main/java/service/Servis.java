@@ -1,5 +1,6 @@
 package service;
 
+import java.math.BigDecimal;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
@@ -13,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import helpers.Mapper;
+import model.Banka;
 import model.PojedinacnoPlacanjeMT102;
+import repository.BankaRepository;
 import repository.MT102Repository;
 import repository.MT103Repository;
 import repository.PojedincanoPlacanjeMT102Repository;
@@ -32,6 +35,8 @@ public class Servis {
 	private ZaglavljeMT102Repository zaglavljeMT102Repository;
 	@Autowired
 	private PojedincanoPlacanjeMT102Repository pojedinacnoPlacanjeMT102Repository;
+	@Autowired
+	private BankaRepository bankaRepository;
 	
 	public MT102Response regulisiMT102(MT102 mt102Soap) {
 		model.MT102 mt102 = mapper.MT102SoapToEntity(mt102Soap);
@@ -63,10 +68,20 @@ public class Servis {
 	}
 	
 	public MT103Response regulisiMT103(MT103 mt103Soap) {
+		
 		model.MT103 mt103 = mapper.MT103SoapToEntity(mt103Soap);
 		mt103Repository.save(mt103);
+		
+		Banka bankaDuznika = bankaRepository.findBySwiftKodBanke(mt103Soap.getSwiftKodBankeDuznika());
+		bankaDuznika.setStanjeRacuna(new BigDecimal(bankaDuznika.getStanjeRacuna().doubleValue() - mt103Soap.getIznos().doubleValue()));
+		bankaRepository.save(bankaDuznika);
+		Banka bankaPoverioca = bankaRepository.findBySwiftKodBanke(mt103Soap.getSwiftKodBankePoverioca());
+		bankaPoverioca.setStanjeRacuna(new BigDecimal(bankaPoverioca.getStanjeRacuna().doubleValue() + mt103Soap.getIznos().doubleValue()));
+		bankaRepository.save(bankaPoverioca);
+		
 		MT103Response response = new MT103Response();
 		response.setMT103(mt103Soap);
+		
 		MT900 mt900 = new MT900();
 		Random random = new Random();
 		mt900.setIdPoruke(Integer.toString(random.nextInt(1000000)));
@@ -77,6 +92,7 @@ public class Servis {
 		mt900.setIznos(mt103.getIznos());
 		mt900.setSifraValute(mt103.getSifraValute());
 		response.setMT900(mt900);
+		
 		MT910 mt910 = new MT910();
 		mt910.setIdPoruke(Integer.toString(random.nextInt(1000000)));
 		mt910.setSwiftKodBankePoverioca(mt103.getSwiftKodBankePoverioca());
@@ -86,6 +102,7 @@ public class Servis {
 		mt910.setIznos(mt103.getIznos());
 		mt910.setSifraValute(mt103.getSifraValute());
 		response.setMT910(mt910);
+		
 		return response;
 	}
 }
