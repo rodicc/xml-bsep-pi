@@ -1,18 +1,22 @@
 package ftn.xmlwebservisi.firme.model;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.math.BigDecimal;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Presek {
 	@Id
-	private int idPreseka;
+	private Integer idPreseka;
 	private String brojRacuna;
 	private Date datumNaloga;
 	private int brojPreseka;
@@ -22,6 +26,10 @@ public class Presek {
 	private int brojPromenaNaTeret;
 	private double ukupnoNaTeret;
 	private double novoStanje;
+	
+	
+	@OneToMany(mappedBy = "presek", cascade = CascadeType.ALL)
+	@JsonManagedReference
 	private List<StavkaPreseka> stavkePreseka;
 	
 	public Presek(){
@@ -30,6 +38,22 @@ public class Presek {
 
 	public int getIdPreseka() {
 		return idPreseka;
+	}
+
+	public void setIdPreseka(Integer idPreseka) {
+		this.idPreseka = idPreseka;
+	}
+
+	public void setBrojPreseka(Integer brojPreseka) {
+		this.brojPreseka = brojPreseka;
+	}
+
+	public void setBrojPromenaUKorist(Integer brojPromenaUKorist) {
+		this.brojPromenaUKorist = brojPromenaUKorist;
+	}
+
+	public void setBrojPromenaNaTeret(Integer brojPromenaNaTeret) {
+		this.brojPromenaNaTeret = brojPromenaNaTeret;
 	}
 
 	public void setIdPreseka(int idPreseka) {
@@ -60,11 +84,11 @@ public class Presek {
 		this.brojPreseka = brojPreseka;
 	}
 
-	public double getPrethodnoStanje() {
+	public BigDecimal getPrethodnoStanje() {
 		return prethodnoStanje;
 	}
 
-	public void setPrethodnoStanje(double prethodnoStanje) {
+	public void setPrethodnoStanje(BigDecimal prethodnoStanje) {
 		this.prethodnoStanje = prethodnoStanje;
 	}
 
@@ -76,11 +100,11 @@ public class Presek {
 		this.brojPromenaUKorist = brojPromenaUKorist;
 	}
 
-	public double getUkupnoUKorist() {
+	public BigDecimal getUkupnoUKorist() {
 		return ukupnoUKorist;
 	}
 
-	public void setUkupnoUKorist(double ukupnoUKorist) {
+	public void setUkupnoUKorist(BigDecimal ukupnoUKorist) {
 		this.ukupnoUKorist = ukupnoUKorist;
 	}
 
@@ -92,19 +116,19 @@ public class Presek {
 		this.brojPromenaNaTeret = brojPromenaNaTeret;
 	}
 
-	public double getUkupnoNaTeret() {
+	public BigDecimal getUkupnoNaTeret() {
 		return ukupnoNaTeret;
 	}
 
-	public void setUkupnoNaTeret(double ukupnoNaTeret) {
+	public void setUkupnoNaTeret(BigDecimal ukupnoNaTeret) {
 		this.ukupnoNaTeret = ukupnoNaTeret;
 	}
 
-	public double getNovoStanje() {
+	public BigDecimal getNovoStanje() {
 		return novoStanje;
 	}
 
-	public void setNovoStanje(double novoStanje) {
+	public void setNovoStanje(BigDecimal novoStanje) {
 		this.novoStanje = novoStanje;
 	}
 
