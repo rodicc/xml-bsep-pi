@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ftn.xmlwebservisi.firme.model.NalogZaPresek;
 import ftn.xmlwebservisi.firme.model.Presek;
+import ftn.xmlwebservisi.firme.model.ZahtevZaIzvod;
 import ftn.xmlwebservisi.firme.service.PresekServis;
 
 @RestController
@@ -18,7 +19,7 @@ public class PresekKontroler {
 	PresekServis presekServis;
 	
 	@PostMapping
-	public Presek posaljiZahtevZaPresek(@RequestBody NalogZaPresek nalog) {
+	public Presek posaljiZahtevZaPresek(@RequestBody ZahtevZaIzvod nalog) {
 		return presekServis.posaljiZahtevZaPresek(nalog);
 		
 	}

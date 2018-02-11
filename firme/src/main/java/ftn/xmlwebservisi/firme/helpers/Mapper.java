@@ -72,12 +72,12 @@ public class Mapper {
 		result.setBrojRacuna(presek.getZaglavlje().getBrojRacuna());
 		result.setDatumNaloga(presek.getZaglavlje().getDatumNaloga().toGregorianCalendar().getTime());
 		result.setBrojPreseka(presek.getZaglavlje().getBrojPreseka());
-		result.setPrethodnoStanje(presek.getZaglavlje().getPrethodnoStanje().doubleValue());
+		result.setPrethodnoStanje(presek.getZaglavlje().getPrethodnoStanje());
 		result.setBrojPromenaUKorist(presek.getZaglavlje().getBrojPromenaUKorist());
-		result.setUkupnoUKorist(presek.getZaglavlje().getUkupnoUKorist().doubleValue());
+		result.setUkupnoUKorist(presek.getZaglavlje().getUkupnoUKorist());
 		result.setBrojPromenaNaTeret(presek.getZaglavlje().getBrojPromenaNaTeret());
-		result.setUkupnoNaTeret(presek.getZaglavlje().getUkupnoNaTeret().doubleValue());
-		result.setNovoStanje(presek.getZaglavlje().getNovoStanje().doubleValue());
+		result.setUkupnoNaTeret(presek.getZaglavlje().getUkupnoNaTeret());
+		result.setNovoStanje(presek.getZaglavlje().getNovoStanje());
 		return result;
 	}
 	
@@ -94,7 +94,7 @@ public class Mapper {
 		result.setRacunPoverioca(stavka.getRacunPrimaoca());
 		result.setModelOdobrenja(stavka.getModelOdobrenja());
 		result.setPozivNaBrojOdobrenja(stavka.getPozivNaBrojOdobrenja());
-		result.setIznos(stavka.getIznos().doubleValue());
+		result.setIznos(stavka.getIznos());
 		result.setSmer(stavka.getSmer().charAt(0));
 		return result;
 	}
