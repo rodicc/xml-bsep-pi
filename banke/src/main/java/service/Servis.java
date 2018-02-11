@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Random;
 
 import javax.xml.datatype.DatatypeFactory;
 
@@ -17,6 +18,12 @@ import org.springframework.stereotype.Service;
 
 import ftn.xmlwebservisi.banke.SoapClient;
 import helpers.Mapper;
+import model.Banka;
+import model.Firma;
+import repository.BankaRepository;
+import repository.FirmaRepository;
+import repository.MT900Repository;
+import repository.MT910Repository;
 import repository.NalogZaPlacanjeRepository;
 import repository.ZahtevZaIzvodRepository;
 import soap.MT102;
@@ -35,20 +42,78 @@ public class Servis {
 	private ZahtevZaIzvodRepository zahtevZaIzvodRepository;
 	@Autowired
 	private SoapClient client;
+	@Autowired 
+	private FirmaRepository firmaRepository;
+	@Autowired
+	private BankaRepository bankaRepository;
+	@Autowired
+	private MT900Repository mt900Repository;
+	@Autowired
+	private MT910Repository mt910Repository;
 
 	public void regulisiNalogZaPlacanje(NalogZaPlacanje nalog) {
-		nalogZaPlacanjeRepository.save(mapper.NalogZaPlacanjeSoapToEntity(nalog));
+		model.NalogZaPlacanje nalogZaPlacanje = mapper.NalogZaPlacanjeSoapToEntity(nalog);
 		if(nalog.isHitno() || nalog.getIznos().doubleValue() >= 250000) {
-			MT103 mt103 = kreirajMT103(nalog); 
-			MT103Response odgovor = client.sendMT103(mt103);
+			regulisiRTGS(nalog);
 		}else {
-			MT102 mt102 = kreirajMT102(nalog);
-			MT102Response odgovor = client.sendMT102(mt102);
+			nalogZaPlacanje.setNijeRegulisan(true);
+			regulisiClearing(nalog);
+		}
+		nalogZaPlacanjeRepository.save(nalogZaPlacanje);		
+	}
+	
+	private void regulisiRTGS(NalogZaPlacanje nalog) {
+		MT103 mt103 = kreirajMT103(nalog);
+		Firma firmaKojaPlaca = firmaRepository.findByBrojRacuna(nalog.getRacunDuznika());
+		rezervisiNovac(firmaKojaPlaca, nalog.getIznos());
+		firmaRepository.save(firmaKojaPlaca);
+		MT103Response odgovor = client.sendMT103(mt103);
+		if(odgovor.getMT103() != null && odgovor.getMT900() != null && odgovor.getMT910() != null) {
+			mt900Repository.save(mapper.mt900SoapToEntity(odgovor.getMT900()));
+			mt910Repository.save(mapper.mt910SoapToEntity(odgovor.getMT910()));
+			double iznosNaloga = nalog.getIznos().doubleValue();
+			firmaKojaPlaca.setRezervisanNovac(new BigDecimal(firmaKojaPlaca.getRezervisanNovac().doubleValue() - iznosNaloga));
+			firmaRepository.save(firmaKojaPlaca);
+			Firma firmaKojojSePlaca = firmaRepository.findByBrojRacuna(nalog.getRacunPrimaoca());
+			firmaKojojSePlaca.setStanjeRacuna(new BigDecimal(firmaKojojSePlaca.getStanjeRacuna().doubleValue() + iznosNaloga));
+			firmaRepository.save(firmaKojojSePlaca);
+			Banka bankaDuznika = bankaRepository.findBySwiftKodBanke(odgovor.getMT900().getSwiftKodBankeDuznika());
+			bankaDuznika.setStanjeRacuna(new BigDecimal(bankaDuznika.getStanjeRacuna().doubleValue() + iznosNaloga));
+			bankaRepository.save(bankaDuznika);
+			Banka bankaPoverioca = bankaRepository.findBySwiftKodBanke(odgovor.getMT910().getSwiftKodBankePoverioca());
+			bankaPoverioca.setStanjeRacuna(new BigDecimal(bankaPoverioca.getStanjeRacuna().doubleValue() - iznosNaloga));
+			bankaRepository.save(bankaPoverioca);
 		}
 	}
-
+	
+	private void regulisiClearing(NalogZaPlacanje nalog) {
+		MT102 mt102 = kreirajMT102(nalog);
+		MT102Response odgovor = client.sendMT102(mt102);
+	}
+	
 	private MT103 kreirajMT103(NalogZaPlacanje nalog) {
 		MT103 mt103 = new MT103();
+		Random random = new Random(1000000);
+		mt103.setIdPoruke(random.toString());
+		Banka bankaDuznika = bankaRepository.findByOznakaBanke(nalog.getRacunDuznika().substring(0, 3));
+		mt103.setSwiftKodBankeDuznika(bankaDuznika.getSwiftKodBanke());
+		mt103.setObracunskiRacunBankeDuznika(bankaDuznika.getObracunskiRacun());
+		Banka bankaPoverioca = bankaRepository.findByOznakaBanke(nalog.getRacunPrimaoca().substring(0, 3));
+		mt103.setSwiftKodBankePoverioca(bankaPoverioca.getSwiftKodBanke());
+		mt103.setObracunskiRacunBankePoverioca(bankaPoverioca.getObracunskiRacun());
+		mt103.setDuznikNalogodavac(nalog.getDuznikNalogodavac());
+		mt103.setSvrhaPlacanja(nalog.getSvrhaPlacanja());
+		mt103.setPrimalacPoverilac(nalog.getPrimalacPoverilac());
+		mt103.setDatumNaloga(nalog.getDatumNaloga());
+		mt103.setDatumValute(nalog.getDatumValute());
+		mt103.setRacunDuznika(nalog.getRacunDuznika());
+		mt103.setModelZaduzenja(nalog.getModelZaduzenja());
+		mt103.setPozivNaBrojZaduzenja(nalog.getPozivNaBrojZaduzenja());
+		mt103.setRacunPoverioca(nalog.getRacunPrimaoca());
+		mt103.setModelOdobrenja(nalog.getModelOdobrenja());
+		mt103.setPozivNaBrojOdobrenja(nalog.getPozivNaBrojOdobrenja());
+		mt103.setIznos(nalog.getIznos());
+		mt103.setSifraValute(nalog.getOznakaValute());
 		return mt103;
 	}
 	
@@ -56,6 +121,14 @@ public class Servis {
 		MT102 mt102 = new MT102();
 		return mt102;
 	}
+	
+	private void rezervisiNovac(Firma firma, BigDecimal iznos) {
+		double rezervisanNovac = firma.getRezervisanNovac().doubleValue() + iznos.doubleValue();
+		firma.setRezervisanNovac(new BigDecimal(rezervisanNovac));
+		double novoStanjeRacuna = firma.getStanjeRacuna().doubleValue() - iznos.doubleValue();
+		firma.setStanjeRacuna(new BigDecimal(novoStanjeRacuna));
+	}
+	
 	
 	public Presek regulisiZahtevZaIzvod(ZahtevZaIzvod zahtev) {
 		try {

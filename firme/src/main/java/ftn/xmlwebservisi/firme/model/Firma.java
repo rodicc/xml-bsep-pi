@@ -18,6 +18,7 @@ public class Firma {
 	private String pib;
 	private String brojRacuna;
 	private BigDecimal stanjeRacuna;
+	private BigDecimal rezervisanNovac;
 
 	public Firma() {
 	}
@@ -69,4 +70,14 @@ public class Firma {
 	public void setStanjeRacuna(BigDecimal stanjeRacuna) {
 		this.stanjeRacuna = stanjeRacuna;
 	}
+
+	public BigDecimal getRezervisanNovac() {
+		return rezervisanNovac;
+	}
+
+	public void setRezervisanNovac(BigDecimal rezervisanNovac) {
+		this.rezervisanNovac = rezervisanNovac;
+	}
+	
+	
 }
