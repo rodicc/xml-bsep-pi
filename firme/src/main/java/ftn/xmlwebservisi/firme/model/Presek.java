@@ -20,12 +20,12 @@ public class Presek {
 	private String brojRacuna;
 	private Date datumNaloga;
 	private int brojPreseka;
-	private double prethodnoStanje;
+	private BigDecimal prethodnoStanje;
 	private int brojPromenaUKorist;
-	private double ukupnoUKorist;
+	private BigDecimal ukupnoUKorist;
 	private int brojPromenaNaTeret;
-	private double ukupnoNaTeret;
-	private double novoStanje;
+	private BigDecimal ukupnoNaTeret;
+	private BigDecimal novoStanje;
 	
 	
 	@OneToMany(mappedBy = "presek", cascade = CascadeType.ALL)
