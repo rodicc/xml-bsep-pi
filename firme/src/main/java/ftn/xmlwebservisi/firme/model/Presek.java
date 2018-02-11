@@ -1,8 +1,9 @@
 package ftn.xmlwebservisi.firme.model;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -18,11 +19,11 @@ public class Presek {
 	private Integer idPreseka;
 	private String brojRacuna;
 	private Date datumNaloga;
-	private Integer brojPreseka;
+	private int brojPreseka;
 	private BigDecimal prethodnoStanje;
-	private Integer brojPromenaUKorist;
+	private int brojPromenaUKorist;
 	private BigDecimal ukupnoUKorist;
-	private Integer brojPromenaNaTeret;
+	private int brojPromenaNaTeret;
 	private BigDecimal ukupnoNaTeret;
 	private BigDecimal novoStanje;
 	
@@ -137,5 +138,7 @@ public class Presek {
 
 	public void setStavkePreseka(List<StavkaPreseka> stavkePreseka) {
 		this.stavkePreseka = stavkePreseka;
-}
+	}
+
+	
 }
