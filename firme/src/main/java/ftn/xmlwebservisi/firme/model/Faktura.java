@@ -33,7 +33,6 @@ public class Faktura {
 	private Date datumRacuna;
 	private Date datumValute;
 	private String oznakaValute;
-	
 	private BigDecimal vrednostRobe;
 	private BigDecimal ukupanRabat;
 	private BigDecimal iznosZaUplatu;
