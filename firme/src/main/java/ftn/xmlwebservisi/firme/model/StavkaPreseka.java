@@ -1,28 +1,41 @@
 package ftn.xmlwebservisi.firme.model;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class StavkaPreseka {
 	@Id
-	private int id;
-	private int idStavke;
+	private Integer id;
+	private Integer idStavke;
 	private String duznikNalogodavac;
 	private String svrhaPlacanja;
 	private String primalacPoverilac;
-	private LocalDate datumNaloga;
-	private LocalDate datumValute;
+	private Date datumNaloga;
+	private Date datumValute;
+	
 	private String racunDuznika;
-	private int modelZaduzenja;
+	private Integer modelZaduzenja;
 	private String pozivNaBrojZaduzenja;
 	private String racunPoverioca;
-	private int modelOdobrenja;
+	private Integer modelOdobrenja;
 	private String pozivNaBrojOdobrenja;
-	private double iznos;
+	
+	private BigDecimal iznos;
 	private char smer;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "presek_id")
+	@JsonManagedReference
+	private Presek presek;
 	
 	public StavkaPreseka(){
 		
@@ -78,19 +91,19 @@ public class StavkaPreseka {
 		this.primalacPoverilac = primalacPoverilac;
 	}
 
-	public LocalDate getDatumNaloga() {
+	public Date getDatumNaloga() {
 		return datumNaloga;
 	}
 
-	public void setDatumNaloga(LocalDate datumNaloga) {
+	public void setDatumNaloga(Date datumNaloga) {
 		this.datumNaloga = datumNaloga;
 	}
 
-	public LocalDate getDatumValute() {
+	public Date getDatumValute() {
 		return datumValute;
 	}
 
-	public void setDatumValute(LocalDate datumValute) {
+	public void setDatumValute(Date datumValute) {
 		this.datumValute = datumValute;
 	}
 
@@ -142,11 +155,11 @@ public class StavkaPreseka {
 		this.pozivNaBrojOdobrenja = pozivNaBrojOdobrenja;
 	}
 
-	public double getIznos() {
+	public BigDecimal getIznos() {
 		return iznos;
 	}
 
-	public void setIznos(double iznos) {
+	public void setIznos(BigDecimal iznos) {
 		this.iznos = iznos;
 	}
 
