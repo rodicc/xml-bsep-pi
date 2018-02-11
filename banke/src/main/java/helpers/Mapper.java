@@ -2,6 +2,8 @@ package helpers;
 
 import org.springframework.stereotype.Service;
 
+import model.MT900;
+import model.MT910;
 import model.NalogZaPlacanje;
 import model.ZahtevZaIzvod;
 
@@ -33,6 +35,30 @@ public class Mapper {
 		result.setBrojRacuna(zahtev.getBrojRacuna());
 		result.setDatum(zahtev.getDatum().toGregorianCalendar().getTime());
 		result.setRedniBrojPreseka(zahtev.getRedniBrojPreseka());
+		return result;
+	}
+
+	public MT900 mt900SoapToEntity(soap.MT900 mt900) {
+		MT900 result = new MT900();
+		result.setIdPoruke(mt900.getIdPoruke());
+		result.setSwiftKodBankeDuznika(mt900.getSwiftKodBankeDuznika());
+		result.setObracunskiRacunBankeDuznika(mt900.getObracunskiRacunBankeDuznika());
+		result.setIdPorukeNaloga(mt900.getIdPorukeNaloga());
+		result.setDatumValute(mt900.getDatumValute().toGregorianCalendar().getTime());
+		result.setIznos(mt900.getIznos());
+		result.setSifraValute(mt900.getSifraValute());
+		return result;
+	}
+	
+	public MT910 mt910SoapToEntity(soap.MT910 mt910) {
+		MT910 result = new MT910();
+		result.setIdPoruke(mt910.getIdPoruke());
+		result.setSwiftKodBankePoverioca(mt910.getSwiftKodBankePoverioca());
+		result.setObracunskiRacunBankePoverioca(mt910.getObracunskiRacunBankePoverioca());
+		result.setIdPorukeNaloga(mt910.getIdPorukeNaloga());
+		result.setDatumValute(mt910.getDatumValute().toGregorianCalendar().getTime());
+		result.setIznos(mt910.getIznos());
+		result.setSifraValute(mt910.getSifraValute());
 		return result;
 	}
 }

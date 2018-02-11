@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 public class NalogZaPlacanje {
 
@@ -18,7 +20,9 @@ public class NalogZaPlacanje {
 	private String duznikNalogodavac;
 	private String svrhaPlacanja;
 	private String primalacPoverilac;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date datumNaloga;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date datumValute;
 	
 	private String racunDuznika;

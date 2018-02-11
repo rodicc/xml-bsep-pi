@@ -30,6 +30,8 @@ public class NalogZaPlacanje {
     private BigDecimal iznos;
     private String oznakaValute;
     private boolean hitno;
+    private boolean nijeRegulisan;
+    
 	public int getId() {
 		return id;
 	}
@@ -125,6 +127,12 @@ public class NalogZaPlacanje {
 	}
 	public void setHitno(boolean hitno) {
 		this.hitno = hitno;
+	}
+	public boolean isNijeRegulisan() {
+		return nijeRegulisan;
+	}
+	public void setNijeRegulisan(boolean nijeRegulisan) {
+		this.nijeRegulisan = nijeRegulisan;
 	}
     
     
