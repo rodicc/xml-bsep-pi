@@ -17,6 +17,7 @@ import soap.StavkaPreseka;
 import soap.Zaglavlje;
 import soap.ZahtevZaIzvod;
 
+@Service
 public class Mapper {
 
 	public NalogZaPlacanje nalogZaPlacanjeEntityToSoap(ftn.xmlwebservisi.firme.model.NalogZaPlacanje nalogEntity) {
