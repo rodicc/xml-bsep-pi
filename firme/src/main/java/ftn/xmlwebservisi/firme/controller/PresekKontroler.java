@@ -16,10 +16,11 @@ import ftn.xmlwebservisi.firme.service.PresekServis;
 public class PresekKontroler {
 	
 	@Autowired
-	PresekServis presekServis;
+	private PresekServis presekServis;
 	
 	@PostMapping
 	public Presek posaljiZahtevZaPresek(@RequestBody ZahtevZaIzvod nalog) {
+		System.out.println(nalog);
 		return presekServis.posaljiZahtevZaPresek(nalog);
 		
 	}

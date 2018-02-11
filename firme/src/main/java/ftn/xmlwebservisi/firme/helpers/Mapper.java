@@ -1,5 +1,6 @@
 package ftn.xmlwebservisi.firme.helpers;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -65,8 +66,12 @@ public class Mapper {
 	}
 
 	public Presek presekSoapToEntity(soap.Presek presek) {
+		
+		if(presek == null) return null;
+		
 		Presek result = new Presek();
 		List<ftn.xmlwebservisi.firme.model.StavkaPreseka> stavke = result.getStavkePreseka();
+		stavke = new ArrayList<ftn.xmlwebservisi.firme.model.StavkaPreseka>();
 		for(StavkaPreseka stavka : presek.getStavkaPreseka()) {
 			stavke.add(stavkaPresekaSoapToEntity(stavka));
 		}

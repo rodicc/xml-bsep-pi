@@ -147,8 +147,13 @@ public class Servis {
 	public Presek regulisiZahtevZaIzvod(ZahtevZaIzvod zahtev) {
 		try {
 			zahtevZaIzvodRepository.save(mapper.zahtevZaIzvodSoapToEntity(zahtev));
-			List<model.NalogZaPlacanje> naloziZaDatum = nalogZaPlacanjeRepository.nadjiPoDatumuIBrojuRacuna(
-					zahtev.getDatum().toGregorianCalendar().getTime(), zahtev.getBrojRacuna());
+			List<model.NalogZaPlacanje> naloziZaDatogKlijenta = nalogZaPlacanjeRepository.nadjiPoRacunuDuznikaIliPrimaoca(zahtev.getBrojRacuna());
+			List<model.NalogZaPlacanje> naloziZaDatum = new ArrayList<>();
+			for(model.NalogZaPlacanje nalog : naloziZaDatogKlijenta) {
+				if(nalog.getDatumNaloga().compareTo(zahtev.getDatum().toGregorianCalendar().getTime()) == 0) {
+					naloziZaDatum.add(nalog);
+				}
+			}
 			List<model.NalogZaPlacanje> trazeniNalozi = new ArrayList<model.NalogZaPlacanje>();
 			for (int i = (zahtev.getRedniBrojPreseka() - 1) * 3; i < zahtev.getRedniBrojPreseka() * 3; i++) {
 				if (i >= naloziZaDatum.size())

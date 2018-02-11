@@ -6,6 +6,7 @@ angular.module('app')
 	
 	
 	$scope.posaljiZahtevZaIzvod = function(){
+		console.log("poziva funkciju");
 		izvodService.posaljiNalogZaIzvod($scope.izvod).then(function(response){
 			
 			$scope.preseci.push(response.data);

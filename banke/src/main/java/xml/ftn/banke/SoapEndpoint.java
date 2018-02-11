@@ -25,6 +25,7 @@ public class SoapEndpoint {
 	}
 	
 	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "posaljiZahtevZaIzvodRequest")
+	@ResponsePayload
 	public PosaljiZahtevZaIzvodResponse posaljiZahtevZaIzvod(@RequestPayload PosaljiZahtevZaIzvodRequest request) {
 		PosaljiZahtevZaIzvodResponse response = new PosaljiZahtevZaIzvodResponse();
 		response.setPresek(servis.regulisiZahtevZaIzvod(request.getZahtevZaIzvod()));

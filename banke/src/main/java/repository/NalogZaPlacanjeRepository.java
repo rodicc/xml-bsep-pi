@@ -12,8 +12,6 @@ import model.NalogZaPlacanje;
 
 public interface NalogZaPlacanjeRepository extends CrudRepository<NalogZaPlacanje, Integer>{
 
-	@Query("select n " +
-		   "from NalogZaPlacanje n " +
-		   "where n.datumNaloga = :datumNaloga AND (n.racunDuznika = :brojRacuna OR n.racunPrimaoca = :brojRacuna)")
-	public List<NalogZaPlacanje> nadjiPoDatumuIBrojuRacuna(Date datumNaloga, String brojRacuna);
+	@Query("SELECT n FROM NalogZaPlacanje n where n.racunDuznika=:racun OR n.racunPrimaoca=:racun")
+	public List<NalogZaPlacanje> nadjiPoRacunuDuznikaIliPrimaoca(@Param("racun") String racun);
 }
