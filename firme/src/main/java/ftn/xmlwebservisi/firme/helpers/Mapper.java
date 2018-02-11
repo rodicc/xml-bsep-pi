@@ -1,13 +1,16 @@
 package ftn.xmlwebservisi.firme.helpers;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.springframework.stereotype.Service;
 
 import soap.NalogZaPlacanje;
+import soap.ZahtevZaIzvod;
 
 public class Mapper {
 
@@ -41,4 +44,17 @@ public class Mapper {
 		return nalogSoap;
 	}
 
+	public ZahtevZaIzvod zahtevZaIzvodEntityToSoap(ftn.xmlwebservisi.firme.model.ZahtevZaIzvod zahtev) {
+		ZahtevZaIzvod result = new ZahtevZaIzvod();
+		result.setBrojRacuna(zahtev.getBrojRacuna());
+		GregorianCalendar calendar = new GregorianCalendar();
+		calendar.setTime(zahtev.getDatum());
+		try {
+			result.setDatum(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
+		} catch (DatatypeConfigurationException e) {
+			e.printStackTrace();
+		}
+		result.setRedniBrojPreseka(zahtev.getRedniBrojPreseka());
+		return result;
+	}
 }

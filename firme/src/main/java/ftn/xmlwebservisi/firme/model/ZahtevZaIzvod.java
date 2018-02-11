@@ -1,6 +1,7 @@
 package ftn.xmlwebservisi.firme.model;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,7 +11,7 @@ public class ZahtevZaIzvod {
 	@Id
 	private int id;
 	private String brojRacuna;
-	private LocalDate datum;
+	private Date datum;
 	private int redniBrojPreseka;
 	
 	public ZahtevZaIzvod(){
@@ -39,11 +40,11 @@ public class ZahtevZaIzvod {
 		this.brojRacuna = brojRacuna;
 	}
 
-	public LocalDate getDatum() {
+	public Date getDatum() {
 		return datum;
 	}
 
-	public void setDatum(LocalDate datum) {
+	public void setDatum(Date datum) {
 		this.datum = datum;
 	}
 
