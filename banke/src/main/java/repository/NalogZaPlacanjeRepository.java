@@ -16,4 +16,6 @@ public interface NalogZaPlacanjeRepository extends CrudRepository<NalogZaPlacanj
 		   "from NalogZaPlacanje n " +
 		   "where n.datumNaloga = :datumNaloga AND (n.racunDuznika = :brojRacuna OR n.racunPrimaoca = :brojRacuna)")
 	public List<NalogZaPlacanje> nadjiPoDatumuIBrojuRacuna(Date datumNaloga, String brojRacuna);
+	
+	List<NalogZaPlacanje> findByNijeRegulisan(boolean regulisan);
 }

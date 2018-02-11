@@ -6,6 +6,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
 
+import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
 import xml.ftn.banke.NalogZaPlacanje;
@@ -30,6 +31,8 @@ import soap.MT102;
 import soap.MT102Response;
 import soap.MT103;
 import soap.MT103Response;
+import soap.PojedinacnoPlacanjeMT102;
+import soap.ZaglavljeMT102;
 
 @Service
 public class Servis {
@@ -87,8 +90,34 @@ public class Servis {
 	}
 	
 	private void regulisiClearing(NalogZaPlacanje nalog) {
-		MT102 mt102 = kreirajMT102(nalog);
-		MT102Response odgovor = client.sendMT102(mt102);
+		model.NalogZaPlacanje nalogEntity = mapper.NalogZaPlacanjeSoapToEntity(nalog);
+		String bankaDuznikaEntity = nalogEntity.getRacunDuznika().substring(0, 3);
+		String bankaPrimaocaEntity = nalogEntity.getRacunPrimaoca().substring(0, 3);
+		
+		// svi neregulisani nalozi
+		List<model.NalogZaPlacanje> neregulisaniNalozi = nalogZaPlacanjeRepository.findByNijeRegulisan(true);
+		// neregulisani nalozi sa istim bankama poverioca, i bankama primaoca
+		List<model.NalogZaPlacanje> naloziZaRegulisanje = new ArrayList<>();
+		naloziZaRegulisanje.add(nalogEntity);
+		
+		// da li ima vise od 3 neregulisana naloga
+		// gde su iste banke poverioca i banke primaoca
+		if (neregulisaniNalozi.size() >= 2) {
+			for (model.NalogZaPlacanje nalogZaPlacanje : neregulisaniNalozi) {
+				String bankaDuznika = nalogZaPlacanje.getRacunDuznika().substring(0, 3);
+				String bankaPrimaoca = nalogZaPlacanje.getRacunPrimaoca().substring(0, 3);
+				
+				if (bankaDuznikaEntity.equals(bankaDuznika) && bankaPrimaocaEntity.equals(bankaPrimaoca)) {
+					naloziZaRegulisanje.add(nalogZaPlacanje);
+				}
+			}
+			// ukoliko ima 3 i vise naloga, radi kliring
+			if (naloziZaRegulisanje.size() >= 3) {
+				MT102 mt102 = kreirajMT102(naloziZaRegulisanje);
+				MT102Response odgovor = client.sendMT102(mt102);
+			}
+		}
+		
 	}
 	
 	private MT103 kreirajMT103(NalogZaPlacanje nalog) {
@@ -117,9 +146,74 @@ public class Servis {
 		return mt103;
 	}
 	
-	private MT102 kreirajMT102(NalogZaPlacanje nalog) {
+	private MT102 kreirajMT102(List<model.NalogZaPlacanje> nalozi) {
+		
+		String oznakaBankeDuznika = nalozi.get(0).getRacunDuznika().substring(0, 3);
+		String oznakaBankePoverioca = nalozi.get(0).getRacunPrimaoca().substring(0, 3);
+		model.Banka bankaDuznika = bankaRepository.findByOznakaBanke(oznakaBankeDuznika);
+		model.Banka bankaPoverioca = bankaRepository.findByOznakaBanke(oznakaBankePoverioca);
+		if (bankaDuznika == null || bankaPoverioca == null) {
+			System.out.println("nisam pronasao banke");
+			return null;
+		}
+
 		MT102 mt102 = new MT102();
-		return mt102;
+		//zaglavlje naloga
+		ZaglavljeMT102 zaglavlje = new ZaglavljeMT102();
+		Random random = new Random(1000000);
+		zaglavlje.setIdPoruke(random.toString());
+		
+		zaglavlje.setSwiftKodBankeDuznika(bankaDuznika.getSwiftKodBanke());
+		zaglavlje.setObracunskiRacunBankeDuznika(bankaDuznika.getObracunskiRacun());
+		
+		zaglavlje.setSwiftKodBankePoverioca(bankaPoverioca.getSwiftKodBanke());
+		zaglavlje.setObracunskiRacunBankePoverioca(bankaPoverioca.getObracunskiRacun());
+		
+		// racunanje iznosa
+		double iznos = 0;
+		for (model.NalogZaPlacanje nalog : nalozi) {
+			iznos += nalog.getIznos().doubleValue();
+		}
+		BigDecimal iznosBigDecimal = new BigDecimal(iznos);
+		zaglavlje.setUkupanIznos(iznosBigDecimal);
+		zaglavlje.setSifraValute(nalozi.get(0).getOznakaValute());
+		
+		try {
+			GregorianCalendar calendar = new GregorianCalendar();
+			calendar.setTime(nalozi.get(0).getDatumValute());
+			zaglavlje.setDatumValute(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
+			calendar.setTime(nalozi.get(0).getDatumNaloga());
+			zaglavlje.setDatum(DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar));
+		} catch (DatatypeConfigurationException e) {
+			e.printStackTrace();
+		}
+		
+		// pojedinacna placanja
+		List<PojedinacnoPlacanjeMT102> pojedinacnaPlacanja = mt102.getPojedinacnoPlacanjeMT102();
+		for (model.NalogZaPlacanje nalog : nalozi) {
+			PojedinacnoPlacanjeMT102 placanje = new PojedinacnoPlacanjeMT102();
+			placanje.setIdNalogaZaPlacanje(nalog.getIdPoruke());
+			
+			placanje.setDuznikNalogodavac(nalog.getDuznikNalogodavac());
+			placanje.setSvrhaPlacanja(nalog.getSvrhaPlacanja());
+			placanje.setPrimalacPoverilac(nalog.getPrimalacPoverilac());
+			placanje.setDatumNaloga(nalog.getDatumNaloga().toString());
+			
+			placanje.setRacunDuznika(nalog.getRacunDuznika());
+			placanje.setModelZaduzenja(nalog.getModelZaduzenja());
+			placanje.setPozivNaBrojZaduzenja(nalog.getPozivNaBrojZaduzenja());
+			
+			placanje.setRacunPoverioca(nalog.getRacunPrimaoca());
+			placanje.setModelOdobrenja(nalog.getModelOdobrenja());
+			placanje.setPozivNaBrojOdobrenja(nalog.getPozivNaBrojOdobrenja());
+			
+			placanje.setIznos(nalog.getIznos());
+			placanje.setSifraValute(nalog.getOznakaValute());
+			
+			pojedinacnaPlacanja.add(placanje);
+			
+		}
+		return null;
 	}
 	
 	private void rezervisiNovac(Firma firma, BigDecimal iznos) {

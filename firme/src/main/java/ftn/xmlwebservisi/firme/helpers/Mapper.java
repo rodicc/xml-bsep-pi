@@ -16,6 +16,7 @@ public class Mapper {
 		nalogSoap.setIdPoruke(nalogEntity.getIdPoruke());
 		nalogSoap.setDuznikNalogodavac(nalogEntity.getDuznikNalogodavac());
 		nalogSoap.setSvrhaPlacanja(nalogEntity.getSvrhaPlacanja());
+		nalogSoap.setPrimalacPoverilac(nalogEntity.getPrimalacPoverilac());
 		try {
 			GregorianCalendar calendar = new GregorianCalendar();
 			calendar.setTime(nalogEntity.getDatumNaloga());
