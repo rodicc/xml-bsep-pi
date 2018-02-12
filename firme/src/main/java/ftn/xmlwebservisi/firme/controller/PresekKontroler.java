@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ftn.xmlwebservisi.firme.model.NalogZaPresek;
 import ftn.xmlwebservisi.firme.model.Presek;
+import ftn.xmlwebservisi.firme.model.ZahtevZaIzvod;
 import ftn.xmlwebservisi.firme.service.PresekServis;
 
 @RestController
@@ -15,10 +16,11 @@ import ftn.xmlwebservisi.firme.service.PresekServis;
 public class PresekKontroler {
 	
 	@Autowired
-	PresekServis presekServis;
+	private PresekServis presekServis;
 	
 	@PostMapping
-	public Presek posaljiZahtevZaPresek(@RequestBody NalogZaPresek nalog) {
+	public Presek posaljiZahtevZaPresek(@RequestBody ZahtevZaIzvod nalog) {
+		System.out.println(nalog);
 		return presekServis.posaljiZahtevZaPresek(nalog);
 		
 	}

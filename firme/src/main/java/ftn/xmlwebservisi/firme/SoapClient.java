@@ -9,6 +9,7 @@ import ftn.xmlwebservisi.firme.helpers.Mapper;
 import ftn.xmlwebservisi.firme.model.ZahtevZaIzvod;
 import soap.NalogZaPlacanje;
 import soap.PosaljiNalogZaPlacanjeRequest;
+import soap.PosaljiZahtevZaIzvodRequest;
 import soap.PosaljiZahtevZaIzvodResponse;
 
 public class SoapClient extends WebServiceGatewaySupport {
@@ -30,7 +31,9 @@ public class SoapClient extends WebServiceGatewaySupport {
 	public PosaljiZahtevZaIzvodResponse posaljiZahtevZaIzvod(ZahtevZaIzvod zahtev) {
 		Mapper mapper = new Mapper();
 		soap.ZahtevZaIzvod zahtevZaIzvod = mapper.zahtevZaIzvodEntityToSoap(zahtev);
-		return  (PosaljiZahtevZaIzvodResponse) getWebServiceTemplate().marshalSendAndReceive("http://localhost:8082/ws", zahtevZaIzvod, 
+		PosaljiZahtevZaIzvodRequest request = new PosaljiZahtevZaIzvodRequest();
+		request.setZahtevZaIzvod(zahtevZaIzvod);
+		return  (PosaljiZahtevZaIzvodResponse) getWebServiceTemplate().marshalSendAndReceive("http://localhost:8082/ws", request, 
 				new SoapActionCallback("http://www.ftn.xml/banke/posaljiZahtevZaIzvodRequest"));
 	}
 }	

@@ -2,20 +2,30 @@ package ftn.xmlwebservisi.firme.service;
 
 import java.math.BigDecimal;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import ftn.xmlwebservisi.firme.SoapClient;
+import ftn.xmlwebservisi.firme.helpers.Mapper;
 import ftn.xmlwebservisi.firme.model.NalogZaPresek;
 import ftn.xmlwebservisi.firme.model.Presek;
 import ftn.xmlwebservisi.firme.model.StavkaPreseka;
+import ftn.xmlwebservisi.firme.model.ZahtevZaIzvod;
 
 @Service
 public class PresekServis {
 	
-	public Presek posaljiZahtevZaPresek(NalogZaPresek nalogZaPresek) {
+	@Autowired
+	private SoapClient client;
+	@Autowired
+	private Mapper mapper;
+	
+	public Presek posaljiZahtevZaPresek(ZahtevZaIzvod zahtevZaIzvod) {
 		
+		return mapper.presekSoapToEntity(client.posaljiZahtevZaIzvod(zahtevZaIzvod).getPresek());
 		//soap zahtev vraca soap.presek koji treba parsirati u model.presek
 		
-		Presek result = new Presek();
+		/*Presek result = new Presek();
 		result.setBrojPreseka(nalogZaPresek.getRedniBrojPreseka());		
 		result.setBrojPromenaNaTeret(0);
 		result.setBrojPromenaUKorist(3);
@@ -48,7 +58,7 @@ public class PresekServis {
 		result.getStavkePreseka().add(stavka1);
 		result.getStavkePreseka().add(stavka1);
 		
-		return result;
+		return result;*/
 	}
 	
 }

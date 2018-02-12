@@ -5,7 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages= {"soap","ftn.xmlwebservisi.firme"})
+@SpringBootApplication(scanBasePackages= {"soap","ftn.xmlwebservisi.firme", "ftn.xmlwebservisi.firme.helpers",
+		"ftn.xmlwebservisi.firme.service"})
 @EntityScan("ftn.xmlwebservisi.firme.model")
 @EnableJpaRepositories("ftn.xmlwebservisi.firme.repository")
 public class FirmeApplication {

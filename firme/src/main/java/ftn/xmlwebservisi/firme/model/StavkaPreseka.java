@@ -2,7 +2,6 @@ package ftn.xmlwebservisi.firme.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -21,7 +20,6 @@ public class StavkaPreseka {
 	private String primalacPoverilac;
 	private Date datumNaloga;
 	private Date datumValute;
-	
 	private String racunDuznika;
 	private Integer modelZaduzenja;
 	private String pozivNaBrojZaduzenja;
