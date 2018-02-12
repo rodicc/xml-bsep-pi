@@ -41,25 +41,25 @@ public class StavkaPreseka {
 
 	
 	
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
 
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
 
 
-	public int getIdStavke() {
+	public Integer getIdStavke() {
 		return idStavke;
 	}
 
 
 
-	public void setIdStavke(int idStavke) {
+	public void setIdStavke(Integer idStavke) {
 		this.idStavke = idStavke;
 	}
 

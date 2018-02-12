@@ -21,7 +21,8 @@ public class PresekKontroler {
 	@PostMapping
 	public Presek posaljiZahtevZaPresek(@RequestBody ZahtevZaIzvod nalog) {
 		System.out.println(nalog);
-		return presekServis.posaljiZahtevZaPresek(nalog);
+		Presek presek = presekServis.posaljiZahtevZaPresek(nalog);
+		return presek;
 		
 	}
 }
