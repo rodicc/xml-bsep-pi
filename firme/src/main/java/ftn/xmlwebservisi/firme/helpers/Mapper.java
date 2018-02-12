@@ -70,11 +70,11 @@ public class Mapper {
 		if(presek == null) return null;
 		
 		Presek result = new Presek();
-		List<ftn.xmlwebservisi.firme.model.StavkaPreseka> stavke = result.getStavkePreseka();
-		stavke = new ArrayList<ftn.xmlwebservisi.firme.model.StavkaPreseka>();
+		ArrayList<ftn.xmlwebservisi.firme.model.StavkaPreseka> stavke = new ArrayList<ftn.xmlwebservisi.firme.model.StavkaPreseka>();
 		for(StavkaPreseka stavka : presek.getStavkaPreseka()) {
 			stavke.add(stavkaPresekaSoapToEntity(stavka));
 		}
+		result.setStavkePreseka(stavke);
 		result.setBrojRacuna(presek.getZaglavlje().getBrojRacuna());
 		result.setDatumNaloga(presek.getZaglavlje().getDatumNaloga().toGregorianCalendar().getTime());
 		result.setBrojPreseka(presek.getZaglavlje().getBrojPreseka());

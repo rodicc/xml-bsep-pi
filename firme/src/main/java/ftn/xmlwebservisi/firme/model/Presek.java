@@ -36,7 +36,7 @@ public class Presek {
 		stavkePreseka = new ArrayList<StavkaPreseka>();
 	}
 
-	public int getIdPreseka() {
+	public Integer getIdPreseka() {
 		return idPreseka;
 	}
 
