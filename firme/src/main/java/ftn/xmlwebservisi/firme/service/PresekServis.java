@@ -11,6 +11,7 @@ import ftn.xmlwebservisi.firme.model.NalogZaPresek;
 import ftn.xmlwebservisi.firme.model.Presek;
 import ftn.xmlwebservisi.firme.model.StavkaPreseka;
 import ftn.xmlwebservisi.firme.model.ZahtevZaIzvod;
+import soap.PosaljiZahtevZaIzvodResponse;
 
 @Service
 public class PresekServis {
@@ -21,8 +22,8 @@ public class PresekServis {
 	private Mapper mapper;
 	
 	public Presek posaljiZahtevZaPresek(ZahtevZaIzvod zahtevZaIzvod) {
-		
-		return mapper.presekSoapToEntity(client.posaljiZahtevZaIzvod(zahtevZaIzvod).getPresek());
+		PosaljiZahtevZaIzvodResponse odgovor = client.posaljiZahtevZaIzvod(zahtevZaIzvod);		
+		return mapper.presekSoapToEntity(odgovor.getPresek());
 		//soap zahtev vraca soap.presek koji treba parsirati u model.presek
 		
 		/*Presek result = new Presek();
