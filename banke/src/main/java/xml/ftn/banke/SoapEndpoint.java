@@ -1,13 +1,9 @@
 package xml.ftn.banke;
 
-import xml.ftn.banke.PosaljiNalogZaPlacanjeRequest;
-import xml.ftn.banke.PosaljiZahtevZaIzvodRequest;
-import xml.ftn.banke.PosaljiZahtevZaIzvodResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
-import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import service.Servis;
 
@@ -20,7 +16,6 @@ public class SoapEndpoint {
 	
 	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "posaljiNalogZaPlacanjeRequest")
 	public void posaljiNalogZaPlacanje(@RequestPayload PosaljiNalogZaPlacanjeRequest request) {
-		System.out.println("ovde");
 		servis.regulisiNalogZaPlacanje(request.getNalogZaPlacanje());
 	}
 	

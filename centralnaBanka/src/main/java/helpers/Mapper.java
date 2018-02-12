@@ -73,6 +73,7 @@ public class Mapper {
 	public MT102 MT102SoapToEntity(xml.ftn.centralnabanka.MT102 mt102) {
 		MT102 result = new MT102();
 		ZaglavljeMT102 zaglavlje = new ZaglavljeMT102();
+		zaglavlje.setIdPoruke(mt102.getZaglavljeMT102().getIdPoruke());
 		zaglavlje.setSwiftKodBankeDuznika(mt102.getZaglavljeMT102().getSwiftKodBankeDuznika());
 		zaglavlje.setObracunskiRacunBankeDuznika(mt102.getZaglavljeMT102().getObracunskiRacunBankeDuznika());
 		zaglavlje.setSwiftKodBankePoverioca(mt102.getZaglavljeMT102().getSwiftKodBankePoverioca());

@@ -28,7 +28,7 @@ public class NalogZaPlacanje {
 	private String racunDuznika;
 	private Integer modelZaduzenja;
 	private String pozivNaBrojZaduzenja;
-	private String racunPoverioca;
+	private String racunPrimaoca;
 	private Integer modelOdobrenja;
 	private String pozivNaBrojOdobrenja;
 	
@@ -139,12 +139,12 @@ public class NalogZaPlacanje {
 		this.pozivNaBrojZaduzenja = pozivNaBrojZaduzenja;
 	}
 
-	public String getRacunPoverioca() {
-		return racunPoverioca;
+	public String getRacunPrimaoca() {
+		return racunPrimaoca;
 	}
 
-	public void setRacunPoverioca(String racunPoverioca) {
-		this.racunPoverioca = racunPoverioca;
+	public void setRacunPrimaoca(String racunPoverioca) {
+		this.racunPrimaoca = racunPoverioca;
 	}
 
 	public int getModelOdobrenja() {

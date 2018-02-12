@@ -1,13 +1,9 @@
 package ftn.xmlwebservisi.firme.helpers;
 
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.springframework.stereotype.Service;
 
 import soap.NalogZaPlacanje;
 import soap.ZahtevZaIzvod;
@@ -33,8 +29,7 @@ public class Mapper {
 		nalogSoap.setModelZaduzenja(nalogEntity.getModelZaduzenja());
 		nalogSoap.setPozivNaBrojZaduzenja(nalogEntity.getPozivNaBrojZaduzenja());
 		
-		nalogSoap.setPrimalacPoverilac(nalogEntity.getPrimalacPoverilac());
-		nalogSoap.setRacunPrimaoca(nalogEntity.getRacunPoverioca());
+		nalogSoap.setRacunPrimaoca(nalogEntity.getRacunPrimaoca());
 		nalogSoap.setModelOdobrenja(nalogEntity.getModelOdobrenja());
 		nalogSoap.setPozivNaBrojOdobrenja(nalogEntity.getPozivNaBrojOdobrenja());
 		

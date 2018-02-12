@@ -29,7 +29,6 @@ public class NalogZaPlacanjeKontroler {
 	
 	@PostMapping
 	public void dodajNalog(@RequestBody NalogZaPlacanje nalog) {
-		System.out.println(nalog);
 		client.posaljiNalogZaPlacanje(nalog);
 	}
 	

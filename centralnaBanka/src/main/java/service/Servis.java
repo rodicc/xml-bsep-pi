@@ -2,6 +2,7 @@ package service;
 
 import java.math.BigDecimal;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Random;
 
 import xml.ftn.centralnabanka.MT102;
@@ -41,8 +42,25 @@ public class Servis {
 	public MT102Response regulisiMT102(MT102 mt102Soap) {
 		model.MT102 mt102 = mapper.MT102SoapToEntity(mt102Soap);
 		zaglavljeMT102Repository.save(mt102.getZaglavljeMT102());
-		pojedinacnoPlacanjeMT102Repository.save(mt102.getPojedinacnaPlacanja());
+		List<PojedinacnoPlacanjeMT102> pojedinacnaPlacanja = mt102.getPojedinacnaPlacanja();
+		for (PojedinacnoPlacanjeMT102 placanje : pojedinacnaPlacanja) {
+			pojedinacnoPlacanjeMT102Repository.save(placanje);
+		}
 		mt102Repository.save(mt102);
+		
+		// prebacivanje novca izmedju banaka
+		String swiftBankeDuznika = mt102.getZaglavljeMT102().getSwiftKodBankeDuznika();
+		model.Banka bankaDuznika = bankaRepository.findBySwiftKodBanke(swiftBankeDuznika);
+		String swiftBankePoverioca = mt102.getZaglavljeMT102().getSwiftKodBankePoverioca();
+		model.Banka bankaPoverioca = bankaRepository.findBySwiftKodBanke(swiftBankePoverioca);
+		
+		double novoStanjeBankeDuznika = bankaDuznika.getStanjeRacuna().doubleValue() - mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
+		bankaDuznika.setStanjeRacuna(new BigDecimal(novoStanjeBankeDuznika));
+		double novoStanjeBankePoverioca = bankaPoverioca.getStanjeRacuna().doubleValue() + mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
+		bankaPoverioca.setStanjeRacuna(new BigDecimal(novoStanjeBankePoverioca));
+		bankaRepository.save(bankaDuznika);
+		bankaRepository.save(bankaPoverioca);
+		
 		MT102Response response = new MT102Response();
 		response.setMT102(mt102Soap);
 		MT900 mt900 = new MT900();
