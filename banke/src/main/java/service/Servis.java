@@ -121,23 +121,7 @@ public class Servis {
 		if (neregulisaniNalozi.size() < 3) {
 			return;
 		}
-
-		/*
-		 * // neregulisani nalozi sa istim bankama poverioca, i bankama primaoca
-		 * List<model.NalogZaPlacanje> naloziZaRegulisanje = new ArrayList<>();
-		 * naloziZaRegulisanje.add(nalogEntity);
-		 * 
-		 * // da li ima 3 ili vise neregulisanih naloga // gde su iste banke poverioca i
-		 * banke primaoca for (model.NalogZaPlacanje nalogZaPlacanje :
-		 * neregulisaniNalozi) { String bankaDuznika =
-		 * nalogZaPlacanje.getRacunDuznika().substring(0, 3); String bankaPrimaoca =
-		 * nalogZaPlacanje.getRacunPrimaoca().substring(0, 3);
-		 * 
-		 * if (bankaDuznikaNovogNaloga.equals(bankaDuznika) &&
-		 * bankaPrimaocaNovogNaloga.equals(bankaPrimaoca)) {
-		 * naloziZaRegulisanje.add(nalogZaPlacanje); } }
-		 */
-
+		
 		// ukoliko ima 3 i vise naloga, radi kliring
 		MT102 mt102 = kreirajMT102(neregulisaniNalozi);
 		MT102Response mt102Response = client.sendMT102(mt102);
