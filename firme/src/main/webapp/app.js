@@ -22,5 +22,10 @@ app.config(['$stateProvider', function($stateProvider){
 		controller:'izvodController'
 	})
 	
+	.state('poruke',{
+		url:'/poruke',
+		templateUrl:'view/poruke.html',
+		controller:'porukeController'
+	})
 	
 }]);
