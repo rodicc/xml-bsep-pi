@@ -342,7 +342,22 @@ public class Servis {
 			zaglavlje.setUkupnoUKorist(new BigDecimal(ukupnoUKorist));
 			zaglavlje.setBrojPromenaNaTeret(brojPromenaNaTeret);
 			zaglavlje.setUkupnoNaTeret(new BigDecimal(ukupnoNaTeret));
+			
 			// treba novo stanje i prethodno stanje
+			int poslednjiNalog = stavkePreseka.size() - 1;
+			List<model.NalogZaPlacanje> naloziPoslePreseka = nalogZaPlacanjeRepository.nadjiSvePosleDatogNaloga(trazeniNalozi.get(poslednjiNalog).getId(), zahtev.getBrojRacuna());
+			double sumaPoslePreseka = 0;
+			for(model.NalogZaPlacanje n : naloziPoslePreseka) {
+				if(n.getDuznikNalogodavac().equals(zahtev.getBrojRacuna())) {
+					sumaPoslePreseka -= n.getIznos().doubleValue();
+				}else {
+					sumaPoslePreseka += n.getIznos().doubleValue();
+				}
+			}
+			Firma firma = firmaRepository.findByBrojRacuna(zahtev.getBrojRacuna());
+			zaglavlje.setNovoStanje(new BigDecimal(firma.getStanjeRacuna().doubleValue() - sumaPoslePreseka));
+			zaglavlje.setPrethodnoStanje(new BigDecimal(zaglavlje.getNovoStanje().doubleValue() - zaglavlje.getUkupnoUKorist().doubleValue() + zaglavlje.getUkupnoNaTeret().doubleValue()));
+			
 			Presek presek = new Presek();
 			presek.setZaglavlje(zaglavlje);
 			List<StavkaPreseka> sp = presek.getStavkaPreseka();
