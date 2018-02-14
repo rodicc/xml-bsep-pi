@@ -110,7 +110,18 @@ public class Servis {
 		model.NalogZaPlacanje nalogEntity = mapper.NalogZaPlacanjeSoapToEntity(nalog);
 		nalogEntity.setNijeRegulisan(true);
 		nalogZaPlacanjeRepository.save(nalogEntity);
-
+		
+		// rezervacija sredstava na racunu klijenta(firme)
+		String racunDuznika = nalogEntity.getRacunDuznika();
+		model.Firma firmaDuznika = firmaRepository.findByBrojRacuna(racunDuznika);
+		double rezervisanNovacNovoStanje = firmaDuznika.getRezervisanNovac().doubleValue() 
+				+ nalogEntity.getIznos().doubleValue();
+		firmaDuznika.setRezervisanNovac(new BigDecimal(rezervisanNovacNovoStanje));
+		double novoStanjeRacuna = firmaDuznika.getStanjeRacuna().doubleValue() 
+				- nalogEntity.getIznos().doubleValue();
+		firmaDuznika.setStanjeRacuna(new BigDecimal(novoStanjeRacuna));
+		firmaRepository.save(firmaDuznika);
+		
 		String bankaDuznikaNovogNaloga = nalogEntity.getRacunDuznika().substring(0, 3);
 		String bankaPrimaocaNovogNaloga = nalogEntity.getRacunPrimaoca().substring(0, 3);
 
@@ -140,15 +151,13 @@ public class Servis {
 		}
 
 		// regulistanje stanja racuna firme i banke duznika
-		String racunDuznika = nalogEntity.getRacunDuznika();
-		String oznakaBankeDuznika = racunDuznika.substring(0, 3);
-		model.Firma firmaDuznika = firmaRepository.findByBrojRacuna(racunDuznika);
+		String oznakaBankeDuznika = racunDuznika.substring(0, 3);		
 		model.Banka bankaDuznika = bankaRepository.findByOznakaBanke(oznakaBankeDuznika);
 
-		// skidanje sredstava sa racuna firme duznika
-		double novoStanjeFirmeDuznika = firmaDuznika.getStanjeRacuna().doubleValue()
+		// skidanje rezervisanih sredstava iz firme duznika
+		double novoStanjeFirmeDuznika = firmaDuznika.getRezervisanNovac().doubleValue()
 				- mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
-		firmaDuznika.setStanjeRacuna(new BigDecimal(novoStanjeFirmeDuznika));
+		firmaDuznika.setRezervisanNovac(new BigDecimal(novoStanjeFirmeDuznika));
 		firmaRepository.save(firmaDuznika);
 		
 		// dodavanje sredstava na racun banke duznika
