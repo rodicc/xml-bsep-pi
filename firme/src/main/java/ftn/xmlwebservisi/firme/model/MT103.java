@@ -6,9 +6,8 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.datatype.XMLGregorianCalendar;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class MT103 {
@@ -23,7 +22,9 @@ public class MT103 {
     private String duznikNalogodavac;
     private String svrhaPlacanja;
     private String primalacPoverilac;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     private Date datumNaloga;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     private Date datumValute;
     private String racunDuznika;
     private int modelZaduzenja;

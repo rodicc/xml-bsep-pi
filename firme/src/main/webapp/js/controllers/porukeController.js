@@ -2,12 +2,15 @@ angular.module("app")
 .controller('porukeController', ['$scope', '$rootScope', 'porukeService', 
 	function($scope, $rootScope, porukeService){
 		
+	poruke = {};
+	
 	$scope.prikaziSvePoruke = function(){
 		porukeService.prikaziSvePoruke().then(function(response){
-			$rootScope.poruke = response.data;
-			console.log($rootScope.poruke);
+			$scope.poruke = response.data;
+			console.log($scope.poruke);
 		});
 	}
 	
+	$scope.prikaziSvePoruke();
 	
 }])

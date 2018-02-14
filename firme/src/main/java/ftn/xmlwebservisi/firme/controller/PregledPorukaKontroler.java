@@ -17,7 +17,6 @@ public class PregledPorukaKontroler {
 	
 	@GetMapping
 	public PorukeWrapper prikaziSvePoruke() {
-		System.out.println("servis");
 		return pregledPorukaServis.findAllMessages();
 	}
 	

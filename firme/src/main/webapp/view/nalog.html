@@ -1,30 +1,30 @@
 <div class='container'>
 <h1>Nalog</h1>
-<form>
+<form name="nalog">
 
 	<div class="row">
 		<div class="col-md-6"  style="padding:20px;">
 			
 			<div><label>Duznik- nalogodavac</label></div>
 			<div><textarea  style="resize:none" rows="2" cols="25" 
-			ng-model="nalog.duznikNalogodavac" class="form-control"></textarea></div>
+			ng-model="nalog.duznikNalogodavac" class="form-control" required></textarea></div>
 			
 			<div><label>Svrha uplate</label></div>
 			<div><textarea style="resize:none" rows="2" cols="25" 
-			ng-model="nalog.svrhaPlacanja" class="form-control"></textarea></div>
+			ng-model="nalog.svrhaPlacanja" class="form-control" required></textarea></div>
 			
 			<div><label>Poverilac-primalac</label></div>
 			<div><textarea style="resize:none" rows="2" cols="25" 
-			ng-model="nalog.primalacPoverilac" class="form-control"></textarea></div>
+			ng-model="nalog.primalacPoverilac" class="form-control" required></textarea></div>
 			
 			<div class="row">
 				<div style="padding:20px" class="col-md-4">
 					<div><label>Datum uplate</label></div>
-					<div><input type="date" ng-model="nalog.datumNaloga" size="8" class="form-control"></div>
+					<div><input type="date" ng-model="datumNaloga" size="8" class="form-control" required></div>
 				</div>
 				<div style="padding:20px" class="col-md-4">
 					<div><label>Datum valute</label></div>
-					<div><input type="date" ng-model="nalog.datumValute"  size="8" class="form-control"></div>
+					<div><input type="date" ng-model="datumValute"  size="8" class="form-control" required></div>
 				</div>
 				<div style="padding:40px;" class="col-md-4">
 					<label>Hitno</label>
@@ -38,48 +38,48 @@
 		<div class="row">
 			<div style="padding-left:5px;" class="col-md-2">
 				<div ><label>Sifra</label></div>
-				<div><input ng-model="nalog.sifraPlacanja" size="3" class="form-control"></div>
+				<div><input ng-model="nalog.sifraPlacanja" size="3" class="form-control" required></div>
 			</div>
 			<div style="padding-left:5px;" class="col-md-2">	
 				<div ><label>Valuta</label></div>
-				<div><input ng-model="nalog.oznakaValute"size="3" class="form-control"></div>
+				<div><input ng-model="nalog.oznakaValute"size="3" class="form-control" required></div>
 			</div>
 			<div style="padding-left:5px; padding-right:0px" class="col-md-8">
 				<div ><label>Iznos</label></div>
-				<div><input ng-model="nalog.iznos"  class="form-control"></div>
+				<div><input ng-model="nalog.iznos"  class="form-control" required></div>
 			</div>		
 		</div>	
 		
 		<div class="row" style="padding-left:5px;">
 			<div><label>Racun duznika-nalogodavca</label></div>
-			<div><input ng-model="nalog.racunDuznika" size="30" class="form-control"></div>	
+			<div><input ng-model="nalog.racunDuznika" size="30" class="form-control" required></div>	
 		</div>		
 		
 	
 		<div class="row">
 				<div style="padding-left:5px;" class="col-md-2">
 					<div><label>Model</label></div>
-					<div><input ng-model="nalog.modelZaduzenja" size="3" class="form-control"></div>
+					<div><input ng-model="nalog.modelZaduzenja" size="3" class="form-control" required></div>
 				</div>
 				<div style="padding-left:5px; padding-right:0px" class="col-md-10">
 					<div><label>Poziv na broj (zaduzenje)</label></div>
-					<div><input ng-model="nalog.pozivNaBrojZaduzenja" size="23" class="form-control"></div>
+					<div><input ng-model="nalog.pozivNaBrojZaduzenja" size="23" class="form-control" required></div>
 				</div>
 		</div>
 		
 			
 		<div class="row" style="padding-left:5px;" >	
 			<div><label>Racun poverioca-primaoca</label></div>
-			<div><input ng-model="nalog.racunPrimaoca" size="30" class="form-control"></div>
+			<div><input ng-model="nalog.racunPrimaoca" size="30" class="form-control" required></div>
 		</div>
 			<div class="row">
 				<div style="padding-left:5px;" class="col-md-2">
 					<div><label>Model</label></div>
-					<div><input ng-model="nalog.modelOdobrenja" size="3" class="form-control"></div>
+					<div><input ng-model="nalog.modelOdobrenja" size="3" class="form-control" required></div>
 				</div>
 				<div style="padding-left:5px; padding-right:0px" class="col-md-10">
 					<div><label>Poziv na broj (odobrenje)</label></div>
-					<div><input ng-model="nalog.pozivNaBrojOdobrenja" size="23" class="form-control"></div>
+					<div><input ng-model="nalog.pozivNaBrojOdobrenja" size="23" class="form-control" required></div>
 				</div>
 			</div>
 		
@@ -87,7 +87,8 @@
 		
 		<div class="row">
 			<div style="padding:10px; padding-left:165px; float:right;">
-				<button ng-click="posaljiNalog()" class="btn btn-md">Posalji</button>
+				<button ng-click="obrisiPolja()" class="btn btn-md">Obrisi polja</button>
+				<button ng-click="posaljiNalog()" class="btn btn-md" ng-disabled="nalog.$invalid">Posalji</button>
 			</div>
 			
 		</div>	

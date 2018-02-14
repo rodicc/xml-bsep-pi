@@ -1,1 +1,187 @@
-<button ng-click="prikaziSvePoruke()">Prikazi poruke</button>
+<div>
+<!-- <button ng-click="prikaziSvePoruke()" class="bt btn-default">Prikazi poruke</button>  -->
+
+	<!-- MT102 -->
+	<div class="panel panel-default" ng-repeat="poruka in poruke.mt102Poruke" style="padding:20px; margin:30px;">
+
+			 <div class="row" align="left" style="margin-left:10px;"><h3>MT102  {{poruka.id}}</h3></div>
+			 <table class="table table-striped">
+				<thead class="thead-default">
+					<tr>
+						<th style="padding: 10px;" align="center">Obracunski racun banke duznika</th>
+						<th style="padding: 10px;" align="center">Obracunski racun banke poverioca</th>
+						<th style="padding: 10px;" align="center">SWIFT kod banke duznika</th>
+						<th style="padding: 10px;" align="center">SWIFT kod banke poverioca</th>
+						<th style="padding: 10px;" align="center">Sifra valute</th>
+						<th style="padding: 10px;" align="center">Datum</th>
+						<th style="padding: 10px;" align="center">Datum valute</th>
+						<th style="padding: 10px;" align="center">Ukupan znos</th>
+					</tr>
+				</thead>
+				<tbody >
+					<tr>
+						<td>{{poruka.zaglavljeMT102.obracunskiRacunBankeDuznika}}</td>
+						<td>{{poruka.zaglavljeMT102.obracunskiRacunBankePoverioca}}</td>
+						<td>{{poruka.zaglavljeMT102.swiftKodBankeDuznika}}</td>
+						<td>{{poruka.zaglavljeMT102.swiftKodBankePoverioca}}</td>
+						<td>{{poruka.zaglavljeMT102.sifraValute}}</td>
+						<td>{{poruka.zaglavljeMT102.datum}}</td>
+						<td>{{poruka.zaglavljeMT102.datumValute}}</td>
+						<td>{{poruka.zaglavljeMT102.ukupanIznos}}</td>
+					</tr>
+				</tbody>
+			 </table>
+			
+			
+			 <hr>
+			 <table class="table table-striped">
+				<thead class="thead-default">
+					<tr>
+						<th style="padding: 10px;" align="center"><span>Svrha placanja</span></th>
+						<th style="padding: 10px;" align="center"><span>Duznik/ Nalogodavac</span></th>
+						<th style="padding: 10px;" align="center">Racun duznika</th>
+						<th style="padding: 10px;" align="center">Model zaduzenja</th>
+						<th style="padding: 10px;" align="center">Poziv na br. zaduzenja</th>
+						<th style="padding: 10px;" align="center">Primalac/ Poverilac</th>
+						<th style="padding: 10px;" align="center">Racun primaoca</th>
+						<th style="padding: 10px;" align="center">Model odobrenja</th>
+						<th style="padding: 10px;" align="center">Poziv na br. odobrenja</th>
+						<th style="padding: 10px;" align="center">Datum naloga</th>
+						<th style="padding: 10px;" align="center">Iznos</th>
+					</tr>
+				</thead>
+				<tbody >
+					<tr ng-repeat="stavka in poruka.pojedinacnaPlacanja">
+						<td>{{stavka.svrhaPlacanja}}</td>
+						<td align="center">{{stavka.duznikNalogodavac}}</td>
+						<td align="center">{{stavka.racunDuznika}}</td>
+						<td align="center">{{stavka.modelZaduzenja}}</td>
+						<td align="center">{{stavka.pozivNaBrojZaduzenja}}</td>
+						<td align="center">{{stavka.primalacPoverilac}}</td>
+						<td align="center">{{stavka.racunPoverioca}}</td>
+						<td align="center">{{stavka.modelOdobrenja}}</td>
+						<td align="center">{{stavka.pozivNaBrojOdobrenja}}</td>
+						<td align="center">{{stavka.datumNaloga}}</td>
+						<td align="center">{{stavka.iznos}}</td>
+					</tr>
+				</tbody>
+			</table>
+	</div>
+	
+	<!-- MT103 -->
+	<div class="panel panel-default" ng-repeat="poruka in poruke.mt103Poruke" style="padding:20px; margin:30px;">
+
+			 <div class="row" align="left" style="margin-left:10px;"><h3>MT103  {{poruka.id}}</h3></div>
+			 <table class="table table-striped">
+				<thead class="thead-default">
+					<tr>
+						<th align="center">Obracunski racun banke duznika</th>
+						<th align="center">Obracunski racun banke poverioca</th>
+						<th align="center">SWIFT kod banke duznika</th>
+						<th align="center">SWIFT kod banke poverioca</th>
+						<th align="center">Sifra valute</th>
+						<th align="center">Datum valute</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr >
+						<td>{{poruka.obracunskiRacunBankeDuznika}}</td>
+						<td>{{poruka.obracunskiRacunBankePoverioca}}</td>
+						<td>{{poruka.swiftKodBankeDuznika}}</td>
+						<td>{{poruka.swiftKodBankePoverioca}}</td>
+						<td>{{poruka.sifraValute}}</td>
+						<td>{{poruka.datumValute}}</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<hr>
+			 <table class="table table-striped">
+				<thead class="thead-default">
+					<tr>
+						<th style="padding: 10px;" align="center"><span>Svrha placanja</span></th>
+						<th style="padding: 10px;" align="center"><span>Duznik/ Nalogodavac</span></th>
+						<th style="padding: 10px;" align="center">Racun duznika</th>
+						<th style="padding: 10px;" align="center">Model zadzuenja</th>
+						<th style="padding: 10px;" align="center">Poziv na br. zaduzenja</th>
+						<th style="padding: 10px;" align="center">Primalac/ Poverilac</th>
+						<th style="padding: 10px;" align="center">Racun primaoca</th>
+						<th style="padding: 10px;" align="center">Model odobrenja</th>
+						<th style="padding: 10px;" align="center">Poziv na br. odobrenja</th>
+						<th style="padding: 10px;" align="center">Datum naloga</th>
+						<th style="padding: 10px;" align="center">Iznos</th>
+					</tr>
+				</thead>
+				<tbody >
+					<tr>
+						<td>{{poruka.svrhaPlacanja}}</td>
+						<td align="center">{{poruka.duznikNalogodavac}}</td>
+						<td align="center">{{poruka.racunDuznika}}</td>
+						<td align="center">{{poruka.modelZaduzenja}}</td>
+						<td align="center">{{poruka.pozivNaBrojZaduzenja}}</td>
+						<td align="center">{{poruka.primalacPoverilac}}</td>
+						<td align="center">{{poruka.racunPoverioca}}</td>
+						<td align="center">{{poruka.modelOdobrenja}}</td>
+						<td align="center">{{poruka.pozivNaBrojOdobrenja}}</td>
+						<td align="center">{{poruka.datumNaloga}}</td>
+						<td align="center">{{poruka.iznos}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	
+	<!-- MT900 -->	
+	<div class="panel panel-default" ng-repeat="poruka in poruke.mt900Poruke" style="padding:20px; margin:30px;">
+		<div class="row" align="left" style="margin-left:10px;"><h3>MT900  {{poruka.id}}</h3></div>
+			 <table class="table table-striped" multiple >
+				<thead class="thead-default">
+					<tr>
+						<th align="center">Obracunski racun banke duznika</th>
+						<th align="center">SWIFT kod banke duznika</th>
+						<th align="center">Sifra valute</th>
+						<th align="center">Datum valute</th>
+						<th align="center">Sifra valute</th>
+						<th align="center">Ukupan iznos</th>
+					</tr>
+				</thead>
+				<tbody >
+					<tr>
+						<td>{{poruka.obracunskiRacunBankeDuznika}}</td>
+						<td>{{poruka.swiftKodBankeDuznika}}</td>
+						<td>{{poruka.sifraValute}}</td>
+						<td>{{poruka.datumValute}}</td>
+						<td>{{poruka.sifraValute}}</td>
+						<td>{{poruka.iznos}}</td>
+					</tr>
+				</tbody>
+			</table>
+			
+		</div>
+		
+	<!-- MT910 -->	
+	<div class="panel panel-default" ng-repeat="poruka in poruke.mt910Poruke" style="padding:20px; margin:30px;">
+		<div class="row" align="left" style="margin-left:10px;"><h3>MT910  {{poruka.id}}</h3></div>
+			 <table class="table table-striped">
+				<thead class="thead-default">
+					<tr>
+						<th align="center">Obracunski racun banke poverioca</th>
+						<th align="center">SWIFT kod banke poverioca</th>
+						<th align="center">Sifra valute</th>
+						<th align="center">Datum valute</th>
+						<th align="center">Sifra valute</th>
+						<th align="center">Ukupan iznos</th>
+					</tr>
+				</thead>
+				<tbody >
+					<tr>
+						<td>{{poruka.obracunskiRacunBankePoverioca}}</td>
+						<td>{{poruka.swiftKodBankePoverioca}}</td>
+						<td>{{poruka.sifraValute}}</td>
+						<td>{{poruka.datumValute}}</td>
+						<td>{{poruka.sifraValute}}</td>
+						<td>{{poruka.iznos}}</td>
+					</tr>
+				</tbody>
+			</table>
+			
+		</div>
