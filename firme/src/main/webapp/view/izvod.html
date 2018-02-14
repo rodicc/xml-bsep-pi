@@ -3,26 +3,36 @@
 	<div class="row">
 	
 		<div class="col-md-3 panel panel-default" style="padding-left:30px; padding-right:30px;">
+		<form name="izvod">
 		<h3>Novi nalog za presek</h3>
 		 	<div class="row">
 				<div><label>Broj racuna</label></div>
-				<div><input ng-model="izvod.brojRacuna" class="form-control"></div>
+				<div><input ng-model="izvod.brojRacuna" class="form-control" required></div>
 			</div>
 			
 			<div class="row">
 				<div class="col-md-7" style="padding-left:0px;">
 					<div><label>Datum</label></div>
-					<div><input type="date" ng-model="izvod.datum" class="form-control"></div>
+					<div><input type="date" ng-model="izvod.datum" class="form-control" required></div>
 				</div>	
 				<div class="col-md-5" style="padding-right:0px;">
 					<div><label>R.br. preseka</label></div>
-					<div><input type="number" ng-model="izvod.redniBrojPreseka" class="form-control"></div>
+					<div><input type="number" ng-model="izvod.redniBrojPreseka" class="form-control" required></div>
 				</div>
 			</div>
 			
 			<div class="row" style="float:right; padding-top:15px; padding-bottom:15px">
-			<button ng-click="posaljiZahtevZaIzvod()" class="btn btn-md">Posalji</button>
+			<!-- 
+			<div style="float:left;">
+				<p ng-show="noResult" class="alert alert-danger">Ne postoji presek za unete parametre</p>
 			</div>
+			 -->
+			<button ng-click="posaljiZahtevZaIzvod()" class="btn btn-md" ng-disabled="izvod.$invalid">Posalji</button>
+			</div>
+			
+			
+			
+		</form>	
 		</div>
 		
 		

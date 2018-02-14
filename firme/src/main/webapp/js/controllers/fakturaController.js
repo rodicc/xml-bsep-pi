@@ -58,7 +58,26 @@ angular.module('app')
 		fakturaService.posaljiFakturu($scope.faktura).then(function(response){
 			
 		});
-		$scope.faktura = {};
+		//$scope.faktura = {};
+		
 	}
 	
-}]);
+}])
+
+.controller('pregledFakturaController', ['$scope', 'fakturaService', function($scope, fakturaService){
+	
+	$scope.fakture = {};
+	
+	fakturaService.prikaziSveFakture().then(function(response){
+			if(response){
+				$scope.fakture = response.data;
+			}
+		})
+		
+	
+	
+	
+}])
+
+
+;

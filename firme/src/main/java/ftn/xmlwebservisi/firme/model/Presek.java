@@ -1,9 +1,8 @@
 package ftn.xmlwebservisi.firme.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -11,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -18,6 +18,7 @@ public class Presek {
 	@Id
 	private Integer idPreseka;
 	private String brojRacuna;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date datumNaloga;
 	private int brojPreseka;
 	private BigDecimal prethodnoStanje;

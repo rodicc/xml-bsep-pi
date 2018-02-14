@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlElement;
 
 @Entity
 public class PojedinacnoPlacanjeMT102 {

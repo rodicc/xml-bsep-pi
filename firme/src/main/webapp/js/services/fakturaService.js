@@ -5,8 +5,11 @@ angular.module("app")
 		posaljiFakturu : function(faktura){
 			console.log("servis");
 			return $http.post("/fakture", faktura).catch(angular.noop);
-		}
+		},
 		
+		prikaziSveFakture : function(){
+			return $http.get("/fakture").catch(angular.noop);
+		}
 		
 	}
 })

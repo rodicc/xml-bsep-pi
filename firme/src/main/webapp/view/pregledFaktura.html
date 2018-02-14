@@ -1,0 +1,78 @@
+<div class="panel panel-default" ng-repeat="faktura in fakture" style="padding:20px; margin:30px;">
+			 <table class="table table-striped">
+				<thead class="thead-default">
+					<tr>
+						<th style="padding: 10px;" align="center">Dobavljac</th>
+						<th style="padding: 10px;" align="center">Adresa dobavljaca</th>
+						<th style="padding: 10px;" align="center">PIB dobavljaca</th>
+						<th style="padding: 10px;" align="center">Kupac</th>
+						<th style="padding: 10px;" align="center">Adresa kupca</th>
+						<th style="padding: 10px;" align="center">PIB kupca</th>
+						<th style="padding: 10px;" align="center">Broj racuna</th>
+						<th style="padding: 10px;" align="center">Uplata na racun</th>
+						<th style="padding: 10px;" align="center">Datum racuna</th>
+						<th style="padding: 10px;" align="center">Datum valute</th>
+						<th style="padding: 10px;" align="center">Oznaka valute</th>
+					</tr>
+				</thead>
+				<tbody >
+					<tr>
+						<td>{{faktura.nazivDobavljaca}}</td>
+						<td>{{faktura.adresaDobavljaca}}</td>
+						<td>{{faktura.pibDobavljacaa}}</td>
+						<td>{{faktura.nazivKupca}}</td>
+						<td>{{faktura.adresaKupca}}</td>
+						<td>{{faktura.pibKupca}}</td>
+						<td>{{faktura.brojRacuna}}</td>
+						<td>{{faktura.uplataNaRacun}}</td>
+						<td>{{faktura.datumRacuna}}</td>
+						<td>{{faktura.datumValute}}</td>
+						<td>{{faktura.oznakaValute}}</td>
+					</tr>
+				</tbody>
+			 </table>
+			 <br>
+			 <h3>Stavke fakture</h3>
+			 <hr>
+			 
+			<table class="table table-striped">
+			<thead class="thead-default">
+				<tr>
+					<th class="col-sm-1"style="padding: 10px;"><span>R.br.</span></th>
+					<th class="col-sm-3" style="padding: 10px;"><span>Naziv</span></th>
+					<th class="col-sm-1" style="padding: 10px;">Jedinicna cena</th>
+					<th class="col-sm-1" style="padding: 10px;">Kolicina</th>
+					<th class="col-sm-1" style="padding: 10px;">Vrednost</th>
+					<th class="col-sm-1" style="padding: 10px;">Jedinica mere</th>
+					<th class="col-sm-1" style="padding: 10px;">Rabat (%)</th>
+					<th class="col-sm-1" style="padding: 10px;">Iznos rabata</th>
+					<th class="col-sm-1" style="padding: 10px;">Umanjeno za rabat</th>
+				</tr>
+			</thead>
+			<tbody >
+				<tr md-select="stavka" ng-repeat="stavka in faktura.stavkeFakture">
+					<td>{{stavka.redniBroj}}</td>
+					<td>{{stavka.naziv}}</td>
+					<td>{{stavka.jedinicnaCena}}</td>
+					<td>{{stavka.kolicina}}</td>
+					<td>{{stavka.vrednost}}</td>
+					<td>{{stavka.jedinicaMere}}</td>
+					<td>{{stavka.rabat}}</td>
+					<td>{{stavka.iznosRabata}}</td>
+					<td>{{stavka.umanjenoZaRabat}}</td>
+				</tr>
+			</tbody>
+		</table>
+		<div style="float:right;">
+			<b> 
+			<label style="padding: 10px;">Vrednost robe:{{faktura.vrednostRobe}}
+			<label style="padding: 10px;">Ukupan rabat:{{faktura.ukupanRabat}}</label> 
+			<label style="padding: 10px;">Oznaka valute:{{faktura.oznakaValute}}</label> 
+			<label style="padding: 10px;">Iznos za uplatu: {{faktura.iznosZaUplatu}}</label>
+	
+			</b>
+		</div>
+		<br>
+
+
+</div>
