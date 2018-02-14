@@ -13,3 +13,8 @@ buildNumber.properties
 # Eclipse
 .classpath
 .settings/
+
+# kofiguracioni fajlovi
+firme/src/main/resources/application.properties
+centralnaBanka/src/main/resources/application.properties
+banke/src/main/resources/application.properties
