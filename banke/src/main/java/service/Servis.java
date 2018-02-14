@@ -354,7 +354,7 @@ public class Servis {
 				stavka.setModelOdobrenja(nalog.getModelOdobrenja());
 				stavka.setPozivNaBrojOdobrenja(nalog.getPozivNaBrojOdobrenja());
 				stavka.setIznos(nalog.getIznos());
-				if (nalog.getRacunDuznika() == zahtev.getBrojRacuna()) {
+				if (nalog.getRacunDuznika().equals(zahtev.getBrojRacuna())) {
 					stavka.setSmer("o");
 					brojPromenaNaTeret++;
 					ukupnoNaTeret += nalog.getIznos().doubleValue();
