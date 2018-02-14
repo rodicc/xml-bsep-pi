@@ -20,14 +20,14 @@ import org.springframework.xml.xsd.XsdSchema;
 @Configuration
 public class WebServiceConfig extends WsConfigurerAdapter {
 	
-	@Override
+	/*@Override
     public void addInterceptors(List<EndpointInterceptor> interceptors) {
         PayloadValidatingInterceptor validatingInterceptor = new PayloadValidatingInterceptor();
         validatingInterceptor.setValidateRequest(true);
         validatingInterceptor.setValidateResponse(true);
         validatingInterceptor.setXsdSchema(soapSchema());
         interceptors.add(validatingInterceptor);
-    }
+    }*/
 	
 	@Bean
 	public ServletRegistrationBean messageDispatcherServlet(ApplicationContext applicationContext) {
