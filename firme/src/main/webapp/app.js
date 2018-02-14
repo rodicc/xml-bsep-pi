@@ -28,4 +28,10 @@ app.config(['$stateProvider', function($stateProvider){
 		controller:'porukeController'
 	})
 	
+	.state('fakture',{
+		url:'/fakture',
+		templateUrl: 'view/pregledFaktura.html',
+		controller: 'pregledFakturaController'
+	})
+	
 }]);
