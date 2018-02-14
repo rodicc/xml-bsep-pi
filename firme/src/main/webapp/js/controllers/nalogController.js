@@ -8,17 +8,20 @@ angular.module('app')
 		nevalidan: false
 	}
 	$scope.nalog = {};
+
+	$scope.obrisiPolja = function(){
+		$scope.nalog = {};
+	}
 	
 	$scope.posaljiNalog = function(){
-		console.log($scope.nalog.hitno);
 		$scope.nalog.idPoruke = Math.random().toString(36).substring(7);
 		if($scope.nalog.hitno === undefined){
 			$scope.nalog.hitno = false;
 		}
-		var datumNaloga = $scope.nalog.datumNaloga.getDate()+"-"+($scope.nalog.datumNaloga.getMonth()+1)+"-"+$scope.nalog.datumNaloga.getFullYear();
+		var datumNaloga = $scope.datumNaloga.getDate()+"-"+($scope.datumNaloga.getMonth()+1)+"-"+$scope.datumNaloga.getFullYear();
 		$scope.nalog.datumNaloga = datumNaloga;
 		
-		var datumValute = $scope.nalog.datumValute.getDate()+"-"+($scope.nalog.datumValute.getMonth()+1)+"-"+$scope.nalog.datumValute.getFullYear();
+		var datumValute = $scope.datumValute.getDate()+"-"+($scope.datumValute.getMonth()+1)+"-"+$scope.datumValute.getFullYear();
 		$scope.nalog.datumValute = datumValute;
 		nalogService.posaljiNalog($scope.nalog)
 			.then(function(response) {

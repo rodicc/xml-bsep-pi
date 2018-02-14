@@ -6,9 +6,8 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.datatype.XMLGregorianCalendar;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class MT910 {
@@ -19,6 +18,7 @@ public class MT910 {
     private String swiftKodBankePoverioca;
     private String obracunskiRacunBankePoverioca;
     private String idPorukeNaloga;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     private Date datumValute;
     private BigDecimal iznos;
     private String sifraValute;

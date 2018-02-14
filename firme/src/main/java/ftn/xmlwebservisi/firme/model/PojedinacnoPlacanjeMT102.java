@@ -1,11 +1,13 @@
 package ftn.xmlwebservisi.firme.model;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlElement;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class PojedinacnoPlacanjeMT102 {
@@ -16,7 +18,8 @@ public class PojedinacnoPlacanjeMT102 {
     private String duznikNalogodavac;
     private String svrhaPlacanja;
     private String primalacPoverilac;
-    private String datumNaloga;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+    private Date datumNaloga;
     private String racunDuznika;
     private int modelZaduzenja;
     private String pozivNaBrojZaduzenja;
@@ -58,10 +61,10 @@ public class PojedinacnoPlacanjeMT102 {
 	public void setPrimalacPoverilac(String primalacPoverilac) {
 		this.primalacPoverilac = primalacPoverilac;
 	}
-	public String getDatumNaloga() {
+	public Date getDatumNaloga() {
 		return datumNaloga;
 	}
-	public void setDatumNaloga(String datumNaloga) {
+	public void setDatumNaloga(Date datumNaloga) {
 		this.datumNaloga = datumNaloga;
 	}
 	public String getRacunDuznika() {
