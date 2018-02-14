@@ -2,12 +2,14 @@ package ftn.xmlwebservisi.firme.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
@@ -18,7 +20,9 @@ public class StavkaPreseka {
 	private String duznikNalogodavac;
 	private String svrhaPlacanja;
 	private String primalacPoverilac;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date datumNaloga;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date datumValute;
 	private String racunDuznika;
 	private Integer modelZaduzenja;

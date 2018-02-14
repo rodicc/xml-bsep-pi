@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 public class ZaglavljeMT102 {
 
@@ -19,7 +21,9 @@ public class ZaglavljeMT102 {
     private String obracunskiRacunBankePoverioca;
     private BigDecimal ukupanIznos;
     private String sifraValute;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     private Date datumValute;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     private Date datum;
     
     

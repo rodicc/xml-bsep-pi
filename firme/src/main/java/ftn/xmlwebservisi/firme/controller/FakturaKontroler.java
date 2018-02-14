@@ -57,4 +57,6 @@ public class FakturaKontroler {
 		StavkaFakture kreiranaStavka = stavkaFaktureServis.dodajStavkuFakture(stavkaFakture);
 		return new ResponseEntity<>(kreiranaStavka, HttpStatus.CREATED);
 	}
+	
+	
 }
