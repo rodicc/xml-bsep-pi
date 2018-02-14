@@ -86,10 +86,19 @@
 		<div class="row"><br></div>
 		
 		<div class="row">
+			<div style="float:left;">
+				<p ng-if="obavestenja.validan" class="alert alert-success">
+					{{obavestenja.uspesno}}
+				</p>
+			</div>
+			<div style="float:left;" >
+					<p ng-if="obavestenja.nevalidan" class="alert alert-danger">
+						{{obavestenja.neuspesno}}
+					</p>
+				</div>
 			<div style="padding:10px; padding-left:165px; float:right;">
 				<button ng-click="posaljiNalog()" class="btn btn-md">Posalji</button>
 			</div>
-			
 		</div>	
 			
 			

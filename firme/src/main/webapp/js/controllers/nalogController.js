@@ -1,7 +1,12 @@
 angular.module('app')
 .controller('nalogController', ['$scope','nalogService', function($scope, nalogService){
 	
-	
+	$scope.obavestenja = {
+		uspesno: "Nalog je uspeno poslan.",
+		neuspesno: "Uneti podaci nisu korektni.",
+		validan: false,
+		nevalidan: false
+	}
 	$scope.nalog = {};
 	
 	$scope.posaljiNalog = function(){
@@ -17,14 +22,16 @@ angular.module('app')
 		$scope.nalog.datumValute = datumValute;
 		nalogService.posaljiNalog($scope.nalog)
 			.then(function(response) {
-				console.log("uspesno poslat");
+				$scope.obavestenja.validan = true;
+				$scope.obavestenja.nevalidan = false;
+				$scope.nalog = {};
 			}
 			, function(error) {
-				console.log("greska pri slanju");
+				$scope.obavestenja.validan = false;
+				$scope.obavestenja.nevalidan = true;
+				$scope.nalog = {};
 			})
-		
 		console.log($scope.nalog);
-		$scope.nalog = {};
 	}
 	
 }]);

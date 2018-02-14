@@ -3,7 +3,7 @@ angular.module("app")
 	return{
 		
 		posaljiNalog : function(nalog){
-			return $http.post("/nalozi", nalog).catch(angular.noop);
+			return $http.post("/nalozi", nalog);
 		}
 		
 	}

@@ -1,0 +1,84 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Sema za nalog za placanje",
+    "type": "object",
+    "required": [
+        "idPoruke",
+        "duznikNalogodavac",
+        "svrhaPlacanja",
+        "datumNaloga",
+        "datumValute",
+        "racunDuznika",
+        "modelZaduzenja",
+        "pozivNaBrojZaduzenja",
+        "racunPrimaoca",
+        "modelOdobrenja",
+        "pozivNaBrojOdobrenja",
+        "iznos",
+        "oznakaValute",
+        "hitno"
+    ],
+    "properties": {
+        "idPoruke": {
+            "type": "string",
+            "maxLength": 50
+        },
+        "duznikNalogodavac": {
+            "type": "string",
+            "maxLength": 255
+        },
+        "svrhaPlacanja": {
+            "type": "string",
+            "maxLength": 255
+        },
+        "datumNaloga": {
+            "type": "string",
+            "pattern": "^(0?[1-9]|1[0-9]|2[0-9]|3[0-1])\\-(0?[1-9]|1[0-2])\\-\\d{4}$"
+        },
+        "datumValute": {
+            "type": "string",
+            "pattern": "^(0?[1-9]|1[0-9]|2[0-9]|3[0-1])\\-(0?[1-9]|1[0-2])\\-\\d{4}$"
+        },
+        "racunDuznika": {
+            "type": "string",
+            "minLength": 18,
+            "maxLength": 18
+        },
+        "modelZaduzenja": {
+            "type": "number",
+            "minimum": 10,
+  			"maximum": 99
+        },
+        "pozivNaBrojZaduzenja": {
+            "type": "string",
+            "maxLength": 20
+        },
+        "racunPrimaoca": {
+            "type": "string",
+            "minLength": 18,
+            "maxLength": 18
+        },
+        "modelOdobrenja": {
+            "type": "number",
+            "minimum": 10,
+  			"maximum": 99
+        },
+        "pozivNaBrojOdobrenja": {
+            "type": "string",
+            "maxLength": 20
+        },
+        "iznos": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 999999999999999,
+            "multipleOf": 0.01
+        },
+        "oznakaValute": {
+            "type": "string",
+            "maxLength": 3
+        },
+        "hitno": {
+            "type": "boolean"
+        }
+    }
+}
