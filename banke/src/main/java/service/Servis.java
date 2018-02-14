@@ -149,40 +149,62 @@ public class Servis {
 			nalogZaRegulisanje.setNijeRegulisan(false);
 			nalogZaPlacanjeRepository.save(nalogZaRegulisanje);
 		}
-
-		// regulistanje stanja racuna firme i banke duznika
-		String oznakaBankeDuznika = racunDuznika.substring(0, 3);		
-		model.Banka bankaDuznika = bankaRepository.findByOznakaBanke(oznakaBankeDuznika);
-
-		// skidanje rezervisanih sredstava iz firme duznika
-		double novoStanjeFirmeDuznika = firmaDuznika.getRezervisanNovac().doubleValue()
-				- mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
-		firmaDuznika.setRezervisanNovac(new BigDecimal(novoStanjeFirmeDuznika));
-		firmaRepository.save(firmaDuznika);
 		
 		// dodavanje sredstava na racun banke duznika
+		String oznakaBankeDuznika = racunDuznika.substring(0, 3);		
+		model.Banka bankaDuznika = bankaRepository.findByOznakaBanke(oznakaBankeDuznika);
+		
 		double novoStanjeBankeDuznika = bankaDuznika.getStanjeRacuna().doubleValue()
 				+ mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
 		bankaDuznika.setStanjeRacuna(new BigDecimal(novoStanjeBankeDuznika));
 		bankaRepository.save(bankaDuznika);
 		
-		// regulistanje stanja racuna firme i banke primaoca
+		// skidanje sredstava sa racuna banke primaoca
 		String racunPrimaoca = nalogEntity.getRacunPrimaoca();
 		String oznakaBankePrimaoca = racunPrimaoca.substring(0, 3);
-		model.Firma firmaPrimaoca = firmaRepository.findByBrojRacuna(racunPrimaoca);
 		model.Banka bankaPrimaoca = bankaRepository.findByOznakaBanke(oznakaBankePrimaoca);
 		
+		double novoStanjeBankePrimaoca = bankaPrimaoca.getStanjeRacuna().doubleValue()
+				- mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
+		bankaPrimaoca.setStanjeRacuna(new BigDecimal(novoStanjeBankePrimaoca));
+		bankaRepository.save(bankaPrimaoca);
+		
+		// regulisanje stanja rezervisanog novca u okviru firmi za svako pojedinacno placanje
+		List<PojedinacnoPlacanjeMT102> pojedinacnaPlacanja = mt102.getPojedinacnoPlacanjeMT102();
+		for (PojedinacnoPlacanjeMT102 placanje : pojedinacnaPlacanja) {
+			String rDuznika = placanje.getRacunDuznika();
+			model.Firma fDuznika = firmaRepository.findByBrojRacuna(rDuznika);
+			double rezervisanoStanje = fDuznika.getRezervisanNovac().doubleValue()
+					- placanje.getIznos().doubleValue();
+			fDuznika.setRezervisanNovac(new BigDecimal(rezervisanoStanje));
+			firmaRepository.save(fDuznika);
+			
+			String rPrimaoca = placanje.getRacunPoverioca();
+			model.Firma fPrimaoca = firmaRepository.findByBrojRacuna(rPrimaoca);
+			double stanjeRacuna = fPrimaoca.getStanjeRacuna().doubleValue()
+					+ placanje.getIznos().doubleValue();
+			fPrimaoca.setStanjeRacuna(new BigDecimal(stanjeRacuna));
+			firmaRepository.save(fPrimaoca);
+		}
+		
+		
+		/*
+		// skidanje rezervisanih sredstava iz firme duznika
+		double novoStanjeFirmeDuznika = firmaDuznika.getRezervisanNovac().doubleValue()
+				- mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
+		firmaDuznika.setRezervisanNovac(new BigDecimal(novoStanjeFirmeDuznika));
+		firmaRepository.save(firmaDuznika);
+		*/
+		
+		
+		/*
+		model.Firma firmaPrimaoca = firmaRepository.findByBrojRacuna(racunPrimaoca);
 		// dodavanje sredstava na racun firme primaoca
 		double novoStanjeFirmePrimaoca = firmaPrimaoca.getStanjeRacuna().doubleValue()
 				+ mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
 		firmaPrimaoca.setStanjeRacuna(new BigDecimal(novoStanjeFirmePrimaoca));
 		firmaRepository.save(firmaPrimaoca);
-		
-		// skidanje sredstava sa racuna banke primaoca
-		double novoStanjeBankePrimaoca = bankaPrimaoca.getStanjeRacuna().doubleValue()
-				- mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
-		bankaPrimaoca.setStanjeRacuna(new BigDecimal(novoStanjeBankePrimaoca));
-		bankaRepository.save(bankaPrimaoca);
+		*/
 
 	}
 
