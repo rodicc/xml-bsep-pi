@@ -1,8 +1,5 @@
 package ftn.xmlwebservisi.firme.helpers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +17,19 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 		
-		List<String> errors = new ArrayList<>();
-		
-		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-			errors.add(error.getField() + " : " + error.getDefaultMessage());
-		}
-		
-		for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-			errors.add(error.getObjectName() + " : " + error.getDefaultMessage());
+		String error = "";
+		FieldError fieldError = ex.getBindingResult().getFieldError();
+		if (fieldError != null) {
+			error = fieldError.getField() + " " + fieldError.getDefaultMessage();
+		} else {
+			ObjectError objectError = ex.getBindingResult().getGlobalError();
+			if (objectError != null) {
+				error = objectError.getDefaultMessage();
+			}
 		}
 		
 		CustomMessageError customMessage = 
-				new CustomMessageError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
+				new CustomMessageError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), error);
 		return handleExceptionInternal(ex, customMessage, headers, customMessage.getStatus(), request);
 	}
 }
