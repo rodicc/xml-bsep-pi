@@ -17,6 +17,10 @@ public class PasswordValueMatchValidator implements ConstraintValidator<Password
 		
 		if (obj instanceof UserDTO) {
 			UserDTO user = (UserDTO)obj;
+			
+			if (user.getPassword() == null || user.getPasswordMatch() == null)
+				return false;
+				
 			return user.getPassword().equals(user.getPasswordMatch());
 		}
 		return false;
