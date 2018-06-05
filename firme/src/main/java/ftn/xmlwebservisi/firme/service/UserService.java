@@ -26,7 +26,7 @@ public class UserService {
 		newUser.setPassword(bCryptPasswordEncoder.encode(userDto.getPassword()));
 		
 		Role role = roleRepository.findByName("USER");
-		newUser.setRole(role);
+		newUser.addRole(role);
 		
 		return userRepository.save(newUser);
 	}
