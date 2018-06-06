@@ -13,11 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableJpaRepositories("ftn.xmlwebservisi.firme.repository")
 public class FirmeApplication {
 	
-	@Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-	
 	public static void main(String[] args) {
 		SpringApplication.run(FirmeApplication.class, args);
 	}
