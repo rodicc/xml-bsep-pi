@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,8 +37,17 @@ public class LoginProcessingFilter extends UsernamePasswordAuthenticationFilter 
 		try {
 			// Extracting request parameters
 			UserDTO user = new ObjectMapper().readValue(request.getInputStream(), UserDTO.class);
-			String username = user.getUsername().trim();
+			
+			String username = user.getUsername();
+			if (username == null || username.trim().isEmpty()) {
+				throw new PreAuthenticatedCredentialsNotFoundException("Username cannot be null or empty");
+			}
+			username = username.trim();
+			
 			String password = user.getPassword();
+			if (password == null) {
+				throw new PreAuthenticatedCredentialsNotFoundException("Password cannot be null");
+			}
 			
 			UsernamePasswordAuthenticationToken authRequest = 
 					new UsernamePasswordAuthenticationToken(username, password);
