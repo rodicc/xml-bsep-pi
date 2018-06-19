@@ -75,9 +75,10 @@ public class LoginProcessingFilter extends UsernamePasswordAuthenticationFilter 
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
 		
-		String username = ((User)authResult.getPrincipal()).getUsername();
-		String token = tokenHandler.generateToken(username);
+		User user = (User)authResult.getPrincipal();
+		String token = tokenHandler.generateToken(user.getUsername());
 		response.addHeader(AUTH_HEADER, AUTH_SCHEME + " " + token);
+		response.addHeader("User", user.getUsername());
 	}
 
 	

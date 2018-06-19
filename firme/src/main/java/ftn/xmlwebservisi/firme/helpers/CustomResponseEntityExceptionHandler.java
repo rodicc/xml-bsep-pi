@@ -20,7 +20,7 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 		String error = "";
 		FieldError fieldError = ex.getBindingResult().getFieldError();
 		if (fieldError != null) {
-			error = fieldError.getField() + " " + fieldError.getDefaultMessage();
+			error = fieldError.getDefaultMessage();
 		} else {
 			ObjectError objectError = ex.getBindingResult().getGlobalError();
 			if (objectError != null) {

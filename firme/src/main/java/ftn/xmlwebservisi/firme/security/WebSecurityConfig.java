@@ -48,7 +48,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) throws Exception {
 		// Allowing access to static resources without authentication
 		web.ignoring()
-			.antMatchers("/webapp/**");
+			.antMatchers("/assets/**")
+			.antMatchers("/js/**")
+			.antMatchers("/view/**")
+			.antMatchers("/app.js")
+			.antMatchers("/index.html");
 	}
 	
 	@Override
