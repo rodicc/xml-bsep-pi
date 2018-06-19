@@ -1,0 +1,9 @@
+.default-background {
+    background: #f8f8f8;
+}
+.underline {
+    text-decoration: underline;
+}
+.pointer-cursor {
+    cursor: pointer;
+}
