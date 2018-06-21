@@ -5,6 +5,8 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,4 +30,20 @@ public class UserController {
 		return new ResponseEntity<String>("User successfully created", HttpStatus.CREATED);
 	}
 	
+	@GetMapping("/public")
+	public String pub() {
+		return "Permit all";
+	}
+	
+	@PreAuthorize("hasRole('USER')")
+	@GetMapping("/secured") 
+	public String secured() {
+		return "Only for users";
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/admins") 
+	public String admin() {
+		return "Only for admins";
+	}
 }
