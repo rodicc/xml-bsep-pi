@@ -15,7 +15,9 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 
 import javax.crypto.KeyGenerator;
@@ -36,36 +38,44 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.xml.security.encryption.EncryptedData;
+import org.apache.xml.security.encryption.EncryptedKey;
+import org.apache.xml.security.encryption.XMLCipher;
+import org.apache.xml.security.encryption.XMLEncryptionException;
+import org.apache.xml.security.exceptions.XMLSecurityException;
+import org.apache.xml.security.keys.KeyInfo;
+import org.apache.xml.security.keys.keyresolver.implementations.RSAKeyValueResolver;
+import org.apache.xml.security.keys.keyresolver.implementations.X509CertificateResolver;
+import org.apache.xml.security.signature.XMLSignature;
+import org.apache.xml.security.signature.XMLSignatureException;
+import org.apache.xml.security.transforms.TransformationException;
+import org.apache.xml.security.transforms.Transforms;
+import org.apache.xml.security.utils.Constants;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.sun.org.apache.xml.internal.security.Init;
-import com.sun.org.apache.xml.internal.security.encryption.EncryptedData;
-import com.sun.org.apache.xml.internal.security.encryption.EncryptedKey;
-import com.sun.org.apache.xml.internal.security.encryption.XMLCipher;
-import com.sun.org.apache.xml.internal.security.encryption.XMLEncryptionException;
-import com.sun.org.apache.xml.internal.security.exceptions.XMLSecurityException;
-import com.sun.org.apache.xml.internal.security.keys.KeyInfo;
-import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.RSAKeyValueResolver;
-import com.sun.org.apache.xml.internal.security.keys.keyresolver.implementations.X509CertificateResolver;
-import com.sun.org.apache.xml.internal.security.signature.XMLSignature;
-import com.sun.org.apache.xml.internal.security.signature.XMLSignatureException;
-import com.sun.org.apache.xml.internal.security.transforms.TransformationException;
-import com.sun.org.apache.xml.internal.security.transforms.Transforms;
-import com.sun.org.apache.xml.internal.security.utils.Constants;
-@SuppressWarnings("rawtypes") 
+import model.certificateGenerator.OCSPResponseStatus;
+@SuppressWarnings("rawtypes")
 
+@Service
 public class XMLSignAndEncryptUtility {
-
+	
+	public static final String CENTRALNA_BANKA = "CBANKA";
+	public static final String BANKA = "BANKA";
+	public static final String FIRMA = "FIRMA";
+	
     public XMLSignAndEncryptUtility() {
         Security.addProvider(new BouncyCastleProvider());
+       // org.apache.xml.security.Init.init();
     }
     
-    public DOMSource encryptToSource(JAXBElement jaxbElement, JAXBContext jaxbContext) {
+    
+	public DOMSource encryptToSource(JAXBElement jaxbElement, JAXBContext jaxbContext, String recieverCertificateAlias ) {
 		try {
 			ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
 			Marshaller marshaller = jaxbContext.createMarshaller();
@@ -73,11 +83,10 @@ public class XMLSignAndEncryptUtility {
 			ByteArrayInputStream inStream = new ByteArrayInputStream(byteOutStream.toByteArray());
 			inStream.reset();
 			//Enkripcija i potpisivanje dokument
-			Document document = encryptAndSign(inStream);
-			//inStream.reset();
+			Document document = encryptAndSign(inStream, recieverCertificateAlias);
 			
 			DOMSource source = new DOMSource(document); 
-			 
+			
 			return source;
 			
 		} catch (JAXBException e) {
@@ -91,7 +100,7 @@ public class XMLSignAndEncryptUtility {
 		return null;
 	}
     
-    public Document encryptAndSign(ByteArrayInputStream inStream) throws CertificateException, FileNotFoundException {
+    public Document encryptAndSign(ByteArrayInputStream inStream, String recieverCertificateAlias) throws CertificateException, FileNotFoundException {
     	
     	Document document = loadDocument(inStream);
     	SecretKey secretKey = generateDataEncryptionKey();
@@ -100,8 +109,8 @@ public class XMLSignAndEncryptUtility {
     	PrivateKey senderPrivateKey = ksUtility.readDefaultPrivateKey();
     	
     	CertificateFactory cf = CertificateFactory.getInstance("X509");
-    	Certificate senderCertificate = cf.generateCertificate(new FileInputStream("./certificates/FIRMA.cer"));
-    	Certificate recieverCertificate = cf.generateCertificate(new FileInputStream("./certificates/BANKA.cer"));
+    	Certificate senderCertificate = cf.generateCertificate(new FileInputStream("./certificates/BANKA.cer"));
+    	Certificate recieverCertificate = cf.generateCertificate(new FileInputStream("./certificates/"+recieverCertificateAlias +".cer"));
     	
     	document = encrypt(document, null, secretKey, recieverCertificate.getPublicKey());
     	document = signDocument(document, senderPrivateKey, senderCertificate);
@@ -110,7 +119,6 @@ public class XMLSignAndEncryptUtility {
     }
     
     public Document veryfyAndDecrypt(InputStream inStream) {
-    	
     	Document encryptedDocument = loadDocument(inStream);
     	if(verifySignature(encryptedDocument)) {
     		KeyStoreUtitlity ksUtility = new KeyStoreUtitlity();
@@ -163,6 +171,7 @@ public class XMLSignAndEncryptUtility {
 	
 	public boolean verifySignature(Document document) {
 		try {
+			org.apache.xml.security.Init.init();
 			//Pronalazi se prvi Signature element 
 			NodeList signatures = document.getElementsByTagNameNS("http://www.w3.org/2000/09/xmldsig#", "Signature");
 			Element signatureEl = (Element) signatures.item(0);
@@ -179,15 +188,24 @@ public class XMLSignAndEncryptUtility {
 			    //Ako postoji sertifikat, provera potpisa
 			    if(keyInfo.containsX509Data() && keyInfo.itemX509Data(0).containsCertificate()) { 
 			        Certificate cert = keyInfo.itemX509Data(0).itemCertificate(0).getX509Certificate();
-			        if(cert != null) 
-			        	return signature.checkSignatureValue((X509Certificate) cert);
+			        if(cert != null) {
+			        	CertificateService certificateService = new CertificateService();
+			        	try {//Provera da li je sertifikat kojim je potpisan dokument istekao ili je povucen
+							((X509Certificate) cert).checkValidity();
+							return (certificateService.checkCertificate(((X509Certificate) cert).getSerialNumber()).equals(OCSPResponseStatus.GOOD) &&
+							       	signature.checkSignatureValue((X509Certificate) cert));
+								
+						} catch (CertificateExpiredException | CertificateNotYetValidException e) {
+							e.printStackTrace();
+						}
+			        }
 			    }
 			}
 		} catch (XMLSignatureException e) {
 			e.printStackTrace();
 		} catch (XMLSecurityException e) {
 			e.printStackTrace();
-		}
+		} 
 		return false;
 	}
     
@@ -204,7 +222,7 @@ public class XMLSignAndEncryptUtility {
 	
 	public Document encrypt(Document document, String elementToEncrypt, SecretKey secretKey, PublicKey publicKey) {
 		try {
-			Init.init();
+			org.apache.xml.security.Init.init();
 		    //Inicijalizacija algoritma za simetricno sifrovanje xml podataka
 		    XMLCipher xmlContentCipher = XMLCipher.getInstance(XMLCipher.TRIPLEDES);
 		    xmlContentCipher.init(XMLCipher.ENCRYPT_MODE, secretKey);
@@ -245,14 +263,12 @@ public class XMLSignAndEncryptUtility {
 	
 	public Document decrypt(Document document, PrivateKey privateKey) {
 		try {
+			org.apache.xml.security.Init.init();
 			//Inicijalizacija za desifrovanje
 			XMLCipher xmlContentCipher = XMLCipher.getInstance();
 			xmlContentCipher.init(XMLCipher.DECRYPT_MODE, null);
 			//Postavlja se kljuc za desifrovanje tajnog kljuca
 			xmlContentCipher.setKEK(privateKey);
-			
-			
-			xmlContentCipher.doFinal(document, (Element)document.getFirstChild());
 			
 			//Desifruju se sva pojavljivanja EncryptedData elementa
 			NodeList elementsToDecrypt = document.getElementsByTagNameNS("http://www.w3.org/2001/04/xmlenc#", "EncryptedData");
@@ -269,11 +285,14 @@ public class XMLSignAndEncryptUtility {
 		}
 		return null;
 	}
-	
-	  
+		  
 	public Document loadDocument(InputStream inStream) {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			//Onemogucava parsiranje eksternih xml elemenata
+			dbf.setExpandEntityReferences(false);
+			String FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+		    dbf.setFeature(FEATURE, true);
 			dbf.setNamespaceAware(true);
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document document = db.parse(inStream);

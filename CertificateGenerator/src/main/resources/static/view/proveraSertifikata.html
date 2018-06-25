@@ -1,5 +1,13 @@
 <div class='container'>
 	<div class="row">
+	<div class="form-group row">
+		<label class="control-label col-sm-2">Certificate authority: </label> 
+		<div class="col-sm-10">
+			<select ng-model="issuer">
+				<option value="">--Choose CA--</option>
+				<option ng-repeat="alias in CACertificates">{{alias}}</option>
+			</select>
+		</div>
 		<form name="checkCertificateForm">
 		
 				<div class="form-group row">
@@ -8,9 +16,9 @@
 						<input  class="form-control" ng-model="checkAlias" required></div>
 				</div>
 				 <div>
-					<button type="submit" ng-click="checkCertificate(checkAlias)" btn btn-primary btn-sm">Check validity</button>
-					<button type="submit" ng-click="getCertificate(checkAlias)" btn btn-primary btn-sm">Get Certificate text</button>
-					<button type="submit" ng-click="getCertificateFile(checkAlias)" btn btn-primary btn-sm">Get certificate file</button>
+				 	<button type="submit" ng-click="getCertificateFile(checkAlias)" ng-disabled="certificate.issuer=''">Get certificate file</button>
+					<button type="submit" ng-click="checkCertificate(checkAlias)" ng-disabled="certificate.issuer=''">Check validity</button>
+					<button type="submit" ng-click="revokeCertificate(checkAlias)" ng-disabled="certificate.issuer=''">Revoke Certificate</button>
 				</div>
 		</form>
 	</div>

@@ -2,7 +2,6 @@ package controller;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -27,9 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import application.SoapClient;
 import model.CSRDto;
 import model.CertificateDto;
-import model.CertificateResponseDto;
 import model.OCSPResponseStatus;
-import model.RevokeCertificateDto;
 import service.CertificateService;
 
 @RestController
@@ -64,8 +61,6 @@ public class CertificateController {
 		
 	}
 	
-	
-	
 	@PostMapping("/new")
 	public ResponseEntity<CertificateDto> generateNewCertificate(@RequestBody CertificateDto certificate)
 			throws NoSuchAlgorithmException, FileNotFoundException, KeyStoreException, NoSuchProviderException, IOException{
@@ -87,31 +82,13 @@ public class CertificateController {
 		
 	}
 	
-	@PostMapping("/revoke")
-	public ResponseEntity<String> revokeCertificate(@RequestBody RevokeCertificateDto revokeCertificateDto){
-
-		boolean isAutorized = true;
-		
-		if(isAutorized) {
-			String response = certificateService.revokeCertificate(revokeCertificateDto);
-			if(response != null) {
-				return new ResponseEntity<String>(response, HttpStatus.OK);
-			}
-			else
-				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-		
-		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-	}
 	
-	//TODO: provera da li je string cifri
-	@GetMapping("/check/{alias}")
-	public ResponseEntity<OCSPResponseStatus> checkCertificate(@PathVariable("alias") String serialNumber){
-
+	@PostMapping("/revoke/{caAlias}")
+	public ResponseEntity<OCSPResponseStatus> revokeCertificate(@RequestBody String serialNumber, @PathVariable String caAlias){
 		boolean isAutorized = true;
 		
 		if(isAutorized) {
-			OCSPResponseStatus response = certificateService.checkCertificate(new BigInteger(serialNumber));
+			OCSPResponseStatus response = client.revokeCertificate(serialNumber, caAlias);
 			if(response != null) {
 				return new ResponseEntity<OCSPResponseStatus>(response, HttpStatus.OK);
 			}
@@ -122,7 +99,25 @@ public class CertificateController {
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
 	
-	@GetMapping("/{certificateAlias}")
+	//TODO: provera da li je string cifri
+	@PostMapping("/check/{caAlias}")
+	public ResponseEntity<OCSPResponseStatus> checkCertificate(@PathVariable("caAlias") String caAlias, @RequestBody String serialNumber){
+
+		boolean isAutorized = true;
+		
+		if(isAutorized) {
+			OCSPResponseStatus response = client.checkCertificate(serialNumber, caAlias);
+			if(response != null) {
+				return new ResponseEntity<OCSPResponseStatus>(response, HttpStatus.OK);
+			}
+			else
+				return new ResponseEntity<OCSPResponseStatus>(HttpStatus.BAD_REQUEST);
+		}
+		
+		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	}
+	
+/*	@GetMapping("/{certificateAlias}")
 	public ResponseEntity<CertificateResponseDto> getCertificate(@PathVariable("certificateAlias") String certificateAlias){
 		
 		boolean isAutorized = true;
@@ -138,24 +133,22 @@ public class CertificateController {
 		
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
-	
-	@GetMapping(value = "/file/{certificateAlias}", produces = MediaType.TEXT_PLAIN_VALUE)
+	*/
+	@PostMapping(value = "/file/{caAlias}", produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
-	public ResponseEntity<ByteArrayResource> getCertificateFile(@PathVariable("certificateAlias") String certificateAlias){
+	public ResponseEntity<ByteArrayResource> getCertificateFile(@PathVariable("certificateAlias") String caAlias, @RequestBody String serialNumber){
 		
 		boolean isAutorized = true;
 		
 		if(isAutorized) {
-			ByteArrayResource response = certificateService.getCertificateFile(this.servletContext, certificateAlias);
+			ByteArrayResource response = client.getCertificateFile(serialNumber, caAlias);
 			if(response != null) {
-				System.out.println("OK");
 				HttpHeaders header = new HttpHeaders();
-				header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename="+ certificateAlias +".cer");
+				header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename="+ serialNumber +".cer");
 				return new ResponseEntity<ByteArrayResource>(response, header, HttpStatus.OK);
 						
 			}
 			else
-				System.out.println("BAD REQ");
 				return new ResponseEntity<ByteArrayResource>(HttpStatus.BAD_REQUEST);
 		}
 		

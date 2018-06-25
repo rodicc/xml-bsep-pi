@@ -3,6 +3,7 @@ package model;
 import java.io.Serializable;
 import java.security.PublicKey;
 
+@SuppressWarnings("serial")
 public class CSRDto extends CertificateDto implements Serializable{
 
 	private PublicKey publicKey;

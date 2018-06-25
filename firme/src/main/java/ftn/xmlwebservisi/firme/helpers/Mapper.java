@@ -1,9 +1,7 @@
 package ftn.xmlwebservisi.firme.helpers;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -11,10 +9,8 @@ import javax.xml.datatype.DatatypeFactory;
 import org.springframework.stereotype.Service;
 
 import ftn.xmlwebservisi.firme.model.Presek;
-import ftn.xmlwebservisi.firme.model.StavkaFakture;
 import soap.NalogZaPlacanje;
 import soap.StavkaPreseka;
-import soap.Zaglavlje;
 import soap.ZahtevZaIzvod;
 
 @Service

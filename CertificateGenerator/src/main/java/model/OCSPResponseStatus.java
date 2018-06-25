@@ -1,5 +1,5 @@
 package model;
 
 public enum OCSPResponseStatus {
-	REVOKED, GOOD
+	REVOKED, GOOD, UNKNOWN
 }

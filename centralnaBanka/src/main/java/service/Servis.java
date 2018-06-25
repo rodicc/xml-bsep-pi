@@ -1,16 +1,9 @@
 package service;
 
 import java.math.BigDecimal;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
 
-import xml.ftn.centralnabanka.MT102;
-import xml.ftn.centralnabanka.MT102Response;
-import xml.ftn.centralnabanka.MT103;
-import xml.ftn.centralnabanka.MT103Response;
-import xml.ftn.centralnabanka.MT900;
-import xml.ftn.centralnabanka.MT910;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +15,12 @@ import repository.MT102Repository;
 import repository.MT103Repository;
 import repository.PojedincanoPlacanjeMT102Repository;
 import repository.ZaglavljeMT102Repository;
+import xml.ftn.centralnabanka.MT102;
+import xml.ftn.centralnabanka.MT102Response;
+import xml.ftn.centralnabanka.MT103;
+import xml.ftn.centralnabanka.MT103Response;
+import xml.ftn.centralnabanka.MT900;
+import xml.ftn.centralnabanka.MT910;
 
 @Service
 public class Servis {

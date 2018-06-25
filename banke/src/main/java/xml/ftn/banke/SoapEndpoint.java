@@ -1,30 +1,186 @@
 package xml.ftn.banke;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamSource;
+
+import org.bouncycastle.pkcs.PKCS10CertificationRequest;
+import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.soap.server.endpoint.annotation.SoapAction;
+import org.w3c.dom.Document;
 
+import model.certificateGenerator.OCSPResponseStatus;
 import service.Servis;
+import xmlSignatureAndEncryption.CertificateService;
+import xmlSignatureAndEncryption.XMLSignAndEncryptUtility;
 
 @Endpoint
 public class SoapEndpoint {
 
-	private static final String NAMESPACE_URI = "http://www.ftn.xml/banke";
+	//private static final String NAMESPACE_URI = "http://www.ftn.xml/banke";
 	@Autowired
 	private Servis servis;
+	private XMLSignAndEncryptUtility xmlSignAndEncryptUtility;
+	private CertificateService certificateService;
 	
-	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "posaljiNalogZaPlacanjeRequest")
-	public void posaljiNalogZaPlacanje(@RequestPayload PosaljiNalogZaPlacanjeRequest request) {
-		servis.regulisiNalogZaPlacanje(request.getNalogZaPlacanje());
-	}
-	
-	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "posaljiZahtevZaIzvodRequest")
+	//@PayloadRoot(namespace = NAMESPACE_URI, localPart = "posaljiNalogZaPlacanjeRequest")
 	@ResponsePayload
-	public PosaljiZahtevZaIzvodResponse posaljiZahtevZaIzvod(@RequestPayload PosaljiZahtevZaIzvodRequest request) {
-		PosaljiZahtevZaIzvodResponse response = new PosaljiZahtevZaIzvodResponse();
-		response.setPresek(servis.regulisiZahtevZaIzvod(request.getZahtevZaIzvod()));
-		return response;
+	@SoapAction("http://www.ftn.xml/banke/PosaljiNalogZaPlacanjeRequest") 
+	public Source posaljiNalogZaPlacanje(@RequestPayload StreamSource request) {
+		//Dekripcija dokumenta
+		xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
+		InputStream inStream = request.getInputStream();
+		Document decryptedDocument = xmlSignAndEncryptUtility.veryfyAndDecrypt(inStream);
+		try {
+			JAXBContext jaxbContext;
+			if((decryptedDocument != null) && (decryptedDocument.getDocumentElement().getLocalName().equals(PosaljiNalogZaPlacanjeRequest.class.getSimpleName()))) {
+				//Unmarshal dokumenta u objekat
+				jaxbContext = JAXBContext.newInstance(PosaljiNalogZaPlacanjeRequest.class);
+				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+				JAXBElement<PosaljiNalogZaPlacanjeRequest> posaljiNalogZaPlacanjeRequest = unmarshaller.unmarshal(decryptedDocument, PosaljiNalogZaPlacanjeRequest.class );
+				
+				//Regulise se zahtev
+				NalogZaPlacanje nalogZaPlacanje = posaljiNalogZaPlacanjeRequest.getValue().getNalogZaPlacanje();
+				servis.regulisiNalogZaPlacanje(nalogZaPlacanje);
+				
+				//Enkripcija odgovora
+				xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
+				DOMSource source = xmlSignAndEncryptUtility.encryptToSource(posaljiNalogZaPlacanjeRequest, jaxbContext, XMLSignAndEncryptUtility.FIRMA);
+				
+				return source;
+			}	
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				inStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
 	}
+	
+	//@PayloadRoot(namespace = NAMESPACE_URI, localPart = "posaljiZahtevZaIzvodRequest")
+	@ResponsePayload
+	@SoapAction("http://www.ftn.xml/banke/PosaljiZahtevZaIzvodRequest") 
+	public Source posaljiZahtevZaIzvod(@RequestPayload StreamSource request) {
+		//Dekripcija dokumenta
+		xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
+		InputStream inStream = request.getInputStream();
+		Document decryptedDocument = xmlSignAndEncryptUtility.veryfyAndDecrypt(inStream);
+		try {
+			JAXBContext jaxbContext;
+			if((decryptedDocument != null) && (decryptedDocument.getDocumentElement().getLocalName().equals(PosaljiZahtevZaIzvodRequest.class.getSimpleName()))) {
+				//Unmarshal dokumenta u objekat
+				jaxbContext = JAXBContext.newInstance(PosaljiZahtevZaIzvodRequest.class);
+				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+				JAXBElement<PosaljiZahtevZaIzvodRequest> posaljiZahtevZaIzvodRequest = unmarshaller.unmarshal(decryptedDocument, PosaljiZahtevZaIzvodRequest.class );
+				
+				//Regulise se zahtev
+				PosaljiZahtevZaIzvodResponse response = new PosaljiZahtevZaIzvodResponse();
+				ZahtevZaIzvod zahtevZaIzvod = posaljiZahtevZaIzvodRequest.getValue().getZahtevZaIzvod();
+				response.setPresek(servis.regulisiZahtevZaIzvod(zahtevZaIzvod));
+				
+				//Enkripcija odgovora
+				JAXBElement<PosaljiZahtevZaIzvodResponse> jaxbElement =
+						new JAXBElement<PosaljiZahtevZaIzvodResponse>(new QName(PosaljiZahtevZaIzvodResponse.class.getSimpleName()),PosaljiZahtevZaIzvodResponse.class, response);
+				JAXBContext responseContext = JAXBContext.newInstance(PosaljiZahtevZaIzvodResponse.class);
+				
+				xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
+				DOMSource source = xmlSignAndEncryptUtility.encryptToSource(jaxbElement, responseContext, XMLSignAndEncryptUtility.FIRMA);
+				
+				return source;
+			}
+			
+		} catch (JAXBException e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			try {
+				inStream.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+	
+	@ResponsePayload
+	@PayloadRoot(namespace = "http://www.ftn.xml/banke", localPart = "CSRRequestDto")
+	public CSRRequestDto handleCSR(@RequestPayload CSRRequestDto dto ) {
+		try {
+			PKCS10CertificationRequest csr = new PKCS10CertificationRequest(Base64.decode((String)dto.requestString));
+			certificateService = new CertificateService();
+			X509Certificate certificate = certificateService.handleCSR(csr);
+			//TODO: vraca samo S/N
+			dto.setRequestString(Base64.encode((certificate.getEncoded())));
+			return dto;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (CertificateEncodingException e) {
+			e.printStackTrace();
+		}
+		
+		return dto;
+	}
+	
+	@ResponsePayload
+	@PayloadRoot(namespace = "http://www.ftn.xml/banke", localPart = "DownloadRequestDto")
+	public DownloadRequestDto sendCertificateFile(@RequestPayload DownloadRequestDto dto) {
+		certificateService = new CertificateService();
+		DownloadRequestDto response = new DownloadRequestDto();
+		byte[] result = certificateService.getCertificateFile((String)dto.getRequestString());
+		
+		response.setRequestString(Base64.toBase64String(result));
+		return response;
+		
+	
+	}
+	
+	@ResponsePayload
+	@PayloadRoot(namespace = "http://www.ftn.xml/banke", localPart = "RevocationRequestDto")
+	public RevocationRequestDto revokeCertificate(@RequestPayload RevocationRequestDto dto) {
+		certificateService = new CertificateService();
+		RevocationRequestDto response = new RevocationRequestDto();
+		OCSPResponseStatus status = certificateService.revokeCertificate(dto);
+		if(status != null) {
+			response.setRequestString(status.toString());
+			return response;
+		}
+		
+		return null;
+	}
+	
+	@ResponsePayload
+	@PayloadRoot(namespace = "http://www.ftn.xml/banke", localPart = "StatusRequestDto")
+	public StatusRequestDto checkCertificate(@RequestPayload StatusRequestDto dto) {
+		certificateService = new CertificateService();
+		StatusRequestDto response = new StatusRequestDto();
+		OCSPResponseStatus status = certificateService.checkCertificate(new BigInteger((String)dto.getRequestString()));
+		if(status != null) {
+			response.setRequestString(status.toString());
+			return response;
+		}
+		
+		return null;
+	}
+	
+	
 }

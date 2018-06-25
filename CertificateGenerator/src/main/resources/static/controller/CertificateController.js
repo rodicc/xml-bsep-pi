@@ -2,7 +2,7 @@ angular.module("app")
 .controller('certificateController', ['$scope', 'certificateService', function($scope, certificateService){
 	
 	$scope.CACertificates = [];
-	
+	$scope.issuer = '';
 	
 	certificateService.getAllCACertificates()
 		.then(function(response){
@@ -11,48 +11,35 @@ angular.module("app")
 	
 	$scope.sendCSR = function(certificate){
 		console.log("CSR")
-		certificateService.sendCSR(certificate)
+		certificateService.sendCSR(certificate, certificate.issuer)
 			.then(function(response){
 				console.log(response);
 			})
 	}
 	
-	$scope.submitCertificate = function(certificate){
-		
-		certificateService.submitCertificate(certificate)
-			.then(function(response){
-				console.log(response);
-			})
-	}
 	
-	$scope.revokeCertificate = function(revokeCertificateDto){
-		certificateService.revokeCertificate(revokeCertificateDto)
-			.then(function(response){
-				console.log(response);
-			})
-	}
-	
-	$scope.checkCertificate = function(checkAlias){
-		certificateService.checkCertificate(checkAlias)
+	$scope.revokeCertificate = function(serialNumber){
+		certificateService.revokeCertificate(serialNumber, $scope.issuer)
 			.then(function(response){
 				alert(response.data);
 			})
 	}
 	
-	$scope.getCertificate = function(alias){
-		certificateService.getCertificate(alias)
+	$scope.checkCertificate = function(serialNumber){
+		certificateService.checkCertificate(serialNumber, $scope.issuer)
 			.then(function(response){
-				alert(response.data.certificateText);
+				alert(response.data);
 			})
 	}
 	
-	$scope.getCertificateFile = function(alias){
-		certificateService.getCertificateFile(alias)
+	
+	$scope.getCertificateFile = function(serialNumber){
+		certificateService.getCertificateFile(serialNumber, $scope.issuer)
 			.then(function(response){
 				console.log(response);
-				download(alias+".cer", response.data);
+				download(serialNumber+".cer", response.data);
 			}, function(error) {
-				alert("Certificate with Serial Number: "+ alias + " could not be found.");
+				alert("Certificate with Serial Number: "+ serialNumber + " could not be found.");
 			})
 		
 			

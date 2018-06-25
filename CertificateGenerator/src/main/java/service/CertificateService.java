@@ -1,7 +1,6 @@
 package service;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -34,9 +33,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.UUID;
 
-import javax.servlet.ServletContext;
-
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.bouncycastle.asn1.ASN1Sequence;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -59,14 +55,10 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
-import application.MediaTypeUtils;
 import model.CSRDto;
 import model.CertificateDto;
-import model.CertificateResponseDto;
 import model.OCSPResponseStatus;
 import model.RevokeCertificateDto;
 
@@ -311,7 +303,8 @@ public class CertificateService {
 		return null;
 		
 	}
-	public CertificateResponseDto getCertificate(String alias) {
+	
+/*	public CertificateResponseDto getCertificate(String alias) {
 			
 			try {
 				if(keyStore == null) {
@@ -343,9 +336,10 @@ public class CertificateService {
 			}
 			
 			return null;
-	}
-	//TODO: alias-> S/N
-	public ByteArrayResource getCertificateFile(ServletContext servletContext, String alias) {
+	}*/
+	
+/*	//TODO: alias-> S/N
+	public ByteArrayResource getCertificateFile(String alias) {
 		try {
 			if(keyStore == null) {
 				keyStore = KeyStore.getInstance("BKS", "BC"); 
@@ -355,10 +349,8 @@ public class CertificateService {
 			Certificate certificate = keyStore.getCertificate(alias);
 	
 			if(certificate == null) {
-				System.out.println("cert == null");
 				return null;
 			}
-			MediaType mediaType = MediaTypeUtils.getMediaTypeForFileName(servletContext, alias+".cer");
 			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 			
 			outStream.write("-----BEGIN CERTIFICATE-----\n".getBytes("US-ASCII"));
@@ -385,7 +377,7 @@ public class CertificateService {
 		}
 		
 		return null;
-	}
+	}*/
 	
 	//TODO: da izbaci povucene sertifikate
 	public List<String> getAllCACertificates(){

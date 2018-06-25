@@ -20,8 +20,8 @@ public class KeyStoreUtitlity {
 	private KeyStore keyStore;
 	public static final String KEY_STORE_PATH = "./certificates/BANKE.jks";
 	public static final String KEY_STORE_PASSWORD = "123456";
-	public static final String CERTIFICATE_ALIAS = "FIRMA";
-	public static final String PRIVATE_KEY_ALIAS = "FIRMA_KEY";
+	public static final String CERTIFICATE_ALIAS = "CBANKA";
+	public static final String PRIVATE_KEY_ALIAS = "CBANKA_KEY";
 	public static final String PRIVATE_KEY_PASSWORD = "123456";
 	
 	public KeyStoreUtitlity() {

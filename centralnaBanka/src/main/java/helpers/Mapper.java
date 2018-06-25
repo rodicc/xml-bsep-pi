@@ -3,16 +3,15 @@ package helpers;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Random;
 
 import javax.xml.datatype.DatatypeFactory;
 
-import xml.ftn.centralnabanka.PojedinacnoPlacanjeMT102;
 import org.springframework.stereotype.Service;
 
 import model.MT102;
 import model.MT103;
 import model.ZaglavljeMT102;
+import xml.ftn.centralnabanka.PojedinacnoPlacanjeMT102;
 
 @Service
 public class Mapper {
