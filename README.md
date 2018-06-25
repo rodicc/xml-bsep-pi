@@ -1,3 +1,4 @@
+## Potrebna ispravka
 ## Pokretanje projekta
 Sve aplikacije se pokrecu kao standardne java aplikacije (ili kao spring boot aplikacije), direktno iz eclipse programskog okruzenja.
 ```
