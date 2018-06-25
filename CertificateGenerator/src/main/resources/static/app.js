@@ -10,6 +10,18 @@ app.config(['$stateProvider', function($stateProvider){
 		controller: 'certificateController'
 	})
 	
+	.state('ukidanje',{
+		url:'/sertifikat/ukidanje',
+		templateUrl: 'view/ukidanjeSertifikata.html',
+		controller: 'certificateController'
+	})
+	
+	.state('provera',{
+		url:'/sertifikat/provera',
+		templateUrl: 'view/proveraSertifikata.html',
+		controller: 'certificateController'
+	})
+	
 	
 	
 }]);

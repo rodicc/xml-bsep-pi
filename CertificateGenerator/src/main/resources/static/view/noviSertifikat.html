@@ -1,6 +1,25 @@
 <div class='container'>
 	<div class="row">
-		<form name="certificateForm" ng-submit="submitCertificate(certificate)">
+		<form name="certificateForm" ng-submit="generateCertificate(certificate)">
+		
+				<div class="form-group row">
+					<label class="control-label col-sm-2">Certificate authority: </label> 
+					<div class="col-sm-10">
+						<select ng-model="certificate.issuer">
+							<option value="">--Choose CA--</option>
+							<option ng-repeat="alias in CACertificates">{{alias}}</option>
+						</select>
+				</div>
+
+				<div class="row">
+					
+					<br>
+				</div>
+				<div class="form-group row">
+					<label class="control-label col-sm-2">Alias:</label> 
+					<div class="col-sm-10">
+						<input  class="form-control" ng-model="certificate.certificateAlias" required></div>
+				</div>
 				<div class="form-group row">
 					<label class="control-label col-sm-2">Common name:</label> 
 					<div class="col-sm-10">
@@ -19,7 +38,7 @@
 				<div class="form-group row">
 					<label class="control-label col-sm-2">Organisation name:</label> 
 					<div class="col-sm-10">
-						<input  class="form-control" ng-model="certificate.organisationName" required></div>
+						<input  class="form-control" ng-model="certificate.organisation" required></div>
 				</div>
 				<div class="form-group row">
 					<label class="control-label col-sm-2">Country:</label> 
@@ -27,11 +46,57 @@
 						<input  class="form-control" ng-model="certificate.country" required></div>
 				</div>
 				<div class="form-group row">
+						<label class="control-label col-sm-2">Location:</label> 
+						<div class="col-sm-10">
+							<input  class="form-control" ng-model="certificate.location" required></div>
+				</div>
+				<div class="form-group row">
 					<label class="control-label col-sm-2">E-mail:</label> 
 					<div class="col-sm-10">
 						<input  class="form-control" ng-model="certificate.email" required></div>
 				</div>
-				<button type="submit">Create certificate</button>
+
+				
+				<div class="form-group row">
+						<label class="control-label col-sm-2">Certificate Authority</label> 
+						<div class="col-sm-4">
+							<input  class="form-control" ng-model="certificate.isCA" type="checkbox"></div>
+						<label class="control-label col-sm-2">Self-signed</label> 
+						<div class="col-sm-4">
+							<input  class="form-control" ng-model="certificate.isSelfSigned" type="checkbox"></div>
+				</div>
+				<br>
+				<div class="form-group row">
+					<label class="control-label col-sm-2">Key Store alias:</label> 
+					<div class="col-sm-10">
+						<input  class="form-control" ng-model="certificate.keyStoreAlias" required></div>
+				</div>
+				<div class="form-group row">
+					<label class="control-label col-sm-2">Key Store password:</label> 
+					<div class="col-sm-10">
+						<input  class="form-control" ng-model="certificate.keyStorePassword" required></div>
+				</div>
+				<br>
+				<div class="form-group row">
+					<label class="control-label col-sm-2">Key alias:</label> 
+					<div class="col-sm-10">
+						<input  class="form-control" ng-model="certificate.keyAlias" required></div>
+				</div>
+				<div class="form-group row">
+					<label class="control-label col-sm-2">Key password:</label> 
+					<div class="col-sm-10">
+						<input  class="form-control" ng-model="certificate.keyPassword" required></div>
+				</div>
+				<div class="form-group row">
+					<label class="control-label col-sm-2">Confirm password:</label> 
+					<div class="col-sm-10">
+						<input  class="form-control" ng-model="confirmPassword" required></div>
+				</div>
+				<span class="error" ng-show="(certificateForm.confirmPassword.$dirty && !(certificateController.confirmPassword === certificateController.certificate.keyPassword))">
+				 Passwords do not match. </span>
+				 <div>
+				
+				<button type="submit" ng-disabled="!(certificateForm.$valid && (certificateController.confirmPassword === certificateController.certificate.keyPassword))">Create certificate</button>
 				
 		</form>
 	</div>
