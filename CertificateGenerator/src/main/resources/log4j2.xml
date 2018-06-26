@@ -38,7 +38,18 @@
 	<Loggers>
 		<!-- configures all loggers under the ftn.xmlwebservisi.firme
 		package to use the App-File-Appender. -->
-		<Logger name="ftn.xmlwebservisi.firme" level="debug" additivity="false">
+		<Logger name="application" level="debug" additivity="false">
+        	<AppenderRef ref="App-File-Appender" />
+        	<AppenderRef ref="Console-Appender"/>               
+     	</Logger><Logger name="controller" level="debug" additivity="false">
+        	<AppenderRef ref="App-File-Appender" />
+        	<AppenderRef ref="Console-Appender"/>               
+     	</Logger>
+     	<Logger name="service" level="debug" additivity="false">
+        	<AppenderRef ref="App-File-Appender" />
+        	<AppenderRef ref="Console-Appender"/>               
+     	</Logger>
+     	<Logger name="soap" level="debug" additivity="false">
         	<AppenderRef ref="App-File-Appender" />
         	<AppenderRef ref="Console-Appender"/>               
      	</Logger>

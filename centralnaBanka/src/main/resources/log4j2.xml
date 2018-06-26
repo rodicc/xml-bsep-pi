@@ -38,14 +38,32 @@
 	<Loggers>
 		<!-- configures all loggers under the ftn.xmlwebservisi.firme
 		package to use the App-File-Appender. -->
-		<Logger name="ftn.xmlwebservisi.firme" level="debug" additivity="false">
+		<Logger name="ftn.xmlwebservisi.centralnaBanka" level="debug" additivity="false">
         	<AppenderRef ref="App-File-Appender" />
         	<AppenderRef ref="Console-Appender"/>               
      	</Logger>
+     	<Logger name="helpers" level="debug" additivity="false">
+        	<AppenderRef ref="App-File-Appender" />
+        	<AppenderRef ref="Console-Appender"/>               
+     	</Logger>
+     	<Logger name="service" level="debug" additivity="false">
+        	<AppenderRef ref="App-File-Appender" />
+        	<AppenderRef ref="Console-Appender"/>               
+     	</Logger>
+     	<Logger name="xml.ftn" level="debug" additivity="false">
+        	<AppenderRef ref="App-File-Appender" />
+        	<AppenderRef ref="Console-Appender"/>               
+     	</Logger>
+     	<Logger name="xmlSignatureAndEncryption" level="debug" additivity="false">
+        	<AppenderRef ref="App-File-Appender" />
+        	<AppenderRef ref="Console-Appender"/>               
+     	</Logger>
+     	
      	<Logger name="org.springframework.web" level="info" additivity="false">
             <AppenderRef ref="SpringBoot-File-Appender"/>
             <AppenderRef ref="Console-Appender"/>
         </Logger>
+        
         <Root level="info">
         	<AppenderRef ref="Console-Appender"/>
         </Root>
