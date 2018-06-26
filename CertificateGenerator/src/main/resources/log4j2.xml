@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Properties>
+		<Property name="log_path">logs</Property>
+		<Property name="archive">logs/archive</Property>
+		<Property name="log_pattern">
+			[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} --- [%t] %c{1} : %msg%n
+		</Property>
+	</Properties>
+	
+	<!-- Appender is output destination of the logger -->
+	<Appenders>
+		<Console name="Console-Appender" target="SYSTEM_OUT">
+			<PatternLayout pattern="${log_pattern}" />	
+		</Console>
+		<RollingFile name="App-File-Appender" 
+					fileName="${log_path}/app_log.log"
+					filePattern="${archive}/app_log_%d{yyyy-MM-dd}_%i.log">
+        	
+        	<PatternLayout pattern="${log_pattern}" />
+        	<Policies>
+        		<SizeBasedTriggeringPolicy size="10MB"/>
+        	</Policies>
+        	<DefaultRolloverStrategy max="10"/>
+    	</RollingFile>
+    	<RollingFile name="SpringBoot-File-Appender" 
+    			fileName="${log_path}/springboot_log.log"
+            	filePattern="${archive}/springboot_log_%d{yyyy-MM-dd}_%i.log">
+            	
+            <PatternLayout pattern="${log_pattern}" />
+            <Policies>
+        		<SizeBasedTriggeringPolicy size="10MB" />
+        	</Policies>
+        	<DefaultRolloverStrategy max="10"/>
+        </RollingFile>  
+	</Appenders>
+	
+	<Loggers>
+		<!-- configures all loggers under the ftn.xmlwebservisi.firme
+		package to use the App-File-Appender. -->
+		<Logger name="ftn.xmlwebservisi.firme" level="debug" additivity="false">
+        	<AppenderRef ref="App-File-Appender" />
+        	<AppenderRef ref="Console-Appender"/>               
+     	</Logger>
+     	<Logger name="org.springframework.web" level="info" additivity="false">
+            <AppenderRef ref="SpringBoot-File-Appender"/>
+            <AppenderRef ref="Console-Appender"/>
+        </Logger>
+        <Root level="info">
+        	<AppenderRef ref="Console-Appender"/>
+        </Root>
+	</Loggers>
+</Configuration>
