@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
-import org.springframework.ws.soap.client.core.SoapActionCallback;
 
 import model.CAWebServiceInfo;
 import model.CSRDto;
@@ -24,9 +23,8 @@ public class SoapClient extends WebServiceGatewaySupport{
 	@Autowired
 	private CertificateService certificateService;
 	
-	//TODO:  srediti response
-	public CSRDto sendCSR(CSRDto csr, String caAlias) {
-			SoapActionCallback callback = new SoapActionCallback(CAWebServiceInfo.getCallbackFor(caAlias));
+	
+	public String sendCSR(CSRDto csr, String caAlias) {
 			WebServiceTemplate template = getWebServiceTemplate();       
 			
 			PKCS10CertificationRequest request = certificateService.generateCSR(csr); 
@@ -34,8 +32,10 @@ public class SoapClient extends WebServiceGatewaySupport{
 			
 			try {
 				dto.setRequestString(Base64.toBase64String(request.getEncoded()));
-				//CSRRequestDto response = (CSRRequestDto) template.marshalSendAndReceive(CAWebServiceInfo.getWSfor(caAlias), dto, callback);
 				CSRRequestDto response = (CSRRequestDto) template.marshalSendAndReceive(CAWebServiceInfo.getWSfor(caAlias), dto);
+				if(response != null) {
+					return (String)response.getRequestString();
+				}
 				
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -44,14 +44,11 @@ public class SoapClient extends WebServiceGatewaySupport{
 		return null;
 	}
 	
-	
 	public ByteArrayResource getCertificateFile(String serialNumber, String caAlias) {
-		SoapActionCallback callback = new SoapActionCallback(CAWebServiceInfo.getCallbackFor(caAlias));
 		WebServiceTemplate template = getWebServiceTemplate(); 
 		DownloadRequestDto dto = new DownloadRequestDto();
 		
 		dto.setRequestString(serialNumber);
-		//DownloadRequestDto response = (DownloadRequestDto) template.marshalSendAndReceive(CAWebServiceInfo.getWSfor(caAlias), dto, callback);
 		DownloadRequestDto response = (DownloadRequestDto) template.marshalSendAndReceive(CAWebServiceInfo.getWSfor(caAlias), dto);
 		ByteArrayResource result = new ByteArrayResource(Base64.decode((String)response.getRequestString()));		
 		
@@ -59,12 +56,10 @@ public class SoapClient extends WebServiceGatewaySupport{
 	}
 	
 	public OCSPResponseStatus revokeCertificate(String serialNumber, String caAlias) {
-		SoapActionCallback callback = new SoapActionCallback(CAWebServiceInfo.getCallbackFor(caAlias));
 		WebServiceTemplate template = getWebServiceTemplate();
 		RevocationRequestDto dto = new RevocationRequestDto();
 		
 		dto.setRequestString(serialNumber);
-		//RevocationRequestDto response = (RevocationRequestDto) template.marshalSendAndReceive(CAWebServiceInfo.getWSfor(caAlias), dto, callback);
 		RevocationRequestDto response = (RevocationRequestDto) template.marshalSendAndReceive(CAWebServiceInfo.getWSfor(caAlias), dto);
 		if(response != null) {
 			if(response.getRequestString().equals("UNKNOWN")) {

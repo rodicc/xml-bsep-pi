@@ -7,8 +7,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.List;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import application.SoapClient;
 import model.CSRDto;
-import model.CertificateDto;
 import model.OCSPResponseStatus;
 import service.CertificateService;
 
@@ -37,11 +34,9 @@ public class CertificateController {
 	CertificateService certificateService;
 	@Autowired
 	SoapClient client;
-	@Autowired
-	private ServletContext servletContext;
 	
 	@PostMapping("/newCSR/{caAlias}")
-	public ResponseEntity<CertificateDto> sendCSR(@RequestBody CSRDto csr, @PathVariable String caAlias)
+	public ResponseEntity<String> sendCSR(@RequestBody CSRDto csr, @PathVariable String caAlias)
 			throws NoSuchAlgorithmException, FileNotFoundException, KeyStoreException, NoSuchProviderException, IOException{
 		
 		
@@ -49,39 +44,17 @@ public class CertificateController {
 		boolean isAutorized = true;
 		
 		if(isAutorized) {
-			CSRDto response = client.sendCSR(csr, caAlias);
+			String response = client.sendCSR(csr, caAlias);
 			if(response != null) {
-				return new ResponseEntity<CertificateDto>(response, HttpStatus.OK);
+				return new ResponseEntity<String>(response, HttpStatus.OK);
 			}
 			else
-				return new ResponseEntity<CertificateDto>(HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 		
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		
 	}
-	
-	@PostMapping("/new")
-	public ResponseEntity<CertificateDto> generateNewCertificate(@RequestBody CertificateDto certificate)
-			throws NoSuchAlgorithmException, FileNotFoundException, KeyStoreException, NoSuchProviderException, IOException{
-		
-		
-		//dok se ne implemenira logovanje
-		boolean isAutorized = true;
-		
-		if(isAutorized) {
-			CertificateDto response = certificateService.generateNewCertificate(certificate);
-			if(response != null) {
-				return new ResponseEntity<CertificateDto>(response, HttpStatus.OK);
-			}
-			else
-				return new ResponseEntity<CertificateDto>(HttpStatus.BAD_REQUEST);
-		}
-		
-		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		
-	}
-	
 	
 	@PostMapping("/revoke/{caAlias}")
 	public ResponseEntity<OCSPResponseStatus> revokeCertificate(@RequestBody String serialNumber, @PathVariable String caAlias){
@@ -117,23 +90,6 @@ public class CertificateController {
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
 	
-/*	@GetMapping("/{certificateAlias}")
-	public ResponseEntity<CertificateResponseDto> getCertificate(@PathVariable("certificateAlias") String certificateAlias){
-		
-		boolean isAutorized = true;
-		
-		if(isAutorized) {
-			CertificateResponseDto response = certificateService.getCertificate(certificateAlias);
-			if(response != null) {
-				return new ResponseEntity<CertificateResponseDto>(response, HttpStatus.OK);
-			}
-			else
-				return new ResponseEntity<CertificateResponseDto>(HttpStatus.BAD_REQUEST);
-		}
-		
-		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-	}
-	*/
 	@PostMapping(value = "/file/{caAlias}", produces = MediaType.TEXT_PLAIN_VALUE)
 	@ResponseBody
 	public ResponseEntity<ByteArrayResource> getCertificateFile(@PathVariable("certificateAlias") String caAlias, @RequestBody String serialNumber){

@@ -13,7 +13,8 @@ angular.module("app")
 		console.log("CSR")
 		certificateService.sendCSR(certificate, certificate.issuer)
 			.then(function(response){
-				console.log(response);
+				alert("S/N: "+response.data);
+				console.log(response.data);
 			})
 	}
 	
