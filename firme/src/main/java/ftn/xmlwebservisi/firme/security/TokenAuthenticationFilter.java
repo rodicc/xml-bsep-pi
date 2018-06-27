@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,9 +21,6 @@ import ftn.xmlwebservisi.firme.service.UserService;
  */
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
-	private final String AUTH_HEADER = "Authorization";
-	private final String AUTH_SCHEME = "Bearer";
-
 	@Autowired
 	private TokenHandler tokenHandler;
 	@Autowired
@@ -31,18 +29,26 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
-
-		String token = request.getHeader(AUTH_HEADER);
-		if (token == null || !token.startsWith(AUTH_SCHEME)) {
+		
+		Cookie[] cookies = request.getCookies();
+		String jwt = null;
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals("jjwt")) {
+					jwt = cookie.getValue();
+				}
+			}
+		}
+		
+		if (cookies == null || jwt == null) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 		
-		token = token.substring(7);
-		String username = tokenHandler.getUsername(token);
+		String username = tokenHandler.getUsername(jwt);
 		if (username != null) {
 			UserDetails userDetails = userService.loadUserByUsername(username);
-			CustomAuthenticationToken authToken = new CustomAuthenticationToken(userDetails, token);
+			CustomAuthenticationToken authToken = new CustomAuthenticationToken(userDetails, jwt);
 			SecurityContextHolder.getContext().setAuthentication(authToken);
 		}
 		filterChain.doFilter(request, response);

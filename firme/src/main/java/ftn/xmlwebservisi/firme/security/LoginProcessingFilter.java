@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,9 +26,6 @@ import ftn.xmlwebservisi.firme.model.User;
  * Authentication is performed by the attemptAuthentication method
  */
 public class LoginProcessingFilter extends UsernamePasswordAuthenticationFilter {
-	
-	private final String AUTH_HEADER = "Authorization";
-	private final String AUTH_SCHEME = "Bearer";
 	
 	// AuthenticationManager is required to process the authentication request tokens
 	private AuthenticationManager authenticationManager;
@@ -77,8 +75,12 @@ public class LoginProcessingFilter extends UsernamePasswordAuthenticationFilter 
 		
 		User user = (User)authResult.getPrincipal();
 		String token = tokenHandler.generateToken(user.getUsername());
-		response.addHeader(AUTH_HEADER, AUTH_SCHEME + " " + token);
+		Cookie cookie = new Cookie("jjwt", token);
+		cookie.setHttpOnly(true);
+		//cookie.setSecure(true);
+		response.addCookie(cookie);
 		response.addHeader("User", user.getUsername());
+
 	}
 
 	

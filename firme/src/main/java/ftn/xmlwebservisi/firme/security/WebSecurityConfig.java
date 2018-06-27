@@ -52,7 +52,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/js/**")
 			.antMatchers("/view/**")
 			.antMatchers("/app.js")
-			.antMatchers("/index.html");
+			.antMatchers("/index.html")
+			.antMatchers("/favicon.ico");
 	}
 	
 	@Override
