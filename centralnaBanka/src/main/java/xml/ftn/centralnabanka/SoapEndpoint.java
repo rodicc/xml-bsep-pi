@@ -16,6 +16,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.util.encoders.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -42,6 +44,7 @@ public class SoapEndpoint {
 	private Servis servis;
 	private XMLSignAndEncryptUtility xmlSignAndEncryptUtility;
 	private CertificateService certificateService;
+	private final Logger logger = LoggerFactory.getLogger(SoapEndpoint.class);
 
 	//@PayloadRoot(namespace = NAMESPACE_URI, localPart = "sendMT103Request")
 	@ResponsePayload
@@ -52,13 +55,14 @@ public class SoapEndpoint {
 		xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
 		InputStream inStream = request.getInputStream();
 		Document decryptedDocument = xmlSignAndEncryptUtility.veryfyAndDecrypt(inStream);
+		JAXBElement<SendMT103Request> sendMT103Request = null;
 		try {
 			JAXBContext jaxbContext;
 			if((decryptedDocument != null) && (decryptedDocument.getDocumentElement().getLocalName().equals(SendMT103Request.class.getSimpleName()))) {
 				//Unmarshal dokumenta u objekat
 				jaxbContext = JAXBContext.newInstance(SendMT103Request.class);
 				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-				JAXBElement<SendMT103Request> sendMT103Request = unmarshaller.unmarshal(decryptedDocument, SendMT103Request.class );
+				sendMT103Request = unmarshaller.unmarshal(decryptedDocument, SendMT103Request.class );
 				
 				//Regulise se zahtev
 				SendMT103Response response = new SendMT103Response();
@@ -76,6 +80,7 @@ public class SoapEndpoint {
 				return source;
 			}	
 		} catch (JAXBException e) {
+			logger.error("Invalid encryption element: Obj={}", sendMT103Request, e);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -100,13 +105,14 @@ public class SoapEndpoint {
 		xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
 		InputStream inStream = request.getInputStream();
 		Document decryptedDocument = xmlSignAndEncryptUtility.veryfyAndDecrypt(inStream);
+		JAXBElement<SendMT102Request> sendMT102Request = null;
 		try {
 			JAXBContext jaxbContext;
 			if((decryptedDocument != null) && (decryptedDocument.getDocumentElement().getLocalName().equals(SendMT102Request.class.getSimpleName()))) {
 				//Unmarshal dokumenta u objekat
 				jaxbContext = JAXBContext.newInstance(SendMT102Request.class);
 				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-				JAXBElement<SendMT102Request> sendMT102Request = unmarshaller.unmarshal(decryptedDocument, SendMT102Request.class );
+				sendMT102Request = unmarshaller.unmarshal(decryptedDocument, SendMT102Request.class );
 				
 				//Regulise se zahtev
 				SendMT102Response response = new SendMT102Response();
@@ -124,6 +130,7 @@ public class SoapEndpoint {
 				return source;
 			}	
 		} catch (JAXBException e) {
+			logger.error("Invalid encryption element: Obj={}", sendMT102Request, e);
 			e.printStackTrace();
 		} finally {
 			try {

@@ -434,6 +434,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="MT103" type="tns:MT103" />
+				<xs:element name="jwt"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -449,6 +450,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="MT102" type="tns:MT102" />
+				<xs:element name="jwt"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -459,5 +461,11 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-
+	
+	<xs:element name="jwt">
+        <xs:simpleType>
+           <xs:restriction base="xs:string">
+               </xs:restriction>
+           </xs:simpleType>
+       </xs:element>
 </xs:schema>

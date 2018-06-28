@@ -27,12 +27,12 @@ angular.module('app')
 			.then(function(response) {
 				$scope.obavestenja.validan = true;
 				$scope.obavestenja.nevalidan = false;
-				$scope.nalog = {};
+				//$scope.nalog = {};
 			}
 			, function(error) {
 				$scope.obavestenja.validan = false;
 				$scope.obavestenja.nevalidan = true;
-				$scope.nalog = {};
+				//$scope.nalog = {};
 			})
 		console.log($scope.nalog);
 	}

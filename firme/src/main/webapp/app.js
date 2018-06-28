@@ -6,46 +6,76 @@ app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpPro
 		.state('faktura',{
 			url:'/faktura',
 			templateUrl: 'view/faktura.html',
-			controller: 'fakturaController',
+			controller: 'fakturaController'
+			/*	,
 			resolve : {
+<<<<<<< HEAD
 				//authenticate: authenticateCb
 			}
+=======
+				authenticate: authenticateCb
+			}*/
+>>>>>>> 065c65426140c0d2e4cf191e3408bf2e2612f88b
 		})
 		
 		.state('nalog',{
 			url:'/nalog',
 			templateUrl:'view/nalog.html',
-			controller:'nalogController',
+			controller:'nalogController'
+		/*		,
 			resolve : {
+<<<<<<< HEAD
 				//authenticate: authenticateCb
 			}
+=======
+				authenticate: authenticateCb
+			}*/
+>>>>>>> 065c65426140c0d2e4cf191e3408bf2e2612f88b
 		})
 		
 		.state('izvod',{
 			url:'/izvod',
 			templateUrl:'view/izvod.html',
-			controller:'izvodController',
+			controller:'izvodController'
+		/*		,
 			resolve : {
+<<<<<<< HEAD
 				//authenticate: authenticateCb
 			}
+=======
+				authenticate: authenticateCb
+			}*/
+>>>>>>> 065c65426140c0d2e4cf191e3408bf2e2612f88b
 		})
 		
 		.state('poruke',{
 			url:'/poruke',
 			templateUrl:'view/poruke.html',
-			controller:'porukeController',
+			controller:'porukeController'
+			/*	,
 			resolve : {
+<<<<<<< HEAD
 				//authenticate: authenticateCb
 			}
+=======
+				authenticate: authenticateCb
+			}*/
+>>>>>>> 065c65426140c0d2e4cf191e3408bf2e2612f88b
 		})
 		
 		.state('fakture',{
 			url:'/fakture',
 			templateUrl: 'view/pregledFaktura.html',
-			controller: 'pregledFakturaController',
+			controller: 'pregledFakturaController'
+			/*	,
 			resolve : {
+<<<<<<< HEAD
 				//authenticate: authenticateCb
 			}
+=======
+				authenticate: authenticateCb
+			}*/
+>>>>>>> 065c65426140c0d2e4cf191e3408bf2e2612f88b
 		})
 		
 		.state('login', {
@@ -63,10 +93,16 @@ app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpPro
 		.state('otherwise', {
 			url: '*path',
 			templateUrl: 'view/login.html',
-			controller: 'userController',
+			controller: 'userController'
+		/*		,
 			resolve : {
+<<<<<<< HEAD
 				//authenticate: authenticateCb
 			}
+=======
+				authenticate: authenticateCb
+			}*/
+>>>>>>> 065c65426140c0d2e4cf191e3408bf2e2612f88b
 		});
 		
 

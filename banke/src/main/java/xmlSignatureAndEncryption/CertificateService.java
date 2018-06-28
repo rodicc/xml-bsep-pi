@@ -23,9 +23,7 @@ import java.security.cert.CRLException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509CRL;
 import java.security.cert.X509CRLEntry;
 import java.security.cert.X509Certificate;
@@ -36,19 +34,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x500.X500NameBuilder;
-import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.CRLReason;
-import org.bouncycastle.asn1.x509.Extension;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v2CRLBuilder;
@@ -60,12 +49,10 @@ import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
-import org.bouncycastle.pkcs.PKCS10CertificationRequestBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import model.certificateGenerator.CSRDto;
-import model.certificateGenerator.CertificateDto;
-import model.certificateGenerator.CertificateResponseDto;
 import model.certificateGenerator.OCSPResponseStatus;
 import xml.ftn.banke.RevocationRequestDto;
 
@@ -79,6 +66,7 @@ public class CertificateService {
 	private static final String CERTIFICATE_ALIAS = "BANKA";
 	private static final String PRIVATE_KEY_ALIAS = "BANKA_KEY";
 	private static final String PRIVATE_KEY_PASSWORD = "123456";
+	private final Logger logger = LoggerFactory.getLogger(CertificateService.class);
 	
 	private KeyStore keyStore;
 	
@@ -87,7 +75,7 @@ public class CertificateService {
 
 	}
 	
-	public CertificateDto generateNewCertificate(CertificateDto certificate) 
+	/*public CertificateDto generateNewCertificate(CertificateDto certificate) 
 			throws NoSuchAlgorithmException, FileNotFoundException, IOException, KeyStoreException, NoSuchProviderException {
 		
 		if(certificate.isValid(certificate)) {
@@ -200,7 +188,7 @@ public class CertificateService {
 			
 		}
 		return null;
-	}
+	}*/
 	
 	public X509Certificate generateCertificate(X500Name subject, PublicKey subjectPublicKey, X509Certificate issuerCertificate, PrivateKey issuerPrivateKey) {
 		try {
@@ -243,9 +231,7 @@ public class CertificateService {
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		}  catch (IOException e) {
 			e.printStackTrace();
 		}
 		
@@ -287,118 +273,12 @@ public class CertificateService {
 		} catch (NoSuchProviderException e) {
 			e.printStackTrace();
 		} catch (CertificateException e) {
+			logger.error("Invalid CA certificate file", e);
 			e.printStackTrace();
 		} catch (UnrecoverableKeyException e) {
 			e.printStackTrace();
 		}
 		return null;
-	}
-	
-	public PKCS10CertificationRequest generateCSR(CSRDto csr) {
-		if(csr.isValid()) {
-			try {
-				//Generisanje para kljuceva i postavljanje parametra za CSR
-				KeyPair keyPair = generateKeyPair();
-				csr.setPublicKey(keyPair.getPublic());
-				
-				SubjectPublicKeyInfo spkInfo = new SubjectPublicKeyInfo(new AlgorithmIdentifier(PKCSObjectIdentifiers.id_RSAES_OAEP), ASN1Sequence.getInstance(keyPair.getPublic().getEncoded()));
-				//SubjectPublicKeyInfo spkInfo = new SubjectPublicKeyInfo(ASN1Sequence.getInstance(keyPair.getPublic().getEncoded()));
-				PKCS10CertificationRequestBuilder pkcsBuilder = new PKCS10CertificationRequestBuilder(this.generateX500Name(csr.getCertificateDto()),spkInfo);
-				
-				//Formira se objekat koji ce sadrzati privatni kljuc i koji ce se koristiti za potpisivanje sertifikata
-				JcaContentSignerBuilder csBuilder = new JcaContentSignerBuilder("SHA256WithRSAEncryption"); csBuilder.setProvider("BC");
-				ContentSigner contentSigner = csBuilder.build(keyPair.getPrivate());
-				
-				//Generise se se objekat koji predstavlja CSR
-				PKCS10CertificationRequest pkCSR = null;
-				pkCSR = pkcsBuilder.build(contentSigner);
-				
-				//Generisanje privremenog samopotpisanog sertifikata radi cuvanja  privatnog kjluca u KeyStore-u
-				//Ucita keyStore
-				if(keyStore == null) {
-					keyStore = KeyStore.getInstance("BKS", "BC");
-				}
-				keyStore.load(new FileInputStream(KEY_STORE_PATH), KEY_STORE_PASSWORD.toCharArray());
-				
-				X500Name subject = this.generateX500Name(csr);
-			    Calendar endDate = Calendar.getInstance(); endDate.set(Calendar.YEAR, endDate.get(Calendar.YEAR) + 1);
-				Date  expDate = new Date(endDate.getTimeInMillis());
-				X509v3CertificateBuilder certGen;
-	
-				//Postavljaju se podaci za generisanje samopotpisanog sertifiakta
-				certGen = new JcaX509v3CertificateBuilder(
-							subject,
-							new BigInteger(16, new SecureRandom()),
-							new Date(),
-							expDate,
-							subject,
-							keyPair.getPublic());
-				
-				//Generise se sertifikat
-				certGen.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
-				X509CertificateHolder certHolder = certGen.build(contentSigner);
-				JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
-				certConverter = certConverter.setProvider("BC");
-	
-				keyStore.setKeyEntry(
-						csr.getKeyAlias(),
-						keyPair.getPrivate(),
-						csr.getKeyPassword().toCharArray(),
-						new Certificate[] { (Certificate) certConverter.getCertificate(certHolder) });
-				//keyStore.setCertificateEntry(csr.getCertificateAlias(), certConverter.getCertificate(certHolder));
-				keyStore.store(new FileOutputStream(KEY_STORE_PATH), KEY_STORE_PASSWORD.toCharArray());
-				
-				return pkCSR;
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (OperatorCreationException e) {
-				e.printStackTrace();
-			} catch (KeyStoreException e) {
-				e.printStackTrace();
-			} catch (NoSuchProviderException e) {
-				e.printStackTrace();
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			} catch (CertificateException e) {
-				e.printStackTrace();
-			} 
-		}
-		return null;
-	}
-	
-	public CertificateResponseDto getCertificate(String alias) {
-			
-			try {
-				if(keyStore == null) {
-					keyStore = KeyStore.getInstance("BKS", "BC"); 
-				}
-				
-				keyStore.load(new FileInputStream(KEY_STORE_PATH), KEY_STORE_PASSWORD.toCharArray());
-				
-				Certificate certificate = keyStore.getCertificate(alias);
-				
-				if(certificate == null) {
-					return null;
-				}
-				
-				return new CertificateResponseDto(certificate.toString());
-				
-			} catch (KeyStoreException e) {
-				System.out.println(e.getMessage());
-			} catch (NoSuchProviderException e) {
-				System.out.println(e.getMessage());
-			} catch (NoSuchAlgorithmException e) {
-				System.out.println(e.getMessage());
-			} catch (CertificateException e) {
-				System.out.println(e.getMessage());
-			} catch (FileNotFoundException e) {
-				System.out.println(e.getMessage());
-			} catch (IOException e) {
-				System.out.println(e.getMessage());
-			}
-			
-			return null;
 	}
 	
 	public byte[] getCertificateFile(String serialNumber) {
@@ -433,8 +313,10 @@ public class CertificateService {
 		} catch (NoSuchAlgorithmException e) {
 			System.out.println(e.getMessage());
 		} catch (CertificateException e) {
+			logger.error("Invalid certificate file with serial number: Obj={}",serialNumber, e);
 			System.out.println(e.getMessage());
 		} catch (FileNotFoundException e) {
+			logger.error("Key store file not found", e);
 			System.out.println(e.getMessage());
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
@@ -477,6 +359,7 @@ public class CertificateService {
 		} catch (CertificateException e) {
 			System.out.println(e.getMessage());
 		} catch (FileNotFoundException e) {
+			logger.error("Key store file not found", e);
 			System.out.println(e.getMessage());
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
@@ -501,8 +384,6 @@ public class CertificateService {
 				while(enumeration.hasMoreElements()) {
 					String alias = (String)enumeration.nextElement();
 				    X509Certificate certificate = (X509Certificate) keyStore.getCertificate(alias); 
-				    System.out.println("Cert S/N: "+ certificate.getSerialNumber().toString());
-				    System.out.println("S/N: "+ serialNumber.toString());
 				    if(certificate.getSerialNumber().equals(serialNumber)) {
 				    	return true;
 				    }
@@ -518,6 +399,7 @@ public class CertificateService {
 			} catch (CertificateException e) {
 				System.out.println(e.getMessage());
 			} catch (FileNotFoundException e) {
+				logger.error("Key store file not found", e);
 				System.out.println(e.getMessage());
 			} catch (IOException e) {
 				System.out.println(e.getMessage());
@@ -580,21 +462,20 @@ public class CertificateService {
 		} catch (CertificateException e) {
 			System.out.println(e.getMessage());
 		} catch (FileNotFoundException e) {
+			logger.error("CRL file not found", e);
 			System.out.println(e.getMessage());
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		} catch (UnrecoverableEntryException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (OperatorCreationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		return null;
 		
 	}
-	//TODO: treba da prima serial number
+	
 	public OCSPResponseStatus checkCertificate(BigInteger serialNumber) {
 			if(checkIfInIssuedList(serialNumber) == false) {
 				return OCSPResponseStatus.UNKNOWN;
@@ -614,6 +495,7 @@ public class CertificateService {
 		     }
 		     
 		} catch (FileNotFoundException e) {
+			logger.error("CRL file not found", e);
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} catch (CertificateException e) {
@@ -627,7 +509,7 @@ public class CertificateService {
 		return null;
 	}
 	
-	private KeyPair generateKeyPair() {
+	public  KeyPair generateKeyPair() {
         try {
 			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA"); 
 			SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
@@ -639,24 +521,6 @@ public class CertificateService {
 			e.printStackTrace();
 		}
         return null;
-	}
-	
-	private X500Name generateX500Name(CertificateDto certificate) {
-		X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
-	    builder.addRDN(BCStyle.CN, certificate.getCommonName());
-	    builder.addRDN(BCStyle.SURNAME, certificate.getSurname());
-	    builder.addRDN(BCStyle.GIVENNAME, certificate.getGivenName());
-	    builder.addRDN(BCStyle.O, certificate.getOrganisation());
-	    builder.addRDN(BCStyle.C, certificate.getCountry());
-	    builder.addRDN(BCStyle.E,certificate.getEmail());
-	    String uid = UUID.randomUUID().toString();
-	    builder.addRDN(BCStyle.UID, uid);
-
-		return builder.build();
-	}
-
-	
-	
-	
+	}	
 	
 }
