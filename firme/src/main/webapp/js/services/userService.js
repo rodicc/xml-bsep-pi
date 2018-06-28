@@ -12,8 +12,13 @@
                 },
 
                 logout: function() {
-                    return $http.get("/userlogout");
+                    return $http.get("/logoutUser");
+                },
+
+                updatePassword: function(data) {
+                    return $http.post("/updatePassword", data);
                 }
+                
 
             }
         })

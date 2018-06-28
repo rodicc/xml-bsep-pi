@@ -7,6 +7,8 @@
                 failedLogin: ""
             }
 
+            $scope.user = {};
+
             $scope.login = function() {
                 userService.login($scope.credentials)
                     .then(function(response) {    
@@ -40,5 +42,6 @@
                     });
                 
             };
+
         });
 })();

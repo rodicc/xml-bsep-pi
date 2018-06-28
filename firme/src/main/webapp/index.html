@@ -26,6 +26,7 @@
 	<script src="js/controllers/fakturaController.js"></script>
 	<script src="js/controllers/porukeController.js"></script>
 	<script src="js/controllers/userController.js"></script>
+	<script src="js/controllers/userUpdateController.js"></script>
 	
 	<script src="js/services/fakturaService.js"></script>
 	<script src="js/services/nalogService.js"></script>
@@ -53,7 +54,7 @@
 					<a ui-sref="register">Register</a>
 				</li>
 				<li ng-if="$root.user != null">
-					<a>Logged in as: <strong>{{$root.user}}</strong></a>
+					<a ui-sref="profile">Logged in as: <strong>{{$root.user}}</strong></a>
 				</li>
 				<li ng-controller="userController" ng-if="$root.user != null">
 					<a ng-click="logout()" class="pointer-cursor">Log out</a>

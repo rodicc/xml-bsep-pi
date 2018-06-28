@@ -48,4 +48,17 @@ public class UserService implements UserDetailsService {
 
 		return new UserPrincipal(user);
 	}
+	
+	public boolean checkOldPassword(UserDetails user, String oldPassword) {
+		return bCryptPasswordEncoder.matches(oldPassword, user.getPassword());
+	}
+	
+	public User updatePassword(String username, String newPassword) {
+		User u = userRepository.findByUsername(username);
+		if (u == null) {
+			return null;
+		}
+		u.setPassword(bCryptPasswordEncoder.encode(newPassword));
+		return userRepository.save(u);
+	}
 }
