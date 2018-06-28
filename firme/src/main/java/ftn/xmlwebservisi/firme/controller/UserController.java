@@ -60,4 +60,5 @@ public class UserController {
 		}
 		return new ResponseEntity<>(new MessageDTO("Old password is not valid"), HttpStatus.BAD_REQUEST);
 	}
+	
 }

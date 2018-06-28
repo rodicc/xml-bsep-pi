@@ -34,13 +34,12 @@
             };
 
             $scope.logout = function() {
+                localStorage.removeItem("User");
+                $rootScope.user = null;
                 userService.logout()
                     .then(function(response) {
-                        localStorage.removeItem("User");
-                        $rootScope.user = null;
                         $state.go("login");
                     });
-                
             };
 
         });
