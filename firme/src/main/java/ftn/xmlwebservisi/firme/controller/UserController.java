@@ -3,6 +3,7 @@ package ftn.xmlwebservisi.firme.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +29,14 @@ public class UserController {
 			return ResponseEntity.badRequest().build();
 		}
 		return new ResponseEntity<String>("User successfully created", HttpStatus.CREATED);
+	}
+	
+	
+	@GetMapping("/userlogout")
+	public ResponseEntity<?> logoutUser() {
+		HttpHeaders cookieHeader = new HttpHeaders();
+		cookieHeader.add(HttpHeaders.SET_COOKIE, "jjwt=null; HttpOnly;");
+		return new ResponseEntity<>(cookieHeader, HttpStatus.OK);
 	}
 	
 	@GetMapping("/public")

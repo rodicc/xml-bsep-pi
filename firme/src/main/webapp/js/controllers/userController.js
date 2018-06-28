@@ -9,10 +9,7 @@
 
             $scope.login = function() {
                 userService.login($scope.credentials)
-                    .then(function(response) {
-                        var token = response.headers("Authorization");
-                        localStorage.setItem("Authorization", token);
-                        
+                    .then(function(response) {    
                         var user = response.headers("User");
                         $rootScope.user = user;
                         localStorage.setItem("User", user);
@@ -36,10 +33,13 @@
             };
 
             $scope.logout = function() {
-                localStorage.removeItem("Authorization");
-                localStorage.removeItem("User");
-                $rootScope.user = null;
-                $state.go("login");
+                userService.logout()
+                    .then(function(response) {
+                        localStorage.removeItem("User");
+                        $rootScope.user = null;
+                        $state.go("login");
+                    });
+                
             };
         });
 })();

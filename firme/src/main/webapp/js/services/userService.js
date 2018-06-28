@@ -9,7 +9,12 @@
 
                 register: function(userData) {
                     return $http.post("/register", userData);
-                } 
+                },
+
+                logout: function() {
+                    return $http.get("/userlogout");
+                }
+
             }
         })
 })();

@@ -8,7 +8,7 @@ app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpPro
 			templateUrl: 'view/faktura.html',
 			controller: 'fakturaController',
 			resolve : {
-				authenticate: authenticateCb
+				//authenticate: authenticateCb
 			}
 		})
 		
@@ -17,7 +17,7 @@ app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpPro
 			templateUrl:'view/nalog.html',
 			controller:'nalogController',
 			resolve : {
-				authenticate: authenticateCb
+				//authenticate: authenticateCb
 			}
 		})
 		
@@ -26,7 +26,7 @@ app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpPro
 			templateUrl:'view/izvod.html',
 			controller:'izvodController',
 			resolve : {
-				authenticate: authenticateCb
+				//authenticate: authenticateCb
 			}
 		})
 		
@@ -35,7 +35,7 @@ app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpPro
 			templateUrl:'view/poruke.html',
 			controller:'porukeController',
 			resolve : {
-				authenticate: authenticateCb
+				//authenticate: authenticateCb
 			}
 		})
 		
@@ -44,7 +44,7 @@ app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpPro
 			templateUrl: 'view/pregledFaktura.html',
 			controller: 'pregledFakturaController',
 			resolve : {
-				authenticate: authenticateCb
+				//authenticate: authenticateCb
 			}
 		})
 		
@@ -65,7 +65,7 @@ app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpPro
 			templateUrl: 'view/login.html',
 			controller: 'userController',
 			resolve : {
-				authenticate: authenticateCb
+				//authenticate: authenticateCb
 			}
 		});
 		
@@ -85,7 +85,8 @@ app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpPro
 	
 }])
 
- var authenticateCb = function (AuthenticatorService) {
+/*
+var authenticateCb = function (AuthenticatorService) {
       return AuthenticatorService.authenticated();
     };
 
@@ -101,6 +102,6 @@ var redirectService = function($q, $rootScope, $location) {
       }
       return deferred.promise;
     };
-  }
+  }*/
 
 
