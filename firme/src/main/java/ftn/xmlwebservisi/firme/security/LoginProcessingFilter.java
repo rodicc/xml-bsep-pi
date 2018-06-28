@@ -8,6 +8,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,9 +29,9 @@ import ftn.xmlwebservisi.firme.model.User;
  */
 public class LoginProcessingFilter extends UsernamePasswordAuthenticationFilter {
 	
+	private Logger logger = LoggerFactory.getLogger(LoginProcessingFilter.class);
 	// AuthenticationManager is required to process the authentication request tokens
 	private AuthenticationManager authenticationManager;
-	
 	private TokenHandler tokenHandler;
 	
 	public LoginProcessingFilter(AuthenticationManager authenticationManager) {
@@ -74,10 +76,15 @@ public class LoginProcessingFilter extends UsernamePasswordAuthenticationFilter 
 			Authentication authResult) throws IOException, ServletException {
 		
 		User user = (User)authResult.getPrincipal();
+		logger.info("User " + user.getUsername() + " successfully logged in");
+		
+		logger.info("Creating token for user " + user.getUsername());
 		String token = tokenHandler.generateToken(user.getUsername());
+		logger.info("Token successfully created");
+		
 		Cookie cookie = new Cookie("jjwt", token);
 		cookie.setHttpOnly(true);
-		//cookie.setSecure(true);
+		cookie.setSecure(true);
 		response.addCookie(cookie);
 		response.addHeader("User", user.getUsername());
 
