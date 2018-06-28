@@ -2,7 +2,10 @@ package ftn.xmlwebservisi.firme.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,10 +26,16 @@ public class NalogZaPlacanjeKontroler {
 	NalogZaPlacanjeServis nalogZaPlacanjeServis;
 	@Autowired
 	SoapClient client;
+	private final Logger logger = LoggerFactory.getLogger(NalogZaPlacanjeKontroler.class);
 	
 	@GetMapping
-	public List<NalogZaPlacanje> nadjiSveNaloge() {
-		return nalogZaPlacanjeServis.nadjiSveNalogeZaPlacanje();
+	public ResponseEntity<List<NalogZaPlacanje>> nadjiSveNaloge() {
+		List<NalogZaPlacanje> response = nalogZaPlacanjeServis.nadjiSveNalogeZaPlacanje();
+		if(response != null) {
+			return new ResponseEntity<List<NalogZaPlacanje>>(response, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<List<NalogZaPlacanje>>(response, HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	@PostMapping
@@ -34,10 +43,12 @@ public class NalogZaPlacanjeKontroler {
 		boolean validan = MyJsonValidator.validirajNalogZaPlacanje(nalog);
 		
 		if (!validan) {
-			return ResponseEntity.badRequest().build();
+			logger.error("Invalid NalogZaPlacanje request, Obj={}", nalog);
+			return new ResponseEntity<NalogZaPlacanje>(HttpStatus.BAD_REQUEST);
+		} else {
+			client.posaljiNalogZaPlacanje(nalog);
+			return new ResponseEntity<NalogZaPlacanje>(HttpStatus.OK);
 		}
-		client.posaljiNalogZaPlacanje(nalog);
-		return ResponseEntity.ok().build();
 	}
 	
 }

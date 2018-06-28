@@ -50,6 +50,8 @@ import org.apache.xml.security.transforms.TransformationException;
 import org.apache.xml.security.transforms.Transforms;
 import org.apache.xml.security.utils.Constants;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -59,11 +61,14 @@ import org.xml.sax.SAXException;
 
 public class XMLSignAndEncryptUtility {
 
+	private final Logger logger = LoggerFactory.getLogger(XMLSignAndEncryptUtility.class);
+	
+	
     public XMLSignAndEncryptUtility() {
         Security.addProvider(new BouncyCastleProvider());
     }
     
-    public DOMSource encryptToSource(JAXBElement jaxbElement, JAXBContext jaxbContext) {
+    public DOMSource encryptToSource(JAXBElement jaxbElement, JAXBContext jaxbContext, String elementName) {
 		try {
 			ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
 			Marshaller marshaller = jaxbContext.createMarshaller();
@@ -71,25 +76,20 @@ public class XMLSignAndEncryptUtility {
 			ByteArrayInputStream inStream = new ByteArrayInputStream(byteOutStream.toByteArray());
 			inStream.reset();
 			//Enkripcija i potpisivanje dokument
-			Document document = encryptAndSign(inStream);
-			
-			
+			Document document = encryptAndSign(inStream, elementName);
 			DOMSource source = new DOMSource(document); 
 			 
 			return source;
 			
 		} catch (JAXBException e) {
+			logger.error("Invalid encryption element: Obj={}", jaxbElement, e);
 			e.printStackTrace();
-		} catch (CertificateException e) {
-			e.printStackTrace();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} 
+		}  
 		
 		return null;
 	}
     
-    public Document encryptAndSign(ByteArrayInputStream inStream) throws CertificateException, FileNotFoundException {
+    public Document encryptAndSign(ByteArrayInputStream inStream, String elementName){
     	
     	Document document = loadDocument(inStream);
     	SecretKey secretKey = generateDataEncryptionKey();
@@ -97,15 +97,36 @@ public class XMLSignAndEncryptUtility {
     	KeyStoreUtitlity ksUtility = new KeyStoreUtitlity();
     	PrivateKey senderPrivateKey = ksUtility.readDefaultPrivateKey();
     	
-    	CertificateFactory cf = CertificateFactory.getInstance("X509");
-    	Certificate senderCertificate = cf.generateCertificate(new FileInputStream("./certificates/FIRMA.cer"));
-    	Certificate recieverCertificate = cf.generateCertificate(new FileInputStream("./certificates/BANKA.cer"));
-    	
-    	document = encrypt(document, null, secretKey, recieverCertificate.getPublicKey());
-    	document = signDocument(document, senderPrivateKey, senderCertificate);
+    	CertificateFactory cf;
+		try {
+			cf = CertificateFactory.getInstance("X509");
+			Certificate senderCertificate = cf.generateCertificate(new FileInputStream("./certificates/FIRMA.cer"));
+	    	Certificate recieverCertificate = cf.generateCertificate(new FileInputStream("./certificates/BANKA.cer"));
+	    	
+	    	document = encrypt(document, elementName, secretKey, recieverCertificate.getPublicKey());
+	    	document = signDocument(document, senderPrivateKey, senderCertificate);
+	    	
+	    	return document;
+		} catch (CertificateException e) {
+			logger.error("Invalid certificate: Obj={}", e.getCause(), e);
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			logger.error("Cerrtificate file could not be found: Obj:{}", e.getCause(), e);
+			e.printStackTrace();
+		}
     
-    	return document;
+		return null;
+    	
     }
+    
+    public String getJwtToken() {
+		TokenService tokenService = new TokenService();
+		KeyStoreUtitlity keyStoreUtitlity = new KeyStoreUtitlity();
+		PrivateKey privateKey = keyStoreUtitlity.readDefaultPrivateKey();
+		//X509Certificate certificate = (X509Certificate)keyStoreUtitlity.readDefaultCertificate();
+		return tokenService.generateToken("FIRMA", privateKey);
+    }
+    
     
     public Document veryfyAndDecrypt(InputStream inStream) {
     	
@@ -116,6 +137,7 @@ public class XMLSignAndEncryptUtility {
     		Document decrypredDocument = decrypt(encryptedDocument, recieverPrivateKey);
     		return decrypredDocument;
     	}
+    	
     	return null;
     }
 	
@@ -149,8 +171,6 @@ public class XMLSignAndEncryptUtility {
 			return document;
 		} catch (TransformationException e) {
 			e.printStackTrace();
-		} catch (XMLSignatureException e) {
-			e.printStackTrace();
 		} catch (DOMException e) {
 			e.printStackTrace();
 		} catch (XMLSecurityException e) {
@@ -160,13 +180,14 @@ public class XMLSignAndEncryptUtility {
 	}
 	
 	public boolean verifySignature(Document document) {
+		XMLSignature signature = null;
 		try {
 			//Pronalazi se prvi Signature element 
 			NodeList signatures = document.getElementsByTagNameNS("http://www.w3.org/2000/09/xmldsig#", "Signature");
 			Element signatureEl = (Element) signatures.item(0);
 			
 			//Kreira se signature objekat od elementa
-			XMLSignature signature = new XMLSignature(signatureEl, null);
+			signature = new XMLSignature(signatureEl, null);
 			//Preuzima se key info
 			KeyInfo keyInfo = signature.getKeyInfo();
 			if(keyInfo != null) {
@@ -182,10 +203,12 @@ public class XMLSignAndEncryptUtility {
 			    }
 			}
 		} catch (XMLSignatureException e) {
+			logger.error("Invalid signature Obj={}, in document Obj={}",signature ,document);
 			e.printStackTrace();
 		} catch (XMLSecurityException e) {
 			e.printStackTrace();
 		}
+		
 		return false;
 	}
     
@@ -224,7 +247,7 @@ public class XMLSignAndEncryptUtility {
 	        	xmlContentCipher.doFinal(document, document);
 	        }
 	        else {
-				NodeList elementsToEncrypt = document.getElementsByTagName(elementToEncrypt);
+				NodeList elementsToEncrypt = document.getElementsByTagNameNS("http://www.ftn.xml/banke", elementToEncrypt);
 				for(int i=0; i < elementsToEncrypt.getLength(); i++) {
 					xmlContentCipher.doFinal(document, ((Element) elementsToEncrypt.item(i)), true);
 				}
@@ -233,6 +256,7 @@ public class XMLSignAndEncryptUtility {
 			return document;
 			
 		} catch (XMLEncryptionException e) {
+			logger.error("Could not encrypt document Obj={}",document, e);
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -249,7 +273,6 @@ public class XMLSignAndEncryptUtility {
 			//Postavlja se kljuc za desifrovanje tajnog kljuca
 			xmlContentCipher.setKEK(privateKey);
 			
-			
 			xmlContentCipher.doFinal(document, (Element)document.getFirstChild());
 			
 			//Desifruju se sva pojavljivanja EncryptedData elementa
@@ -261,6 +284,7 @@ public class XMLSignAndEncryptUtility {
 			return document;
 			
 		} catch (XMLEncryptionException e) {
+			logger.error("Could not decrypt document Obj={}",document, e);
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -286,8 +310,10 @@ public class XMLSignAndEncryptUtility {
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
+			logger.error("Could not parse XML stream", e);
 			e.printStackTrace();
 		} catch (IOException e) {
+			logger.error("Could not parse XML stream", e);
 			e.printStackTrace();
 		}
 		return null;

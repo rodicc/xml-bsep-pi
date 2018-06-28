@@ -31,4 +31,6 @@ public interface NalogZaPlacanjeRepository extends CrudRepository<NalogZaPlacanj
 		   "from NalogZaPlacanje n " + 
 		   "where n.id > :idNaloga AND (n.racunDuznika = :brojRacuna OR n.racunPrimaoca = :brojRacuna)")
 	public List<NalogZaPlacanje> nadjiSvePosleDatogNaloga(@Param("idNaloga") int idNaloga, @Param("brojRacuna") String brojRacuna);
+	
+	public NalogZaPlacanje findByIdPoruke(String idporuke);
 }

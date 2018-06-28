@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +39,8 @@ public class Servis {
 	private PojedincanoPlacanjeMT102Repository pojedinacnoPlacanjeMT102Repository;
 	@Autowired
 	private BankaRepository bankaRepository;
+	
+	private final Logger logger = LoggerFactory.getLogger(Servis.class);
 	
 	public MT102Response regulisiMT102(MT102 mt102Soap) {
 		model.MT102 mt102 = mapper.MT102SoapToEntity(mt102Soap);

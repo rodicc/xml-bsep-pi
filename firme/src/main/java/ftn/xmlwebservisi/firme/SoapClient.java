@@ -1,8 +1,4 @@
 package ftn.xmlwebservisi.firme;
-
-
-
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
@@ -14,6 +10,8 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 import org.springframework.ws.soap.client.core.SoapActionCallback;
@@ -31,28 +29,33 @@ public class SoapClient extends WebServiceGatewaySupport {
 	
 	private XMLSignAndEncryptUtility xmlSignAndEncryptUtility;
 	private static final String WS_URI = "http://localhost:8082/ws";
+	private final Logger logger = LoggerFactory.getLogger(SoapClient.class);
 	
 	public PosaljiNalogZaPlacanjeRequest posaljiNalogZaPlacanje(ftn.xmlwebservisi.firme.model.NalogZaPlacanje nalog){
 		Mapper maper = new Mapper();
+		xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
+		
 		NalogZaPlacanje nalogSoap = maper.nalogZaPlacanjeEntityToSoap(nalog);
 		PosaljiNalogZaPlacanjeRequest request = new PosaljiNalogZaPlacanjeRequest();
 		request.setNalogZaPlacanje(nalogSoap); 
+		request.setJwt(xmlSignAndEncryptUtility.getJwtToken());
+		
 		SoapActionCallback callback = new SoapActionCallback("http://www.ftn.xml/banke/PosaljiNalogZaPlacanjeRequest");
-		WebServiceTemplate template = getWebServiceTemplate();                   
+		WebServiceTemplate template = getWebServiceTemplate();  
+		JAXBElement<PosaljiNalogZaPlacanjeRequest> jaxbElement = null;
 		try {
 			//Postavljanje promenjlivih za enkripciju objekta u Source
-			JAXBElement<PosaljiNalogZaPlacanjeRequest> jaxbElement =
-					new JAXBElement<PosaljiNalogZaPlacanjeRequest>(new QName(PosaljiNalogZaPlacanjeRequest.class.getSimpleName()),PosaljiNalogZaPlacanjeRequest.class, request);
+			jaxbElement = new JAXBElement<PosaljiNalogZaPlacanjeRequest>(new QName(PosaljiNalogZaPlacanjeRequest.class.getSimpleName()),PosaljiNalogZaPlacanjeRequest.class, request);
 			JAXBContext requestContext = JAXBContext.newInstance(PosaljiNalogZaPlacanjeRequest.class);
 			
-			xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
-			DOMSource source = xmlSignAndEncryptUtility.encryptToSource(jaxbElement, requestContext);
+			DOMSource source = xmlSignAndEncryptUtility.encryptToSource(jaxbElement, requestContext, "nalogZaPlacanje");
 			
 			//Postavljanje promenljivih za upisivanje odgovora
 			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 			StreamResult result = new StreamResult(outStream);
 			
 			//Slanje zahteva(source) i upisivanje odgovora(result)
+			logger.info("Sending NalogZaPlacanje Request to: {}, ObjID={}", WS_URI,  nalog.getIdPoruke());
 			template.sendSourceAndReceiveToResult(WS_URI, source, callback, result);
 			
 			//Dekripcija i provera odgovora 
@@ -66,7 +69,10 @@ public class SoapClient extends WebServiceGatewaySupport {
 			}
 			
 		} catch (JAXBException e) {
+			logger.error("Invalid encryption element: Obj={}", jaxbElement, e);
 			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Could not reach: {}", WS_URI, e);
 		}
 		return null;
 	}
@@ -74,25 +80,29 @@ public class SoapClient extends WebServiceGatewaySupport {
 
 	public PosaljiZahtevZaIzvodResponse posaljiZahtevZaIzvod(ZahtevZaIzvod zahtev){
 		Mapper mapper = new Mapper();
+		xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
+		
 		soap.ZahtevZaIzvod zahtevZaIzvodSoap = mapper.zahtevZaIzvodEntityToSoap(zahtev);
 		PosaljiZahtevZaIzvodRequest request = new PosaljiZahtevZaIzvodRequest();
 		request.setZahtevZaIzvod(zahtevZaIzvodSoap);
+		request.setJwt(xmlSignAndEncryptUtility.getJwtToken());
+		
 		SoapActionCallback callback = new SoapActionCallback("http://www.ftn.xml/banke/PosaljiZahtevZaIzvodRequest");
 		WebServiceTemplate template = getWebServiceTemplate();
+		JAXBElement<PosaljiZahtevZaIzvodRequest> jaxbElement = null;
 		try {
 			//Postavljanje promenjlivih za enkripciju objekta u Source
-			JAXBElement<PosaljiZahtevZaIzvodRequest> jaxbElement =
-					new JAXBElement<PosaljiZahtevZaIzvodRequest>(new QName(PosaljiZahtevZaIzvodRequest.class.getSimpleName()),PosaljiZahtevZaIzvodRequest.class, request);
+			jaxbElement = new JAXBElement<PosaljiZahtevZaIzvodRequest>(new QName(PosaljiZahtevZaIzvodRequest.class.getSimpleName()),PosaljiZahtevZaIzvodRequest.class, request);
 			JAXBContext requestContext = JAXBContext.newInstance(PosaljiZahtevZaIzvodRequest.class);
 			
-			xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
-			DOMSource source = xmlSignAndEncryptUtility.encryptToSource(jaxbElement, requestContext);
+			DOMSource source = xmlSignAndEncryptUtility.encryptToSource(jaxbElement, requestContext, "zahtevZaIzvod");
 			
 			//Postavljanje promenljivih za upisivanje odgovora
 			ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 			StreamResult result = new StreamResult(outStream);
 			
 			//Slanje zahteva(source) i upisivanje odgovora(result)
+			logger.info("Sending ZahtevZaIzvod Request to: {}, Obj={}", WS_URI,  zahtev);
 			template.sendSourceAndReceiveToResult(WS_URI, source, callback, result);
 			
 			//Dekripcija i provera odgovora 
@@ -105,8 +115,11 @@ public class SoapClient extends WebServiceGatewaySupport {
 				return posaljiZahtevZaIzvodResponse.getValue();
 			}
 			
-		} catch (JAXBException e1) {
-			e1.printStackTrace();
+		} catch (JAXBException e) {
+			logger.error("Invalid encryption element: Obj={}", jaxbElement, e);
+			e.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Could not reach: {}", WS_URI, e);
 		}
 		return null;
 	}

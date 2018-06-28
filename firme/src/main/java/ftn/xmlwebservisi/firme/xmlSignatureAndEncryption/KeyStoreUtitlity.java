@@ -15,6 +15,9 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class KeyStoreUtitlity {
 	
 	private KeyStore keyStore;
@@ -23,6 +26,8 @@ public class KeyStoreUtitlity {
 	public static final String CERTIFICATE_ALIAS = "FIRMA";
 	public static final String PRIVATE_KEY_ALIAS = "FIRMA_KEY";
 	public static final String PRIVATE_KEY_PASSWORD = "123456";
+	
+	private final Logger logger = LoggerFactory.getLogger(KeyStoreUtitlity.class);
 	
 	public KeyStoreUtitlity() {
 		
@@ -47,6 +52,7 @@ public class KeyStoreUtitlity {
 		} catch (NoSuchProviderException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
+			logger.error("Key store file not found", e);
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
@@ -84,6 +90,7 @@ public class KeyStoreUtitlity {
 		} catch (NoSuchProviderException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
+			logger.error("Key store file not found", e);
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
@@ -121,6 +128,7 @@ public class KeyStoreUtitlity {
 		} catch (NoSuchProviderException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
+			logger.error("Key store file not found", e);
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
@@ -160,6 +168,7 @@ public class KeyStoreUtitlity {
 		} catch (NoSuchProviderException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
+			logger.error("Key store file not found", e);
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
@@ -199,6 +208,7 @@ public class KeyStoreUtitlity {
 		} catch (CertificateException e) {
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
+			logger.error("Key store file not found", e);
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();

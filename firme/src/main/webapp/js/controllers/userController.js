@@ -30,8 +30,7 @@
                         $scope.messages.successfulRegistration = response.data;
                     }, function(error) {
                         $scope.messages.successfulRegistration = "";
-                        $scope.messages.failedRegistration = 
-                                                    error.data.errors[0];
+                        $scope.messages.failedRegistration =  error.data.errors[0];
                     });
             };
 

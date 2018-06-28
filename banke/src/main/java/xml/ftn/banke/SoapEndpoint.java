@@ -17,6 +17,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.bouncycastle.pkcs.PKCS10CertificationRequest;
 import org.bouncycastle.util.encoders.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
@@ -38,22 +40,26 @@ public class SoapEndpoint {
 	private Servis servis;
 	private XMLSignAndEncryptUtility xmlSignAndEncryptUtility;
 	private CertificateService certificateService;
+	private final Logger logger = LoggerFactory.getLogger(SoapEndpoint.class);
+
 	
 	//@PayloadRoot(namespace = NAMESPACE_URI, localPart = "posaljiNalogZaPlacanjeRequest")
 	@ResponsePayload
 	@SoapAction("http://www.ftn.xml/banke/PosaljiNalogZaPlacanjeRequest") 
 	public Source posaljiNalogZaPlacanje(@RequestPayload StreamSource request) {
 		//Dekripcija dokumenta
+		System.out.println("soap endpoint");
 		xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
 		InputStream inStream = request.getInputStream();
 		Document decryptedDocument = xmlSignAndEncryptUtility.veryfyAndDecrypt(inStream);
+		JAXBElement<PosaljiNalogZaPlacanjeRequest> posaljiNalogZaPlacanjeRequest = null;
 		try {
 			JAXBContext jaxbContext;
 			if((decryptedDocument != null) && (decryptedDocument.getDocumentElement().getLocalName().equals(PosaljiNalogZaPlacanjeRequest.class.getSimpleName()))) {
 				//Unmarshal dokumenta u objekat
 				jaxbContext = JAXBContext.newInstance(PosaljiNalogZaPlacanjeRequest.class);
 				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-				JAXBElement<PosaljiNalogZaPlacanjeRequest> posaljiNalogZaPlacanjeRequest = unmarshaller.unmarshal(decryptedDocument, PosaljiNalogZaPlacanjeRequest.class );
+				posaljiNalogZaPlacanjeRequest = unmarshaller.unmarshal(decryptedDocument, PosaljiNalogZaPlacanjeRequest.class );
 				
 				//Regulise se zahtev
 				NalogZaPlacanje nalogZaPlacanje = posaljiNalogZaPlacanjeRequest.getValue().getNalogZaPlacanje();
@@ -61,11 +67,12 @@ public class SoapEndpoint {
 				
 				//Enkripcija odgovora
 				xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
-				DOMSource source = xmlSignAndEncryptUtility.encryptToSource(posaljiNalogZaPlacanjeRequest, jaxbContext, XMLSignAndEncryptUtility.FIRMA);
+				DOMSource source = xmlSignAndEncryptUtility.encryptToSource(posaljiNalogZaPlacanjeRequest, jaxbContext, XMLSignAndEncryptUtility.FIRMA, null);
 				
 				return source;
 			}	
 		} catch (JAXBException e) {
+			logger.error("Invalid encryption element: Obj={}", posaljiNalogZaPlacanjeRequest, e);
 			e.printStackTrace();
 		} finally {
 			try {
@@ -85,13 +92,14 @@ public class SoapEndpoint {
 		xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
 		InputStream inStream = request.getInputStream();
 		Document decryptedDocument = xmlSignAndEncryptUtility.veryfyAndDecrypt(inStream);
+		JAXBElement<PosaljiZahtevZaIzvodRequest> posaljiZahtevZaIzvodRequest = null;
 		try {
 			JAXBContext jaxbContext;
 			if((decryptedDocument != null) && (decryptedDocument.getDocumentElement().getLocalName().equals(PosaljiZahtevZaIzvodRequest.class.getSimpleName()))) {
 				//Unmarshal dokumenta u objekat
 				jaxbContext = JAXBContext.newInstance(PosaljiZahtevZaIzvodRequest.class);
 				Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-				JAXBElement<PosaljiZahtevZaIzvodRequest> posaljiZahtevZaIzvodRequest = unmarshaller.unmarshal(decryptedDocument, PosaljiZahtevZaIzvodRequest.class );
+				posaljiZahtevZaIzvodRequest = unmarshaller.unmarshal(decryptedDocument, PosaljiZahtevZaIzvodRequest.class );
 				
 				//Regulise se zahtev
 				PosaljiZahtevZaIzvodResponse response = new PosaljiZahtevZaIzvodResponse();
@@ -104,12 +112,13 @@ public class SoapEndpoint {
 				JAXBContext responseContext = JAXBContext.newInstance(PosaljiZahtevZaIzvodResponse.class);
 				
 				xmlSignAndEncryptUtility = new XMLSignAndEncryptUtility();
-				DOMSource source = xmlSignAndEncryptUtility.encryptToSource(jaxbElement, responseContext, XMLSignAndEncryptUtility.FIRMA);
+				DOMSource source = xmlSignAndEncryptUtility.encryptToSource(jaxbElement, responseContext, XMLSignAndEncryptUtility.FIRMA, null);
 				
 				return source;
 			}
 			
 		} catch (JAXBException e) {
+			logger.error("Invalid encryption element: Obj={}", posaljiZahtevZaIzvodRequest, e);
 			e.printStackTrace();
 			return null;
 		} finally {
@@ -178,9 +187,9 @@ public class SoapEndpoint {
 			response.setRequestString(status.toString());
 			return response;
 		}
-		
 		return null;
 	}
+	
 	
 	
 }

@@ -107,6 +107,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="nalog_za_placanje" type="tns:nalog_za_placanje" />
+				<xs:element name="jwt"/>
 			</xs:sequence>			
 		</xs:complexType>
 	</xs:element>
@@ -303,6 +304,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="zahtev_za_izvod" type="tns:zahtev_za_izvod" />
+				<xs:element name="jwt"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -315,4 +317,10 @@
 		</xs:complexType>
 	</xs:element>
 	
+	<xs:element name="jwt">
+        <xs:simpleType>
+           <xs:restriction base="xs:string">
+               </xs:restriction>
+           </xs:simpleType>
+       </xs:element>
 </xs:schema>
