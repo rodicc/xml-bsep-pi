@@ -3,12 +3,11 @@ angular.module("app")
 	return {
 		
 		posaljiFakturu : function(faktura){
-			console.log("servis");
-			return $http.post("/fakture", faktura).catch(angular.noop);
+			return $http.post("/fakture", faktura);
 		},
 		
 		prikaziSveFakture : function(){
-			return $http.get("/fakture").catch(angular.noop);
+			return $http.get("/fakture");
 		}
 		
 	}

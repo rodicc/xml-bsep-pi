@@ -1,20 +1,13 @@
 angular.module('app')
-.controller('fakturaController', ['$scope', 'fakturaService', function($scope, fakturaService){
+.controller('fakturaController', ['$scope', 'fakturaService', '$state', function($scope, fakturaService, $state){
 	
-	$scope.stavke = [];
-	
-	$scope.stavkeSize = 0;
-	
-	$scope.vrednostRobe = 0;
-	
-	$scope.ukupanRabat = 0;
-	
+	$scope.stavke = [];	
+	$scope.stavkeSize = 0;	
+	$scope.vrednostRobe = 0;	
+	$scope.ukupanRabat = 0;	
 	$scope.iznosZaUplatu = 0;
-	
-	$scope.selektovanoPreduzece = [];
-	
+	$scope.selektovanoPreduzece = [];	
 	$scope.selektovanaStavka = [];
-	
 	$scope.faktura = {};
 	
 	
@@ -40,43 +33,39 @@ angular.module('app')
 		$scope.ukupanRabat = Math.round(($scope.ukupanRabat + stavkaZaDodavanje.iznosRabata)*100)/100;
 		$scope.iznosZaUplatu = Math.round(($scope.iznosZaUplatu + stavkaZaDodavanje.ukupno)*100)/100;
 		
-		/*$scope.naziv = "";
-		$scope.kolicina = "";
-		$scope.jedinicnaCena = "";
-		$scope.jedinicaMere = "";
-		
-		*/
-		
 	}
 	
-	$scope.posaljiFakturu = function(){
-		console.log("kontroler");
+	$scope.posaljiFakturu = function() {
+
 		$scope.faktura.vrednostRobe = $scope.vrednostRobe;
 		$scope.faktura.ukupanRabat = $scope.ukupanRabat;
 		$scope.faktura.iznosZaUplatu = $scope.iznosZaUplatu;
 		$scope.faktura.stavkeFakture = $scope.stavke;
-		fakturaService.posaljiFakturu($scope.faktura).then(function(response){
-			
-		});
-		//$scope.faktura = {};
 		
+		fakturaService.posaljiFakturu($scope.faktura)
+			.then(function(response) {
+
+			}, function(error) {
+				if (error.status == 401 || error.status == 403) {
+					$state.go("login");
+				}
+			});
 	}
 	
 }])
 
-.controller('pregledFakturaController', ['$scope', 'fakturaService', function($scope, fakturaService){
+.controller('pregledFakturaController', ['$scope', 'fakturaService', '$state', function($scope, fakturaService, $state){
 	
 	$scope.fakture = {};
 	
-	fakturaService.prikaziSveFakture().then(function(response){
-			if(response){
-				$scope.fakture = response.data;
+	fakturaService.prikaziSveFakture()
+		.then(function(response) {
+			$scope.fakture = response.data;
+		}, function(error) {
+			if (error.status == 401 || error.status == 403) {
+				$state.go("login");
 			}
 		})
-		
-	
-	
-	
 }])
 
 

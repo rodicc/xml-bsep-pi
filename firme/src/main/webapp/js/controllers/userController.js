@@ -28,6 +28,7 @@
                         $scope.messages.failedRegistration = "";
                         $scope.messages.successfulRegistration = response.data;
                     }, function(error) {
+                        console.log(error);
                         $scope.messages.successfulRegistration = "";
                         $scope.messages.failedRegistration =  error.data.errors[0];
                     });
