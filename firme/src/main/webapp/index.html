@@ -33,6 +33,7 @@
 	<script src="js/services/izvodService.js"></script>
 	<script src="js/services/porukeService.js"></script>
 	<script src="js/services/userService.js"></script>
+	<script src="js/services/redirectService.js"></script>
 
 </head>
 
@@ -40,9 +41,9 @@
 	<nav class="navbar navbar-default">
 		<div class="container-fluid">
 			<ul class="nav navbar-nav">		
-				<li><a style="padding:10px;" href="#/faktura">Slanje fakture</a></li>
-				<li><a style="padding:10px;" href="#/nalog">Slanje naloga za plaćanje</a></li>
-				<li><a style="padding:10px;" href="#/izvod">Preuzimanje izvoda</a></li>
+				<li ng-if="$root.user != null"><a style="padding:10px;" href="#/faktura">Slanje fakture</a></li>
+				<li ng-if="$root.user != null"><a style="padding:10px;" href="#/nalog">Slanje naloga za plaćanje</a></li>
+				<li ng-if="$root.user != null"><a style="padding:10px;" href="#/izvod">Preuzimanje izvoda</a></li>
 				<li ng-if="$root.user != null"><a style="padding:10px;" href="#/poruke">Pregled poruka</a></li>
 				<li ng-if="$root.user != null"><a style="padding:10px;" href="#/fakture">Pregled faktura</a></li>
 			</ul>

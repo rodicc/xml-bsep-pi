@@ -1,56 +1,51 @@
 var app = angular.module('app', ['ui.router']);
 
-app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpProvider) {
+app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpProvider, redirectService) {
 	
 	$stateProvider
 		.state('faktura',{
 			url:'/faktura',
 			templateUrl: 'view/faktura.html',
-			controller: 'fakturaController'
-			/*	,
+			controller: 'fakturaController',
 			resolve : {
 				authenticate: authenticateCb
-			}*/
+			}
 		})
 		
 		.state('nalog',{
 			url:'/nalog',
 			templateUrl:'view/nalog.html',
-			controller:'nalogController'
-		/*		,
+			controller:'nalogController',
 			resolve : {
 				authenticate: authenticateCb
-			}*/
+			}
 		})
 		
 		.state('izvod',{
 			url:'/izvod',
 			templateUrl:'view/izvod.html',
-			controller:'izvodController'
-		/*		,
+			controller:'izvodController',
 			resolve : {
 				authenticate: authenticateCb
-			}*/
+			}
 		})
 		
 		.state('poruke',{
 			url:'/poruke',
 			templateUrl:'view/poruke.html',
-			controller:'porukeController'
-			/*	,
+			controller:'porukeController',
 			resolve : {
 				authenticate: authenticateCb
-			}*/
+			}
 		})
 		
 		.state('fakture',{
 			url:'/fakture',
 			templateUrl: 'view/pregledFaktura.html',
-			controller: 'pregledFakturaController'
-			/*	,
+			controller: 'pregledFakturaController',
 			resolve : {
 				authenticate: authenticateCb
-			}*/
+			}
 		})
 		
 		.state('login', {
@@ -93,20 +88,22 @@ app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpPro
 	
 }])
 
-/*
-var authenticateCb = function (AuthenticatorService) {
-      return AuthenticatorService.authenticated();
+
+var authenticateCb = function (redirectService) {
+      return redirectService.authenticated();
     };
+/*
+var redirectService = function($q, $rootScope, $location, $state) {
 
-var redirectService = function($q, $rootScope, $location) {
-
-    this.authenticated = function () {
+   this.authenticated = function () {
       var deferred = $q.defer();
-      if ($rootScope.user) {
-        deferred.resolve();
+      if ($rootScope.user == null) {
+    	  //$location.path("/login");
+    	  $state.go("login")
+          deferred.reject();
+    	  
       } else {
-        $location.path("/login");
-        deferred.reject();
+          deferred.resolve();
       }
       return deferred.promise;
     };

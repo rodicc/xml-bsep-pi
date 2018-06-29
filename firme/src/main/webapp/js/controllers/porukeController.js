@@ -9,9 +9,6 @@ angular.module("app")
 			.then(function(response) {
 				$scope.poruke = response.data;
 			}, function(error) {
-				if (error.status == 401 || error.status == 403) {
-					$state.go("login");
-				}
 			});
 	}
 	$scope.prikaziSvePoruke();

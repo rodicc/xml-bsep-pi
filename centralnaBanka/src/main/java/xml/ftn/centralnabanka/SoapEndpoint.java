@@ -163,25 +163,6 @@ public class SoapEndpoint {
 		return dto;
 	}
 	
-/*	@ResponsePayload
-	//@PayloadRoot(namespace = "http://www.ftn.xml/banke", localPart = "CSRRequestDto")
-	@SoapAction("http://localhost:8083/ws/handleSelfSignedCSR")
-	public CSRRequestDto handleSelfSignedCSR(@RequestPayload CSRRequestDto dto ) {
-		try {
-			PKCS10CertificationRequest csr = new PKCS10CertificationRequest(Base64.decode((String)dto.getRequestString()));
-			certificateService = new CertificateService();
-			X509Certificate certificate = certificateService.handleCSR(csr);
-			
-			dto.setRequestString(certificate.getSerialNumber().toString());
-			return dto;
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-		
-		return dto;
-	}*/
-	
 	@ResponsePayload
 	@PayloadRoot(namespace = "http://www.ftn.xml/banke", localPart = "DownloadRequestDto")
 	public DownloadRequestDto sendCertificateFile(@RequestPayload DownloadRequestDto dto) {

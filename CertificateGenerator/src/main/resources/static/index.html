@@ -21,7 +21,10 @@
 		
 		<script src="app.js"></script>
 		<script src="/controller/CertificateController.js"></script>
+		<script src="/controller/userController.js"></script>
+		
 		<script src="/service/CertificateService.js"></script>
+		<script src="/service/userService.js"></script>
 		
 </head>
 
@@ -29,12 +32,25 @@
 <nav class="navbar navbar-default">
 	<div class="container-fluid">
 		<ul class="nav navbar-nav">		
-			<li><a style="padding:10px;" href="#/sertifikat">Generisanje sertifikata</a></li>
-			<!-- <li><a style="padding:10px;" href="#/sertifikat/ukidanje">Ukidanje sertifikata</a></li> -->
+			<li><a style="padding:10px;" href="#/sertifikat" ng-if="$root.user != null">Generisanje sertifikata</a></li>
 			 <li><a style="padding:10px;" href="#/sertifikat/provera">Provera sertifikata</a></li>
-			<!--<li><a style="padding:10px;" href="#/poruke">Pregled poruka</a></li>
-			<li><a style="padding:10px;" href="#/fakture">Pregled faktura</a></li>  -->
 		</ul>
+		
+		<ul class="nav navbar-nav navbar-right">
+				<li ng-if="$root.user == null">
+					<a ui-sref="login">Log In</a>
+				</li>
+				<li ng-if="$root.user == null">
+					<a ui-sref="register">Register</a>
+				</li>
+				<li ng-if="$root.user != null">
+					<a>Logged in as: <strong>{{$root.user}}</strong></a>
+				</li>
+				<li ng-controller="userController" ng-if="$root.user != null">
+					<a ng-click="logout()" class="pointer-cursor">Log out</a>
+				</li>
+			</ul>
+		
 	</div>
 </nav>
 	<div ui-view ></div>

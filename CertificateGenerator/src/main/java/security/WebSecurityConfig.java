@@ -1,4 +1,4 @@
-package ftn.xmlwebservisi.firme.security;
+package security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -13,11 +13,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CsrfFilter;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
-import ftn.xmlwebservisi.firme.service.UserService;
+import service.UserService;
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +28,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		
 		http.cors().disable();
-		//http.csrf().csrfTokenRepository(csrfTokenRepository());
 		http.csrf().disable();
 	
 		// No session will be used or created by spring security
@@ -39,17 +35,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		
 		// Entry points
 		http.authorizeRequests()
-			.antMatchers(HttpMethod.POST, "/register").permitAll()
 			.antMatchers("/").permitAll()
-			.antMatchers("/public").permitAll()
+			.antMatchers(HttpMethod.GET, "/certificates").permitAll()
+			.antMatchers(HttpMethod.POST, "/certificates/check/{caAlias}").permitAll()
+			.antMatchers(HttpMethod.POST, "/certificates/download/{caAlias}").permitAll()
 			.anyRequest().authenticated()
 			.and()
 			.addFilter(new LoginProcessingFilter(authenticationManager()))
-			.addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
-			
-			//inserting CsrfHeaderFilter after the Spring security CsrfFilter 
-			//so that the request attribute is available
-			.addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class);
+			.addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class);
 	}
 	
 	@Override
@@ -61,7 +54,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/view/**")
 			.antMatchers("/app.js")
 			.antMatchers("/index.html")
-			.antMatchers("/favicon.ico");
+			.antMatchers("/favicon.ico")
+			.antMatchers("/static/**")
+			.antMatchers("/service/**")
+			.antMatchers("/controller/**");
 	}
 	
 	@Override
@@ -81,13 +77,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public TokenAuthenticationFilter jwtAuthenticationTokenFilter() throws Exception {
 		return new TokenAuthenticationFilter();
 	}
-	
-	@Bean
-	public CsrfTokenRepository csrfTokenRepository() {
-		HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
-		repository.setHeaderName("X-XSRF-TOKEN");
-		return repository;
-	}
-	
 	
 }

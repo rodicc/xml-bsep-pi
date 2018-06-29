@@ -1,0 +1,34 @@
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-md-4 col-md-offset-4 default-background">
+            <form ng-submit="login()" role="form">
+                <h2>Log in</h2>
+                
+                <div class="alert alert-danger" ng-if="messages.failedLogin">
+                    {{messages.failedLogin}}
+                </div>
+
+                <div class="form-group">
+                    <label for="username" class="sr-only">Username</label>
+                    <input type="text" class="form-control" id="username" ng-model="credentials.username" placeholder="Username" autofocus required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="sr-only">Password</label>
+                    <input type="password" class="form-control" id="password" ng-model="credentials.password" placeholder="Password" required>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Log in
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label class="member">Not a member?</label>
+                    <a ui-sref="register" class="underline"><strong>Sign up</strong></a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

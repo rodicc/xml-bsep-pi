@@ -19,7 +19,7 @@
 				 <div>
 				 	<button type="submit" ng-click="getCertificateFile(checkAlias)" ng-disabled="certificate.issuer=''">Get certificate file</button>
 					<button type="submit" ng-click="checkCertificate(checkAlias)" ng-disabled="certificate.issuer=''">Check validity</button>
-					<button type="submit" ng-click="revokeCertificate(checkAlias)" ng-disabled="certificate.issuer=''">Revoke Certificate</button>
+					<button type="submit" ng-click="revokeCertificate(checkAlias)" ng-disabled="certificate.issuer=''" ng-if="$root.role == 'ADMIN'">Revoke Certificate</button>
 				</div>
 		</form>
 	</div>

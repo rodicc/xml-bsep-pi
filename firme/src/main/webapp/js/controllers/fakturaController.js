@@ -46,9 +46,7 @@ angular.module('app')
 			.then(function(response) {
 
 			}, function(error) {
-				if (error.status == 401 || error.status == 403) {
-					$state.go("login");
-				}
+				
 			});
 	}
 	
@@ -62,9 +60,7 @@ angular.module('app')
 		.then(function(response) {
 			$scope.fakture = response.data;
 		}, function(error) {
-			if (error.status == 401 || error.status == 403) {
-				$state.go("login");
-			}
+			
 		})
 }])
 

@@ -17,9 +17,7 @@ angular.module('app')
 				console.log($scope.preseci);
 
 			}, function(error) {
-				if (error.status == 401 || error.status == 403) {
-					$state.go("login");
-				}
+				
 			})
 	}
 }]);

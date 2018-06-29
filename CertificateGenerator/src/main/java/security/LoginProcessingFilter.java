@@ -1,10 +1,9 @@
-package ftn.xmlwebservisi.firme.security;
+package security;
 
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,8 +18,9 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedC
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import ftn.xmlwebservisi.firme.dto.UserDTO;
-import ftn.xmlwebservisi.firme.model.User;
+import dto.UserDTO;
+import model.User;
+
 
 /*
  * This filter will intercept a request and attempt to perform authentication from that request 
@@ -86,12 +86,9 @@ public class LoginProcessingFilter extends UsernamePasswordAuthenticationFilter 
 		String token = tokenHandler.generateToken(user.getUsername());
 		logger.info("Token successfully created");
 		
-		Cookie cookie = new Cookie("jjwt", token);
-		cookie.setHttpOnly(true);
-		cookie.setSecure(true);
-		response.addCookie(cookie);
+		response.addHeader("Authorization", token);
 		response.addHeader("User", user.getUsername());
-
+		response.addHeader("Role", user.getRoles().get(0).getName());
 	}
 
 	

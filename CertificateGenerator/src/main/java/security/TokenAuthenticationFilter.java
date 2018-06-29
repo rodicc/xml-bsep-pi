@@ -1,10 +1,9 @@
-package ftn.xmlwebservisi.firme.security;
+package security;
 
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,7 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import ftn.xmlwebservisi.firme.service.UserService;
+import service.UserService;
+
 
 /*
  * Processes any HTTP request that has a header of Authorization with an authentication scheme of Bearer
@@ -33,30 +33,21 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		
-		logger.debug("Looking for jjwt cookie...");
-		Cookie[] cookies = request.getCookies();
-		String jwt = null;
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("jjwt")) {
-					jwt = cookie.getValue();
-					logger.debug("Found jjwt cookie " + jwt);
-				}
-			}
-		}
+		logger.debug("Looking for jwt header...");
+		String jwtHeader = request.getHeader("Authorization");
 		
-		if (cookies == null || jwt == null || jwt.equals("null")) {
-			logger.debug("jjwt cookie doesn't exist");
+		if (jwtHeader == null) {
+			logger.debug("header doesn't exist");
 			filterChain.doFilter(request, response);
 			return;
 		}
 		
 		logger.debug("Parsing jwt token...");
-		String username = tokenHandler.getUsername(jwt);
+		String username = tokenHandler.getUsername(jwtHeader);
 		if (username != null) {
 			logger.debug("Successfully parsed user from the token");
 			UserDetails userDetails = userService.loadUserByUsername(username);
-			CustomAuthenticationToken authToken = new CustomAuthenticationToken(userDetails, jwt);
+			CustomAuthenticationToken authToken = new CustomAuthenticationToken(userDetails, jwtHeader);
 			SecurityContextHolder.getContext().setAuthentication(authToken);
 			logger.debug("User " + username + " successfully added to the spring security context");
 		}

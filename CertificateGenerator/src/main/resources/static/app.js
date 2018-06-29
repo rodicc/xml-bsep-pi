@@ -1,6 +1,6 @@
 var app = angular.module('app', ['ui.router']);
 
-app.config(['$stateProvider', function($stateProvider){
+app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpProvider){
 	
 	$stateProvider
 	
@@ -22,6 +22,29 @@ app.config(['$stateProvider', function($stateProvider){
 		controller: 'certificateController'
 	})
 	
-	
-	
+	.state('login', {
+			url: '/login',
+			templateUrl: 'view/login.html',
+			controller: 'userController'
+	})
+
+	.state('register', {
+		url: '/register',
+		templateUrl: 'view/registration.html',
+		controller: 'userController'
+	});
+
+	$httpProvider.interceptors.push(["$q", "$injector", "$rootScope", function($q, $injector, $rootScope) {
+		return {
+			request: function(config) {
+				var token = localStorage.getItem("Authorization");
+				if (token) {
+					config.headers["Authorization"] = token;
+					$rootScope.user = localStorage.getItem("User");
+					$rootScope.role = localStorage.getItem("Role");
+				}
+				return config;
+			}
+		};
+	}]);	
 }]);

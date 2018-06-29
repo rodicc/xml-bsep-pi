@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,7 @@ public class CertificateController {
 	SoapClient client;
 	private final Logger logger = LoggerFactory.getLogger(CertificateController.class);
 	
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@PostMapping("/newSelfSigned")
 	public ResponseEntity<String> sendSelfSignedCSR(@RequestBody CertificateDto csr)
 			throws NoSuchAlgorithmException, FileNotFoundException, KeyStoreException, NoSuchProviderException, IOException{
@@ -61,6 +63,8 @@ public class CertificateController {
 		
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
+	
+	
 	@PostMapping("/newCSR/{caAlias}")
 	public ResponseEntity<String> sendCSR(@RequestBody CertificateDto csr, @PathVariable("caAlias") String caAlias)
 			throws NoSuchAlgorithmException, FileNotFoundException, KeyStoreException, NoSuchProviderException, IOException{
@@ -85,6 +89,7 @@ public class CertificateController {
 		
 	}
 	
+	@PreAuthorize("hasAnyRole('ADMIN')")
 	@PostMapping("/revoke/{caAlias}")
 	public ResponseEntity<OCSPResponseStatus> revokeCertificate(@RequestBody String serialNumber, @PathVariable("caAlias") String caAlias){
 		boolean isAutorized = true;
@@ -105,7 +110,7 @@ public class CertificateController {
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
 	
-	//TODO: provera da li je string cifri
+	
 	@PostMapping("/check/{caAlias}")
 	public ResponseEntity<OCSPResponseStatus> checkCertificate(@PathVariable("caAlias") String caAlias, @RequestBody String serialNumber){
 

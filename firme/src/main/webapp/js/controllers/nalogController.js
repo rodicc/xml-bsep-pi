@@ -32,9 +32,7 @@ angular.module('app')
 			}, function(error) {
 				$scope.obavestenja.validan = false;
 				$scope.obavestenja.nevalidan = true;
-				if (error.status == 401 || error.status == 403) {
-					$state.go("login");
-				}
+				
 			})
 		console.log($scope.nalog);
 	}
