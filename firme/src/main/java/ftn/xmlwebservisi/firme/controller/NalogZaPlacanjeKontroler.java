@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,7 @@ public class NalogZaPlacanjeKontroler {
 	SoapClient client;
 	private final Logger logger = LoggerFactory.getLogger(NalogZaPlacanjeKontroler.class);
 	
+	@PreAuthorize("hasAnyRole('INSIDER')")
 	@GetMapping
 	public ResponseEntity<List<NalogZaPlacanje>> nadjiSveNaloge() {
 		List<NalogZaPlacanje> response = nalogZaPlacanjeServis.nadjiSveNalogeZaPlacanje();
@@ -38,6 +40,7 @@ public class NalogZaPlacanjeKontroler {
 		}
 	}
 	
+	@PreAuthorize("hasAnyRole('USER', 'INSIDER')")
 	@PostMapping
 	public ResponseEntity<NalogZaPlacanje> dodajNalog(@RequestBody NalogZaPlacanje nalog) {
 		boolean validan = MyJsonValidator.validirajNalogZaPlacanje(nalog);

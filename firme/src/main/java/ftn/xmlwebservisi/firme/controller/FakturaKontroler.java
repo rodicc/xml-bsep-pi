@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,6 +33,7 @@ public class FakturaKontroler {
 		return fakturaServis.nadjiSveFakture();
 	}
 	
+	@PreAuthorize("hasAnyRole('INSIDER')")
 	@GetMapping("/{id}")
 	public ResponseEntity<Faktura> nadjiFakturu(@PathVariable(value = "id") Integer fakturaId) {
 		Faktura nadjenaFaktura = fakturaServis.nadjiFakturu(fakturaId);
@@ -41,11 +43,13 @@ public class FakturaKontroler {
 		return new ResponseEntity<>(nadjenaFaktura, HttpStatus.OK);
 	}
 	
+	@PreAuthorize("hasAnyRole('USER')")
 	@PostMapping
 	public Faktura dodajFakturu(@RequestBody Faktura faktura) {
 		return fakturaServis.novaFaktura(faktura); 
 	}
 	
+	@PreAuthorize("hasAnyRole('USER')")
 	@PostMapping("/{id}")
 	public ResponseEntity<StavkaFakture> dodajStavkuFakture(@PathVariable(value = "id") Integer fakturaId,
 											@RequestBody StavkaFakture stavkaFakture) {
