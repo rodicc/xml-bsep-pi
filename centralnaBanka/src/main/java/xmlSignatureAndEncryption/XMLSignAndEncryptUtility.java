@@ -88,6 +88,10 @@ public class XMLSignAndEncryptUtility {
 			inStream.reset();
 			//Enkripcija i potpisivanje dokument
 			Document document = encryptAndSign(inStream);
+			if(document == null) {
+				logger.error("Aborting encryptToSource, encryptAndSign returned null");
+				return null;
+			}
 			
 			DOMSource source = new DOMSource(document); 
 			
@@ -104,10 +108,18 @@ public class XMLSignAndEncryptUtility {
     public Document encryptAndSign(ByteArrayInputStream inStream){
     	
     	Document document = loadDocument(inStream);
+    	if(document == null) {
+			logger.error("Aborting encryptAndSign, loadDocument returned null");
+			return null;
+		}
     	SecretKey secretKey = generateDataEncryptionKey();
     	
     	KeyStoreUtitlity ksUtility = new KeyStoreUtitlity();
     	PrivateKey senderPrivateKey = ksUtility.readDefaultPrivateKey();
+    	if(senderPrivateKey == null) {
+			logger.error("Aborting encryptAndSign, KeyStoreUtitlity.readDefaultPrivateKey returned null");
+			return null;
+		}
     	
     	CertificateFactory cf;
 		try {
@@ -115,15 +127,24 @@ public class XMLSignAndEncryptUtility {
 			Certificate senderCertificate = cf.generateCertificate(new FileInputStream("./certificates/CBANKA.cer"));
 	    	Certificate recieverCertificate = cf.generateCertificate(new FileInputStream("./certificates/BANKA.cer"));
 	    	
+	    	
 	    	document = encrypt(document, null, secretKey, recieverCertificate.getPublicKey());
+	    	if(document == null) {
+				logger.error("Aborting encryptAndSign, encrypt returned null");
+				return null;
+			}
 	    	document = signDocument(document, senderPrivateKey, senderCertificate);
-	    
+	    	if(document == null) {
+				logger.error("Aborting encryptAndSign, signDocument returned null");
+				return null;
+			}
 	    	return document;
+	    	
 		} catch (CertificateException e) {
 			logger.error("Invalid certificate: Obj={}", e.getCause(), e);
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			logger.error("Cerrtificate file could not be found: Obj:{}", e.getCause(), e);
+			logger.error("Certificate file could not be found: Obj:{}", e.getCause(), e);
 			e.printStackTrace();
 		}
     	return null;
@@ -133,6 +154,7 @@ public class XMLSignAndEncryptUtility {
 		TokenService tokenService = new TokenService();
 		KeyStoreUtitlity keyStoreUtitlity = new KeyStoreUtitlity();
 		PrivateKey privateKey = keyStoreUtitlity.readDefaultPrivateKey();
+		
 		X509Certificate certificate = (X509Certificate)keyStoreUtitlity.readDefaultCertificate();
 		return tokenService.generateToken(certificate.getIssuerX500Principal().getName(), privateKey);
     }
@@ -142,20 +164,28 @@ public class XMLSignAndEncryptUtility {
     		CertificateFactory cf = CertificateFactory.getInstance("X509");
 			Certificate certificate = cf.generateCertificate(new FileInputStream("./certificates/BANKA.cer"));
 			PublicKey publicKey = certificate.getPublicKey();
-			
 			TokenService tokenService = new TokenService();
 	    	Claims claims = tokenService.getClaims(token, publicKey);
 	    	if(claims != null) {
-		    	if (new Date(System.currentTimeMillis()).before(claims.getExpiration())) {
-		    		if(!jwtIDs.contains(claims.getId())) {
-		    			jwtIDs.add(claims.getId());
+	    		Date expiration = claims.getExpiration();
+		    	if (new Date(System.currentTimeMillis()).before(expiration)) {
+		    		String id = claims.getId();
+		    		if(!jwtIDs.contains(id)) {
+		    			jwtIDs.add(id);
 		    			return true;
+		    		} else {
+		    			logger.info("JWT token invalid, token ID already used, Obj={}", id);
 		    		}
+		    	} else {
+		    	Date now = new Date(System.currentTimeMillis());
+		    	logger.info("JWT token expired @time={}, expiration time=, Obj={}", now, expiration, token);
 		    	}
 	    	}
 		} catch (CertificateException e) {
+			logger.error("Invalid certificate: Obj={}", e.getCause(), e);
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
+			logger.error("Certificate file could not be found: Obj:{}", e.getCause(), e);
 			e.printStackTrace();
 		}
     	return false;
@@ -168,7 +198,7 @@ public class XMLSignAndEncryptUtility {
     	NodeList nodes = e.getElementsByTagNameNS("http://www.ftn.xml/banke", "jwt");
     	String jwt = nodes.item(0).getTextContent();
     	if(!isJwtValid(jwt)) {
-    		logger.error("Invalid request token Obj={}", jwt);
+    		logger.info("Aborting verifyAndDecrypt, invalid JWT", jwt);
     		return null;
     	}
     	if(verifySignature(encryptedDocument)) {

@@ -54,9 +54,18 @@ public class Servis {
 		// prebacivanje novca izmedju banaka
 		String swiftBankeDuznika = mt102.getZaglavljeMT102().getSwiftKodBankeDuznika();
 		model.Banka bankaDuznika = bankaRepository.findBySwiftKodBanke(swiftBankeDuznika);
+		if(bankaDuznika == null) {
+			logger.error("BankaRepository.findBySwiftKodBanke returned null for Obj={}", swiftBankeDuznika);
+		}
 		String swiftBankePoverioca = mt102.getZaglavljeMT102().getSwiftKodBankePoverioca();
 		model.Banka bankaPoverioca = bankaRepository.findBySwiftKodBanke(swiftBankePoverioca);
-		
+		if(bankaPoverioca == null) {
+			logger.error("BankaRepository.findBySwiftKodBanke returned null for Obj={}", swiftBankePoverioca);
+		}
+		if(bankaDuznika == null || bankaPoverioca == null) {
+			logger.error("Aborting regulisi MT102");
+			return null;
+		}
 		double novoStanjeBankeDuznika = bankaDuznika.getStanjeRacuna().doubleValue() - mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
 		bankaDuznika.setStanjeRacuna(new BigDecimal(novoStanjeBankeDuznika));
 		double novoStanjeBankePoverioca = bankaPoverioca.getStanjeRacuna().doubleValue() + mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
@@ -92,11 +101,24 @@ public class Servis {
 		
 		model.MT103 mt103 = mapper.MT103SoapToEntity(mt103Soap);
 		mt103Repository.save(mt103);
+		String swiftBankeDuznika = mt103Soap.getSwiftKodBankeDuznika();
+		Banka bankaDuznika = bankaRepository.findBySwiftKodBanke(swiftBankeDuznika);
+		if(bankaDuznika == null) {
+			logger.error("BankaRepository.findBySwiftKodBanke returned null for Obj={}", swiftBankeDuznika);
+		}
+		String swiftBankePrimaoca = mt103Soap.getSwiftKodBankeDuznika();
+		Banka bankaPoverioca = bankaRepository.findBySwiftKodBanke(swiftBankePrimaoca);
+		if(bankaDuznika == null) {
+			logger.error("BankaRepository.findBySwiftKodBanke returned null for Obj={}", swiftBankePrimaoca);
+		}
+		if(bankaDuznika == null || bankaPoverioca == null) {
+			logger.error("Aborting regulisiMT103");
+			return null;
+		}
 		
-		Banka bankaDuznika = bankaRepository.findBySwiftKodBanke(mt103Soap.getSwiftKodBankeDuznika());
 		bankaDuznika.setStanjeRacuna(new BigDecimal(bankaDuznika.getStanjeRacuna().doubleValue() - mt103Soap.getIznos().doubleValue()));
 		bankaRepository.save(bankaDuznika);
-		Banka bankaPoverioca = bankaRepository.findBySwiftKodBanke(mt103Soap.getSwiftKodBankePoverioca());
+		
 		bankaPoverioca.setStanjeRacuna(new BigDecimal(bankaPoverioca.getStanjeRacuna().doubleValue() + mt103Soap.getIznos().doubleValue()));
 		bankaRepository.save(bankaPoverioca);
 		

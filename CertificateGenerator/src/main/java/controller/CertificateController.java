@@ -20,11 +20,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import application.SoapClient;
-import model.CSRDto;
+import model.CertificateDto;
 import model.OCSPResponseStatus;
 import service.CertificateService;
 
@@ -38,16 +37,38 @@ public class CertificateController {
 	SoapClient client;
 	private final Logger logger = LoggerFactory.getLogger(CertificateController.class);
 	
-	@PostMapping("/newCSR/{caAlias}")
-	public ResponseEntity<String> sendCSR(@RequestBody CSRDto csr, @PathVariable String caAlias)
+	@PostMapping("/newSelfSigned")
+	public ResponseEntity<String> sendSelfSignedCSR(@RequestBody CertificateDto csr)
 			throws NoSuchAlgorithmException, FileNotFoundException, KeyStoreException, NoSuchProviderException, IOException{
+		boolean isAutorized = true;
 		
+		if(isAutorized) {
+			if (csr.isValid(csr)) {
+				String response = null;
+				if(csr.isSelfSigned()) {
+					response = certificateService.generateSelfSignedCertificate(csr, true);
+				}
+				if(response != null) {
+					return new ResponseEntity<String>(response, HttpStatus.OK);
+				}
+				else
+					return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			} else {
+				logger.error("Invalid CSR Request: Obj={}", csr);
+				return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+			}
+		}
 		
+		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	}
+	@PostMapping("/newCSR/{caAlias}")
+	public ResponseEntity<String> sendCSR(@RequestBody CertificateDto csr, @PathVariable("caAlias") String caAlias)
+			throws NoSuchAlgorithmException, FileNotFoundException, KeyStoreException, NoSuchProviderException, IOException{
 		//dok se ne implemenira logovanje
 		boolean isAutorized = true;
 		
 		if(isAutorized) {
-			if (csr.isValid()) {
+			if (csr.isValid(csr)) {
 				String response = client.sendCSR(csr, caAlias);
 				if(response != null) {
 					return new ResponseEntity<String>(response, HttpStatus.OK);
@@ -65,7 +86,7 @@ public class CertificateController {
 	}
 	
 	@PostMapping("/revoke/{caAlias}")
-	public ResponseEntity<OCSPResponseStatus> revokeCertificate(@RequestBody String serialNumber, @PathVariable String caAlias){
+	public ResponseEntity<OCSPResponseStatus> revokeCertificate(@RequestBody String serialNumber, @PathVariable("caAlias") String caAlias){
 		boolean isAutorized = true;
 		
 		if(isAutorized) {
@@ -105,15 +126,20 @@ public class CertificateController {
 		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 	}
 	
-	@PostMapping(value = "/file/{caAlias}", produces = MediaType.TEXT_PLAIN_VALUE)
-	@ResponseBody
-	public ResponseEntity<ByteArrayResource> getCertificateFile(@PathVariable("certificateAlias") String caAlias, @RequestBody String serialNumber){
+	@PostMapping(value = "/download/{caAlias}", produces = MediaType.TEXT_PLAIN_VALUE)
+	//@ResponseBody
+	public ResponseEntity<ByteArrayResource> getCertificateFile(@PathVariable("caAlias") String caAlias, @RequestBody String serialNumber){
 		
 		boolean isAutorized = true;
 		
 		if(isAutorized) {
 			if(serialNumber.matches("^[0-9]*$")) {
-				ByteArrayResource response = client.getCertificateFile(serialNumber, caAlias);
+				ByteArrayResource response = null;
+				if(caAlias.equals("SELF")) {
+					response = new ByteArrayResource(certificateService.getCertificateFile(serialNumber));
+				} else {
+					response = client.getCertificateFile(serialNumber, caAlias);
+				}
 				if(response != null) {
 					HttpHeaders header = new HttpHeaders();
 					header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename="+ serialNumber +".cer");

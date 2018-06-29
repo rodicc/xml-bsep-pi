@@ -77,6 +77,11 @@ public class XMLSignAndEncryptUtility {
 			inStream.reset();
 			//Enkripcija i potpisivanje dokument
 			Document document = encryptAndSign(inStream, elementName);
+			if(document == null) {
+				logger.error("Aborting encryptToSource, encryptAndSign returned null");
+				return null;
+			}
+			
 			DOMSource source = new DOMSource(document); 
 			 
 			return source;
@@ -92,11 +97,18 @@ public class XMLSignAndEncryptUtility {
     public Document encryptAndSign(ByteArrayInputStream inStream, String elementName){
     	
     	Document document = loadDocument(inStream);
+    	if(document == null) {
+			logger.error("Aborting encryptAndSign, loadDocument returned null");
+			return null;
+		}
     	SecretKey secretKey = generateDataEncryptionKey();
     	
     	KeyStoreUtitlity ksUtility = new KeyStoreUtitlity();
     	PrivateKey senderPrivateKey = ksUtility.readDefaultPrivateKey();
-    	
+    	if(senderPrivateKey == null) {
+			logger.error("Aborting encryptAndSign, KeyStoreUtitlity.readDefaultPrivateKey returned null");
+			return null;
+		}
     	CertificateFactory cf;
 		try {
 			cf = CertificateFactory.getInstance("X509");
@@ -104,9 +116,17 @@ public class XMLSignAndEncryptUtility {
 	    	Certificate recieverCertificate = cf.generateCertificate(new FileInputStream("./certificates/BANKA.cer"));
 	    	
 	    	document = encrypt(document, elementName, secretKey, recieverCertificate.getPublicKey());
+	    	if(document == null) {
+				logger.error("Aborting encryptAndSign, encrypt returned null");
+				return null;
+			}
 	    	document = signDocument(document, senderPrivateKey, senderCertificate);
-	    	
+	    	if(document == null) {
+				logger.error("Aborting encryptAndSign, signDocument returned null");
+				return null;
+			}
 	    	return document;
+	    	
 		} catch (CertificateException e) {
 			logger.error("Invalid certificate: Obj={}", e.getCause(), e);
 			e.printStackTrace();

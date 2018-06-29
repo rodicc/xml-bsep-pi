@@ -10,12 +10,20 @@ angular.module("app")
 		})
 	
 	$scope.sendCSR = function(certificate){
-		console.log("CSR")
-		certificateService.sendCSR(certificate, certificate.issuer)
-			.then(function(response){
-				alert("S/N: "+response.data);
-				console.log(response.data);
-			})
+		console.log("CSR") 
+		if(certificate.isSelfSigned){
+			certificateService.generateSelfSigned(certificate)
+				.then(function(response){
+						alert("S/N: "+response.data);
+						console.log(response.data);
+					})
+		} else {
+			certificateService.sendCSR(certificate, certificate.issuer)
+				.then(function(response){
+					alert("S/N: "+response.data);
+					console.log(response.data);
+				})
+		}
 	}
 	
 	
@@ -39,8 +47,6 @@ angular.module("app")
 			.then(function(response){
 				console.log(response);
 				download(serialNumber+".cer", response.data);
-			}, function(error) {
-				alert("Certificate with Serial Number: "+ serialNumber + " could not be found.");
 			})
 		
 			

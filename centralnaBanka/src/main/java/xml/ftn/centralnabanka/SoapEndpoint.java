@@ -118,6 +118,9 @@ public class SoapEndpoint {
 				SendMT102Response response = new SendMT102Response();
 				MT102 mt102 = sendMT102Request.getValue().getMT102();
 				response.setMT102Response(servis.regulisiMT102(mt102));
+				if(servis.regulisiMT102(mt102) == null) {
+					
+				}
 				
 				//Enkripcija odgovora
 				JAXBElement<SendMT102Response> jaxbElement =
@@ -159,6 +162,25 @@ public class SoapEndpoint {
 		
 		return dto;
 	}
+	
+/*	@ResponsePayload
+	//@PayloadRoot(namespace = "http://www.ftn.xml/banke", localPart = "CSRRequestDto")
+	@SoapAction("http://localhost:8083/ws/handleSelfSignedCSR")
+	public CSRRequestDto handleSelfSignedCSR(@RequestPayload CSRRequestDto dto ) {
+		try {
+			PKCS10CertificationRequest csr = new PKCS10CertificationRequest(Base64.decode((String)dto.getRequestString()));
+			certificateService = new CertificateService();
+			X509Certificate certificate = certificateService.handleCSR(csr);
+			
+			dto.setRequestString(certificate.getSerialNumber().toString());
+			return dto;
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		
+		return dto;
+	}*/
 	
 	@ResponsePayload
 	@PayloadRoot(namespace = "http://www.ftn.xml/banke", localPart = "DownloadRequestDto")

@@ -12,7 +12,7 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.client.core.support.WebServiceGatewaySupport;
 
 import model.CAWebServiceInfo;
-import model.CSRDto;
+import model.CertificateDto;
 import model.OCSPResponseStatus;
 import service.CertificateService;
 import soap.CSRRequestDto;
@@ -26,7 +26,7 @@ public class SoapClient extends WebServiceGatewaySupport{
 	private CertificateService certificateService;
 	private final Logger logger = LoggerFactory.getLogger(SoapClient.class);
 	
-	public String sendCSR(CSRDto csr, String caAlias) {
+	public String sendCSR(CertificateDto csr, String caAlias) {
 			WebServiceTemplate template = getWebServiceTemplate();       
 			
 			PKCS10CertificationRequest request = certificateService.generateCSR(csr); 
@@ -49,6 +49,31 @@ public class SoapClient extends WebServiceGatewaySupport{
 			logger.error("Invalid CSR response");
 		return null;
 	}
+	
+/*	public String sendSelfSignedCSR(CertificateDto csr, String caAlias) {
+		WebServiceTemplate template = getWebServiceTemplate();   
+		String caWS = CAWebServiceInfo.getWSfor(caAlias);
+		SoapActionCallback callback = new SoapActionCallback(caWS+"/handleSelfSignedCSR");
+		
+		PKCS10CertificationRequest request = certificateService.generateCSR(csr); 
+		CSRRequestDto dto = new CSRRequestDto();
+		try {
+			dto.setRequestString(Base64.toBase64String(request.getEncoded()));
+			
+			logger.info("Sending CSR to: {}", caWS);
+			CSRRequestDto response = (CSRRequestDto) template.marshalSendAndReceive(caWS, dto, callback);
+			if(response != null) {
+				return (String)response.getRequestString();
+			}
+			
+		} catch (IOException e) {
+			logger.error("Sending CSR to: {} failed", caWS , e);
+			e.printStackTrace();
+		} 
+		
+		logger.error("Invalid CSR response");
+	return null;
+	}*/
 	
 	public ByteArrayResource getCertificateFile(String serialNumber, String caAlias) {
 		WebServiceTemplate template = getWebServiceTemplate(); 
@@ -121,4 +146,6 @@ public class SoapClient extends WebServiceGatewaySupport{
 		logger.error("Invalid Certificate Status response");
 		return null;
 	}
+
+	
 }

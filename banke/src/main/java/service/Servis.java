@@ -76,7 +76,14 @@ public class Servis {
 	private void regulisiRTGS(NalogZaPlacanje nalog) {
 		if(nalogZaPlacanjeRepository.findByIdPoruke(nalog.getIdPoruke()) == null) {
 			MT103 mt103 = kreirajMT103(nalog);
-			Firma firmaKojaPlaca = firmaRepository.findByBrojRacuna(nalog.getRacunDuznika());
+			if(mt103 == null) {
+				logger.error("Aborting regulisiRTGS, got null for MT103");
+			}
+			String racunDuznika = nalog.getRacunDuznika();
+			Firma firmaKojaPlaca = firmaRepository.findByBrojRacuna(racunDuznika);
+			if(firmaKojaPlaca == null) {
+				logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", racunDuznika);
+			}
 			rezervisiNovac(firmaKojaPlaca, nalog.getIznos());
 			firmaRepository.save(firmaKojaPlaca);
 	
@@ -93,21 +100,34 @@ public class Servis {
 				firmaRepository.save(firmaKojaPlaca);
 	
 				// dodavanje iznosa firmi kojoj se placa
-				Firma firmaKojojSePlaca = firmaRepository.findByBrojRacuna(nalog.getRacunPrimaoca());
+				String racunPrimaoca = nalog.getRacunPrimaoca();
+				Firma firmaKojojSePlaca = firmaRepository.findByBrojRacuna(racunPrimaoca);
+				if(firmaKojojSePlaca == null) {
+					logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", racunPrimaoca);
+				}
 				firmaKojojSePlaca
 						.setStanjeRacuna(new BigDecimal(firmaKojojSePlaca.getStanjeRacuna().doubleValue() + iznosNaloga));
 				firmaRepository.save(firmaKojojSePlaca);
 	
 				// banka prebacuje sredstva od klijenta sebi
-				Banka bankaDuznika = bankaRepository.findBySwiftKodBanke(odgovor.getMT900().getSwiftKodBankeDuznika());
+				String swiftKodBankeDuznika = odgovor.getMT900().getSwiftKodBankeDuznika();
+				Banka bankaDuznika = bankaRepository.findBySwiftKodBanke(swiftKodBankeDuznika);
+				if(bankaDuznika == null) {
+					logger.error("BankaRepository.findBySwiftKodBanke returned null for Obj={}", swiftKodBankeDuznika);
+				}
 				bankaDuznika.setStanjeRacuna(new BigDecimal(bankaDuznika.getStanjeRacuna().doubleValue() + iznosNaloga));
 				bankaRepository.save(bankaDuznika);
 	
 				// banka prebacuje na racun klijenta
 				Banka bankaPoverioca = bankaRepository.findBySwiftKodBanke(odgovor.getMT910().getSwiftKodBankePoverioca());
+				if(bankaPoverioca == null) {
+					logger.error("BankaRepository.findBySwiftKodBanke returned null for Obj={}", odgovor.getMT910().getSwiftKodBankePoverioca());
+				}
 				bankaPoverioca
 						.setStanjeRacuna(new BigDecimal(bankaPoverioca.getStanjeRacuna().doubleValue() - iznosNaloga));
 				bankaRepository.save(bankaPoverioca);
+			} else {
+				logger.error("Invalid MT103Response, got null MT103={}, MT900={}, MT910={}",odgovor.getMT103(), odgovor.getMT900(), odgovor.getMT910());
 			}
 		}
 		logger.error("Invalid NalogZaPlacanje, duplicate entry idPoruke Obj={}", nalog.getIdPoruke());
@@ -122,6 +142,10 @@ public class Servis {
 			// rezervacija sredstava na racunu klijenta(firme)
 			String racunDuznika = nalogEntity.getRacunDuznika();
 			model.Firma firmaDuznika = firmaRepository.findByBrojRacuna(racunDuznika);
+			if(firmaDuznika == null) {
+				logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", racunDuznika);
+			}
+			
 			double rezervisanNovacNovoStanje = firmaDuznika.getRezervisanNovac().doubleValue() 
 					+ nalogEntity.getIznos().doubleValue();
 			firmaDuznika.setRezervisanNovac(new BigDecimal(rezervisanNovacNovoStanje));
@@ -143,6 +167,10 @@ public class Servis {
 			
 			// ukoliko ima 3 i vise naloga, radi kliring
 			MT102 mt102 = kreirajMT102(neregulisaniNalozi);
+			if(mt102 == null) {
+				logger.error("Aborting regulisiClearing, got null for MT102");
+				return;
+			}
 			MT102Response mt102Response = client.sendMT102(mt102);
 	
 			MT900 mt900Soap = mt102Response.getMT900();
@@ -161,6 +189,9 @@ public class Servis {
 			// dodavanje sredstava na racun banke duznika
 			String oznakaBankeDuznika = racunDuznika.substring(0, 3);		
 			model.Banka bankaDuznika = bankaRepository.findByOznakaBanke(oznakaBankeDuznika);
+			if(bankaDuznika == null) {
+				logger.error("BankaRepository.findByOznakaBanke returned null for Obj={}", oznakaBankeDuznika);
+			}
 			
 			double novoStanjeBankeDuznika = bankaDuznika.getStanjeRacuna().doubleValue()
 					+ mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
@@ -171,6 +202,9 @@ public class Servis {
 			String racunPrimaoca = nalogEntity.getRacunPrimaoca();
 			String oznakaBankePrimaoca = racunPrimaoca.substring(0, 3);
 			model.Banka bankaPrimaoca = bankaRepository.findByOznakaBanke(oznakaBankePrimaoca);
+			if(bankaPrimaoca == null) {
+				logger.error("BankaRepository.findByOznakaBanke returned null for Obj={}", oznakaBankePrimaoca);
+			}
 			
 			double novoStanjeBankePrimaoca = bankaPrimaoca.getStanjeRacuna().doubleValue()
 					- mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
@@ -182,6 +216,9 @@ public class Servis {
 			for (PojedinacnoPlacanjeMT102 placanje : pojedinacnaPlacanja) {
 				String rDuznika = placanje.getRacunDuznika();
 				model.Firma fDuznika = firmaRepository.findByBrojRacuna(rDuznika);
+				if(fDuznika == null) {
+					logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", rDuznika);
+				}
 				double rezervisanoStanje = fDuznika.getRezervisanNovac().doubleValue()
 						- placanje.getIznos().doubleValue();
 				fDuznika.setRezervisanNovac(new BigDecimal(rezervisanoStanje));
@@ -189,6 +226,9 @@ public class Servis {
 				
 				String rPrimaoca = placanje.getRacunPoverioca();
 				model.Firma fPrimaoca = firmaRepository.findByBrojRacuna(rPrimaoca);
+				if(fPrimaoca == null) {
+					logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", rPrimaoca);
+				}
 				double stanjeRacuna = fPrimaoca.getStanjeRacuna().doubleValue()
 						+ placanje.getIznos().doubleValue();
 				fPrimaoca.setStanjeRacuna(new BigDecimal(stanjeRacuna));
@@ -202,12 +242,23 @@ public class Servis {
 		MT103 mt103 = new MT103();
 		Random random = new Random();
 		mt103.setIdPoruke(Integer.toString(random.nextInt(1000000)));
-
-		Banka bankaDuznika = bankaRepository.findByOznakaBanke(nalog.getRacunDuznika().substring(0, 3));
+		String oznakaBankeDuznika = nalog.getRacunDuznika().substring(0, 3);
+		Banka bankaDuznika = bankaRepository.findByOznakaBanke(oznakaBankeDuznika);
+		if(bankaDuznika == null) {
+			logger.error("BankaRepository.findByOznakaBanke returned null for Obj={}", oznakaBankeDuznika);
+		}
+		String oznakaBankePoverioca = nalog.getRacunPrimaoca().substring(0, 3);
+		Banka bankaPoverioca = bankaRepository.findByOznakaBanke(oznakaBankePoverioca);
+		if(bankaPoverioca == null) {
+			logger.error("BankaRepository.findByOznakaBanke returned null for Obj={}", oznakaBankePoverioca);
+		}
+		if (bankaDuznika == null || bankaPoverioca == null) {
+			logger.error("Aborting kreirajMT103");
+			return null;
+		}
 		mt103.setSwiftKodBankeDuznika(bankaDuznika.getSwiftKodBanke());
 		mt103.setObracunskiRacunBankeDuznika(bankaDuznika.getObracunskiRacun());
-
-		Banka bankaPoverioca = bankaRepository.findByOznakaBanke(nalog.getRacunPrimaoca().substring(0, 3));
+		
 		mt103.setSwiftKodBankePoverioca(bankaPoverioca.getSwiftKodBanke());
 		mt103.setObracunskiRacunBankePoverioca(bankaPoverioca.getObracunskiRacun());
 
@@ -233,9 +284,15 @@ public class Servis {
 		String oznakaBankeDuznika = nalozi.get(0).getRacunDuznika().substring(0, 3);
 		String oznakaBankePoverioca = nalozi.get(0).getRacunPrimaoca().substring(0, 3);
 		model.Banka bankaDuznika = bankaRepository.findByOznakaBanke(oznakaBankeDuznika);
+		if(bankaDuznika == null) {
+			logger.error("BankaRepository.findByOznakaBanke returned null for Obj={}", oznakaBankeDuznika);
+		}
 		model.Banka bankaPoverioca = bankaRepository.findByOznakaBanke(oznakaBankePoverioca);
+		if(bankaPoverioca == null) {
+			logger.error("BankaRepository.findByOznakaBanke returned null for Obj={}", oznakaBankePoverioca);
+		}
 		if (bankaDuznika == null || bankaPoverioca == null) {
-			System.out.println("nisam pronasao banke");
+			logger.error("Aborting kreirajMT102");
 			return null;
 		}
 
@@ -375,7 +432,11 @@ public class Servis {
 					sumaPoslePreseka += n.getIznos().doubleValue();
 				}
 			}
-			Firma firma = firmaRepository.findByBrojRacuna(zahtev.getBrojRacuna());
+			String brojRacuna = zahtev.getBrojRacuna();
+			Firma firma = firmaRepository.findByBrojRacuna(brojRacuna);
+			if(firma == null) {
+				logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", brojRacuna);
+			}
 			zaglavlje.setNovoStanje(new BigDecimal(firma.getStanjeRacuna().doubleValue() - sumaPoslePreseka));
 			zaglavlje.setPrethodnoStanje(new BigDecimal(zaglavlje.getNovoStanje().doubleValue() - zaglavlje.getUkupnoUKorist().doubleValue() + zaglavlje.getUkupnoNaTeret().doubleValue()));
 			

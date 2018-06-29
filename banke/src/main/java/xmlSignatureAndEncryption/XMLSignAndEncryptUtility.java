@@ -94,12 +94,17 @@ public class XMLSignAndEncryptUtility {
 			inStream.reset();
 			//Enkripcija i potpisivanje dokument
 			Document document = encryptAndSign(inStream, recieverCertificateAlias, elementName);
+			if(document == null) {
+				logger.error("Aborting encryptToSource, encryptAndSign returned null");
+				return null;
+			}
 			
 			DOMSource source = new DOMSource(document); 
 			
 			return source;
 			
 		} catch (JAXBException e) {
+			logger.error("Invalid encryption element: Obj={}", jaxbElement, e);
 			e.printStackTrace();
 		} 
 		
@@ -109,11 +114,18 @@ public class XMLSignAndEncryptUtility {
     public Document encryptAndSign(ByteArrayInputStream inStream, String recieverCertificateAlias, String elementName){
     	
     	Document document = loadDocument(inStream);
+    	if(document == null) {
+			logger.error("Aborting encryptAndSign, loadDocument returned null");
+			return null;
+		}
     	SecretKey secretKey = generateDataEncryptionKey();
     	
     	KeyStoreUtitlity ksUtility = new KeyStoreUtitlity();
     	PrivateKey senderPrivateKey = ksUtility.readDefaultPrivateKey();
-    	
+    	if(senderPrivateKey == null) {
+			logger.error("Aborting encryptAndSign, KeyStoreUtitlity.readDefaultPrivateKey returned null");
+			return null;
+		}
     	CertificateFactory cf;
 		try {
 			cf = CertificateFactory.getInstance("X509");
@@ -121,9 +133,17 @@ public class XMLSignAndEncryptUtility {
 	    	Certificate recieverCertificate = cf.generateCertificate(new FileInputStream("./certificates/"+recieverCertificateAlias +".cer"));
 	    	
 	    	document = encrypt(document, elementName, secretKey, recieverCertificate.getPublicKey());
+	    	if(document == null) {
+				logger.error("Aborting encryptAndSign, encrypt returned null");
+				return null;
+			}
 	    	document = signDocument(document, senderPrivateKey, senderCertificate);
-	    
+	    	if(document == null) {
+				logger.error("Aborting encryptAndSign, signDocument returned null");
+				return null;
+			}
 	    	return document;
+	    	
 		} catch (CertificateException e) {
 			logger.error("Invalid certificate: Obj={}", e.getCause(), e);
 			e.printStackTrace();
@@ -149,18 +169,27 @@ public class XMLSignAndEncryptUtility {
 			PublicKey publicKey = certificate.getPublicKey();
 			
 			TokenService tokenService = new TokenService();
-	    	Claims claims = tokenService.getClaims(token, publicKey);
-	    	if(claims != null) {
-		    	if (new Date(System.currentTimeMillis()).before(claims.getExpiration())) {
-		    		if(!jwtIDs.contains(claims.getId())) {
-		    			jwtIDs.add(claims.getId());
+			Claims claims = tokenService.getClaims(token, publicKey);
+			if(claims != null) {
+	    		Date expiration = claims.getExpiration();
+		    	if (new Date(System.currentTimeMillis()).before(expiration)) {
+		    		String id = claims.getId();
+		    		if(!jwtIDs.contains(id)) {
+		    			jwtIDs.add(id);
 		    			return true;
+		    		} else {
+		    			logger.info("JWT token invalid, token ID already used, Obj={}", id);
 		    		}
+		    	} else {
+		    	Date now = new Date(System.currentTimeMillis());
+		    	logger.info("JWT token expired @time={}, expiration time=, Obj={}", now, expiration, token);
 		    	}
 	    	}
 		} catch (CertificateException e) {
+			logger.error("Invalid certificate: Obj={}", e.getCause(), e);
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
+			logger.error("Certificate file could not be found: Obj:{}", e.getCause(), e);
 			e.printStackTrace();
 		}
     	return false;
@@ -173,7 +202,7 @@ public class XMLSignAndEncryptUtility {
     	NodeList nodes = e.getElementsByTagNameNS("http://www.ftn.xml/banke", "jwt");
     	String jwt = nodes.item(0).getTextContent();
     	if(!isJwtValid(jwt)) {
-    		logger.error("Invalid request token Obj={}", jwt);
+    		logger.info("Aborting verifyAndDecrypt, invalid JWT", jwt);
     		return null;
     	}
     	//Provera sadrzaja dokumenta

@@ -3,6 +3,10 @@ angular.module("app").factory(
 		function($http) {
 
 			return {
+				generateSelfSigned : function(certificate) {
+					return $http.post('/certificates/newSelfSigned', certificate);
+				},
+				
 				sendCSR : function(certificate) {
 					return $http.post('/certificates/newCSR/'
 							+ certificate.issuer, certificate);
@@ -13,8 +17,7 @@ angular.module("app").factory(
 				},
 
 				getCertificateFile : function(serialNumber, caAlias) {
-					return $http.post('/certificates/file/' + caAlias,
-							serialNumber);
+				return $http.post('/certificates/download/' + caAlias, serialNumber);
 
 				},
 

@@ -29,18 +29,32 @@ import java.security.cert.X509CRLEntry;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.bouncycastle.asn1.ASN1Boolean;
+import org.bouncycastle.asn1.ASN1EncodableVector;
+import org.bouncycastle.asn1.DERIA5String;
+import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x509.AccessDescription;
+import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.CRLReason;
+import org.bouncycastle.asn1.x509.DistributionPoint;
+import org.bouncycastle.asn1.x509.DistributionPointName;
+import org.bouncycastle.asn1.x509.ExtendedKeyUsage;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralNames;
+import org.bouncycastle.asn1.x509.KeyPurposeId;
+import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.asn1.x509.ReasonFlags;
 import org.bouncycastle.cert.X509CRLHolder;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v2CRLBuilder;
@@ -79,7 +93,7 @@ public class CertificateService {
 
 	}
 	
-	public X509Certificate generateCertificate(X500Name subject, PublicKey subjectPublicKey, X509Certificate issuerCertificate, PrivateKey issuerPrivateKey) {
+	public X509Certificate generateCertificate(X500Name subject, PublicKey subjectPublicKey, X509Certificate issuerCertificate, PrivateKey issuerPrivateKey, boolean isCA) {
 		try {
 			//Generisanje seriskog broja i datuma vazenja sertifikata
 			BigInteger serialNumber = new BigInteger(16, new SecureRandom());
@@ -98,6 +112,35 @@ public class CertificateService {
 					expDate,
 					subject,
 					subjectPublicKey);	
+			//AIA ekstenzija
+			AccessDescription caIssuers = new AccessDescription(AccessDescription.id_ad_caIssuers,
+			        new GeneralName(GeneralName.uniformResourceIdentifier, new DERIA5String("https://localhost:8083/CBANKA.cer")));
+			AccessDescription ocsp = new AccessDescription(AccessDescription.id_ad_ocsp,
+			        new GeneralName(GeneralName.uniformResourceIdentifier, new DERIA5String("http://localhost:8083/ws")));
+			ASN1EncodableVector aia_ASN = new ASN1EncodableVector();
+			aia_ASN.add(caIssuers);
+			aia_ASN.add(ocsp);
+			certGen.addExtension(Extension.authorityInfoAccess, false, new DERSequence(aia_ASN));
+			
+			//CRL Distribution Points ekstenzija
+			DistributionPointName distPointOne = new DistributionPointName(new GeneralNames(
+			        new GeneralName(GeneralName.uniformResourceIdentifier,"https://localhost:8083/revoked_certificates.crl")));
+			
+			ReasonFlags flag = new ReasonFlags(ReasonFlags.unused);
+			DistributionPoint distPoints = new DistributionPoint(distPointOne,flag, null);
+			certGen.addExtension(Extension.cRLDistributionPoints, false, distPoints);
+			
+			//Key Usage ektenzija
+			certGen.addExtension(Extension.keyUsage, false, new KeyUsage(KeyUsage.digitalSignature | KeyUsage.keyCertSign));
+			
+			//Extended Key Usage ekstenzija
+			KeyPurposeId[] EKU = new KeyPurposeId[1];
+			EKU[0] = KeyPurposeId.id_kp_clientAuth;
+			certGen.addExtension(Extension.extendedKeyUsage, false, new ExtendedKeyUsage(EKU));
+			
+			//CA ekstenzija
+			certGen.addExtension(Extension.basicConstraints, true, new BasicConstraints(isCA));
+			
 			//Generisanje sertifikata
 			X509CertificateHolder certHolder = certGen.build(contentSigner);
 			JcaX509CertificateConverter certConverter = new JcaX509CertificateConverter();
@@ -105,8 +148,11 @@ public class CertificateService {
 			X509Certificate certificate = certConverter.getCertificate(certHolder);
 			
 			//Dodavanje novog sertifikata u trustStore
-			keyStore.setCertificateEntry(certificate.getSubjectX500Principal().getName(), certificate);
+			//keyStore.setCertificateEntry(certificate.getSubjectX500Principal().getName(), certificate);
+			String sN = certificate.getSerialNumber().toString();
+			keyStore.setCertificateEntry(sN, certificate);
 			keyStore.store(new FileOutputStream(KEY_STORE_PATH), KEY_STORE_PASSWORD.toCharArray());
+			logger.info("Created certificate with serial number={}", sN);
 			
 			return certificate;
 			
@@ -122,9 +168,10 @@ public class CertificateService {
 			e.printStackTrace();
 		}  catch (IOException e) {
 			e.printStackTrace();
+		}  catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		
+	
 		return null;
 	}
 	
@@ -145,11 +192,17 @@ public class CertificateService {
 			KeyFactory kf = KeyFactory.getInstance("RSA", "BC");
 			PublicKey publicKey = kf.generatePublic(new X509EncodedKeySpec(csr.getSubjectPublicKeyInfo().parsePublicKey().getEncoded()));
 			X500Name subject = csr.getSubject();
-			X509Certificate certificate = generateCertificate(subject, publicKey, issuerCertificate, issuerPrivateKey);
+			//Provera da li je CA
+			Attribute[] attributes = csr.getAttributes();
+			boolean isCA = false;
+			DERSequence sequence = (DERSequence) attributes[0].getAttrValues().getObjectAt(0);
+			if(sequence.size() > 0) {
+				isCA = ((ASN1Boolean) sequence.getObjectAt(0)).isTrue();
+			}
 			
+			X509Certificate certificate = generateCertificate(subject, publicKey, issuerCertificate, issuerPrivateKey, isCA);
 			
 			return certificate;
-			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -214,31 +267,25 @@ public class CertificateService {
 		return null;
 	}
 	
-	//TODO: da izbaci povucene sertifikate
-	public List<String> getAllCACertificates(){
-		
+	public boolean checkIfInIssuedList(BigInteger serialNumber){
 		try {
-			ArrayList<String> result = new ArrayList<>();
-			
+				
 			if(keyStore == null) {
 				keyStore = KeyStore.getInstance("BKS", "BC"); 
 			}
-			
+				
 			keyStore.load(new FileInputStream(KEY_STORE_PATH), KEY_STORE_PASSWORD.toCharArray());
-			
+				
 			Enumeration<String> enumeration = keyStore.aliases();
-			
 			while(enumeration.hasMoreElements()) {
 				String alias = (String)enumeration.nextElement();
-			    X509Certificate certificate = (X509Certificate) keyStore.getCertificate(alias); 
-			    if(keyStore.isCertificateEntry(alias))
-			    	if(certificate.getBasicConstraints() != -1) {
-			    		result.add(alias);
-			    	}
+				X509Certificate certificate = (X509Certificate) keyStore.getCertificate(alias); 
+			    if(certificate.getSerialNumber().equals(serialNumber)) {
+			    	return true;
+			    }
+				    	
 			}
-			
-			return result;
-			
+				
 		}  catch (KeyStoreException e) {
 			System.out.println(e.getMessage());
 		} catch (NoSuchProviderException e) {
@@ -253,56 +300,11 @@ public class CertificateService {
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}
-		
-		return null;
-		
+			
+		return false;		
 	}
 	
-	public boolean checkIfInIssuedList(BigInteger serialNumber){
-			
-			try {
-				
-				if(keyStore == null) {
-					keyStore = KeyStore.getInstance("BKS", "BC"); 
-				}
-				
-				keyStore.load(new FileInputStream(KEY_STORE_PATH), KEY_STORE_PASSWORD.toCharArray());
-				
-				Enumeration<String> enumeration = keyStore.aliases();
-				
-				while(enumeration.hasMoreElements()) {
-					String alias = (String)enumeration.nextElement();
-				    X509Certificate certificate = (X509Certificate) keyStore.getCertificate(alias); 
-				    System.out.println("Cert S/N: "+ certificate.getSerialNumber().toString());
-				    System.out.println("S/N: "+ serialNumber.toString());
-				    if(certificate.getSerialNumber().equals(serialNumber)) {
-				    	return true;
-				    }
-				    	
-				}
-				
-			}  catch (KeyStoreException e) {
-				System.out.println(e.getMessage());
-			} catch (NoSuchProviderException e) {
-				System.out.println(e.getMessage());
-			} catch (NoSuchAlgorithmException e) {
-				System.out.println(e.getMessage());
-			} catch (CertificateException e) {
-				System.out.println(e.getMessage());
-			} catch (FileNotFoundException e) {
-				logger.error("Key store file not found", e);
-				System.out.println(e.getMessage());
-			} catch (IOException e) {
-				System.out.println(e.getMessage());
-			}
-			
-			return false;
-			
-		}
-	
-	
 	public OCSPResponseStatus revokeCertificate(RevocationRequestDto revokeCertificateDto) {
-		
 		try {
 			//Ucitava sertifikat
 			if(keyStore == null) {
@@ -312,6 +314,7 @@ public class CertificateService {
 			keyStore.load(new FileInputStream(KEY_STORE_PATH), KEY_STORE_PASSWORD.toCharArray());
 			X509Certificate certificate = (X509Certificate) keyStore.getCertificate(CERTIFICATE_ALIAS);
 			if(certificate == null) {
+				logger.error("Aborting revokeCertificate, could not load issuer certificate");
 				return null;
 			}
 			
@@ -323,7 +326,7 @@ public class CertificateService {
 			//Upisuje serijski broj sertifikata u CRL 
 			BigInteger serialNumber = new BigInteger((String)revokeCertificateDto.getRequestString());
 			if(checkIfInIssuedList(serialNumber) == false) {
-				System.out.println("not in cert list");
+				logger.info("Certificate not in issued list Obj={}", serialNumber);
 				return OCSPResponseStatus.UNKNOWN;
 			}
 			
@@ -364,9 +367,8 @@ public class CertificateService {
 		}
 		
 		return null;
-		
 	}
-	//TODO: treba da prima serial number
+	
 	public OCSPResponseStatus checkCertificate(BigInteger serialNumber) {
 			if(checkIfInIssuedList(serialNumber) == false) {
 				return OCSPResponseStatus.UNKNOWN;

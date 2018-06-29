@@ -3,7 +3,6 @@ package xml.ftn.banke;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 
 import javax.xml.bind.JAXBContext;
@@ -138,15 +137,11 @@ public class SoapEndpoint {
 			PKCS10CertificationRequest csr = new PKCS10CertificationRequest(Base64.decode((String)dto.requestString));
 			certificateService = new CertificateService();
 			X509Certificate certificate = certificateService.handleCSR(csr);
-			//TODO: vraca samo S/N
-			dto.setRequestString(Base64.encode((certificate.getEncoded())));
+			dto.setRequestString(certificate.getSerialNumber().toString());
 			return dto;
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (CertificateEncodingException e) {
-			e.printStackTrace();
-		}
-		
+		} 
 		return dto;
 	}
 	
