@@ -26,6 +26,7 @@
 	<script src="js/controllers/fakturaController.js"></script>
 	<script src="js/controllers/porukeController.js"></script>
 	<script src="js/controllers/userController.js"></script>
+	<script src="js/controllers/userUpdateController.js"></script>
 	
 	<script src="js/services/fakturaService.js"></script>
 	<script src="js/services/nalogService.js"></script>
@@ -38,12 +39,12 @@
 <body>
 	<nav class="navbar navbar-default">
 		<div class="container-fluid">
-			<ul class="nav navbar-nav" ng-if="$root.user != null">		
+			<ul class="nav navbar-nav">		
 				<li><a style="padding:10px;" href="#/faktura">Slanje fakture</a></li>
 				<li><a style="padding:10px;" href="#/nalog">Slanje naloga za plaćanje</a></li>
 				<li><a style="padding:10px;" href="#/izvod">Preuzimanje izvoda</a></li>
-				<li><a style="padding:10px;" href="#/poruke">Pregled poruka</a></li>
-				<li><a style="padding:10px;" href="#/fakture">Pregled faktura</a></li>
+				<li ng-if="$root.user != null"><a style="padding:10px;" href="#/poruke">Pregled poruka</a></li>
+				<li ng-if="$root.user != null"><a style="padding:10px;" href="#/fakture">Pregled faktura</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li ng-if="$root.user == null">
@@ -53,7 +54,7 @@
 					<a ui-sref="register">Register</a>
 				</li>
 				<li ng-if="$root.user != null">
-					<a>Logged in as: <strong>{{$root.user}}</strong></a>
+					<a ui-sref="profile">Logged in as: <strong>{{$root.user}}</strong></a>
 				</li>
 				<li ng-controller="userController" ng-if="$root.user != null">
 					<a ng-click="logout()" class="pointer-cursor">Log out</a>

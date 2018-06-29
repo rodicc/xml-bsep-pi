@@ -1,5 +1,5 @@
 angular.module('app')
-.controller('nalogController', ['$scope','nalogService', function($scope, nalogService){
+.controller('nalogController', ['$scope','nalogService', '$state', function($scope, nalogService, $state) {
 	
 	$scope.obavestenja = {
 		uspesno: "Nalog je uspeno poslan.",
@@ -23,16 +23,18 @@ angular.module('app')
 		
 		var datumValute = $scope.datumValute.getDate()+"-"+($scope.datumValute.getMonth()+1)+"-"+$scope.datumValute.getFullYear();
 		$scope.nalog.datumValute = datumValute;
+		
+		
 		nalogService.posaljiNalog($scope.nalog)
 			.then(function(response) {
 				$scope.obavestenja.validan = true;
 				$scope.obavestenja.nevalidan = false;
-				//$scope.nalog = {};
-			}
-			, function(error) {
+			}, function(error) {
 				$scope.obavestenja.validan = false;
 				$scope.obavestenja.nevalidan = true;
-				//$scope.nalog = {};
+				if (error.status == 401 || error.status == 403) {
+					$state.go("login");
+				}
 			})
 		console.log($scope.nalog);
 	}

@@ -9,7 +9,17 @@
 
                 register: function(userData) {
                     return $http.post("/register", userData);
-                } 
+                },
+
+                logout: function() {
+                    return $http.get("/logoutUser");
+                },
+
+                updatePassword: function(data) {
+                    return $http.post("/updatePassword", data);
+                }
+                
+
             }
         })
 })();

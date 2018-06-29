@@ -13,6 +13,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import ftn.xmlwebservisi.firme.service.UserService;
 
@@ -28,7 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		
 		http.cors().disable();
-		http.csrf().disable();
+		http.csrf().csrfTokenRepository(csrfTokenRepository());
 	
 		// No session will be used or created by spring security
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -41,7 +44,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.anyRequest().authenticated()
 			.and()
 			.addFilter(new LoginProcessingFilter(authenticationManager()))
-			.addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class);
+			.addFilterBefore(jwtAuthenticationTokenFilter(), BasicAuthenticationFilter.class)
+			
+			//inserting CsrfHeaderFilter after the Spring security CsrfFilter 
+			//so that the request attribute is available
+			.addFilterAfter(new CsrfHeaderFilter(), CsrfFilter.class);
 	}
 	
 	@Override
@@ -52,7 +59,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/js/**")
 			.antMatchers("/view/**")
 			.antMatchers("/app.js")
-			.antMatchers("/index.html");
+			.antMatchers("/index.html")
+			.antMatchers("/favicon.ico");
 	}
 	
 	@Override
@@ -72,4 +80,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public TokenAuthenticationFilter jwtAuthenticationTokenFilter() throws Exception {
 		return new TokenAuthenticationFilter();
 	}
+	
+	@Bean
+	public CsrfTokenRepository csrfTokenRepository() {
+		HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
+		repository.setHeaderName("X-XSRF-TOKEN");
+		return repository;
+	}
+	
+	
 }

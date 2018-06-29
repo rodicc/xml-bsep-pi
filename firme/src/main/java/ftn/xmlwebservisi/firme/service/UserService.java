@@ -1,5 +1,7 @@
 package ftn.xmlwebservisi.firme.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +18,9 @@ import ftn.xmlwebservisi.firme.repository.UserRepository;
 
 @Service
 public class UserService implements UserDetailsService {
-
+	
+	private Logger logger = LoggerFactory.getLogger(UserService.class);
+	
 	@Autowired
 	UserRepository userRepository;
 	@Autowired
@@ -43,9 +47,23 @@ public class UserService implements UserDetailsService {
 
 		User user = userRepository.findByUsername(username);
 		if (user == null) {
+			logger.error("User with username " + username + " could not be found");
 			throw new UsernameNotFoundException("User with username " + username + " could not be found.");
 		}
 
 		return new UserPrincipal(user);
+	}
+	
+	public boolean checkOldPassword(UserDetails user, String oldPassword) {
+		return bCryptPasswordEncoder.matches(oldPassword, user.getPassword());
+	}
+	
+	public User updatePassword(String username, String newPassword) {
+		User u = userRepository.findByUsername(username);
+		if (u == null) {
+			return null;
+		}
+		u.setPassword(bCryptPasswordEncoder.encode(newPassword));
+		return userRepository.save(u);
 	}
 }

@@ -60,30 +60,32 @@ app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpPro
 		})
 
 		.state('register', {
-			url: 'register',
+			url: '/register',
 			templateUrl: 'view/registration.html',
 			controller: 'userController'
 		})
-		
+		/*	
 		.state('otherwise', {
 			url: '*path',
 			templateUrl: 'view/login.html',
 			controller: 'userController'
-		/*		,
+			,
 			resolve : {
 				authenticate: authenticateCb
-			}*/
+			
+		})}*/
+		
+		.state('profile', {
+			url: '/profile',
+			templateUrl: 'view/profile.html',
+			controller: 'userUpdateController'
 		});
 		
 
-	$httpProvider.interceptors.push(function($q, $injector, $rootScope) {
+	$httpProvider.interceptors.push(function($rootScope) {
 		return {
 			request: function(config) {
-				var token = localStorage.getItem("Authorization");
-				if (token) {
-					config.headers["Authorization"] = token;
-					$rootScope.user = localStorage.getItem("User");
-				}
+				$rootScope.user = localStorage.getItem("User");
 				return config;
 			}
 		}
@@ -91,7 +93,8 @@ app.config(['$stateProvider', '$httpProvider', function($stateProvider, $httpPro
 	
 }])
 
- var authenticateCb = function (AuthenticatorService) {
+/*
+var authenticateCb = function (AuthenticatorService) {
       return AuthenticatorService.authenticated();
     };
 
@@ -107,6 +110,6 @@ var redirectService = function($q, $rootScope, $location) {
       }
       return deferred.promise;
     };
-  }
+  }*/
 
 

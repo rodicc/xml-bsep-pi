@@ -7,12 +7,11 @@
                 failedLogin: ""
             }
 
+            $scope.user = {};
+
             $scope.login = function() {
                 userService.login($scope.credentials)
-                    .then(function(response) {
-                        var token = response.headers("Authorization");
-                        localStorage.setItem("Authorization", token);
-                        
+                    .then(function(response) {    
                         var user = response.headers("User");
                         $rootScope.user = user;
                         localStorage.setItem("User", user);
@@ -29,16 +28,20 @@
                         $scope.messages.failedRegistration = "";
                         $scope.messages.successfulRegistration = response.data;
                     }, function(error) {
+                        console.log(error);
                         $scope.messages.successfulRegistration = "";
                         $scope.messages.failedRegistration =  error.data.errors[0];
                     });
             };
 
             $scope.logout = function() {
-                localStorage.removeItem("Authorization");
                 localStorage.removeItem("User");
                 $rootScope.user = null;
-                $state.go("login");
+                userService.logout()
+                    .then(function(response) {
+                        $state.go("login");
+                    });
             };
+
         });
 })();
