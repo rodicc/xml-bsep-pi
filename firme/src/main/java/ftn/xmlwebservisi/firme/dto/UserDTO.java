@@ -2,6 +2,7 @@ package ftn.xmlwebservisi.firme.dto;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import ftn.xmlwebservisi.firme.annotations.PasswordStrength;
 import ftn.xmlwebservisi.firme.annotations.PasswordValueMatch;
 import ftn.xmlwebservisi.firme.annotations.UniqueUsername;
 
@@ -12,6 +13,7 @@ public class UserDTO {
 	@UniqueUsername
 	private String username;
 	@NotBlank
+	@PasswordStrength
 	private String password;
 	@NotBlank
 	private String passwordMatch;
