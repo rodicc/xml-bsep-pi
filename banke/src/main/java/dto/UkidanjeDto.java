@@ -2,14 +2,14 @@ package dto;
 
 public class UkidanjeDto {
 
-	private String brojRacunaZaUkidnaje;
+	private String brojRacunaZaUkidanje;
 	private String brojRacunaZaPrenosSredstava;
 	
-	public String getBrojRacunaZaUkidnaje() {
-		return brojRacunaZaUkidnaje;
+	public String getBrojRacunaZaUkidanje() {
+		return brojRacunaZaUkidanje;
 	}
-	public void setBrojRacunaZaUkidnaje(String brojRacunaZaUkidnaje) {
-		this.brojRacunaZaUkidnaje = brojRacunaZaUkidnaje;
+	public void setBrojRacunaZaUkidanje(String brojRacunaZaUkidnaje) {
+		this.brojRacunaZaUkidanje = brojRacunaZaUkidnaje;
 	}
 	public String getBrojRacunaZaPrenosSredstava() {
 		return brojRacunaZaPrenosSredstava;

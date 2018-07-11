@@ -1,1 +1,197 @@
+
+<div class="panel panel-default"  style="padding:20px; margin:30px;">
 <h1>Klijenti</h1>
+	<input type="text" class="form-control" ng-model="firmaSearch" placeholder="Pretraga" style="width:200px; float:right"/>
+	</br>
+		<table class="table table-striped">
+			 <thead class="thead-default">
+			 	<tr>
+			 		<td>Naziv Firme</td>
+			 		<td>PIB</td>
+			 		<td>Adresa</td>
+			 		<td></td>
+			 	</tr>
+			 </thead>
+			 <tbody>
+			 	<tr ng-repeat="klijent in klijenti | filter: firmaSearch">
+			 		<td>{{klijent.nazivFirme}}</td>
+			 		<td>{{klijent.pib}}</td>
+			 		<td>{{klijent.adresa}}</td>
+			 		<td><button ng-click="prikaziRacune($index)" class="btn btn-md btn-default">Racuni</button></td>
+			 	</tr>
+			 </tbody>
+		 </table>
+</div>
+<div class="panel panel-default"  style="padding:20px; margin:30px;">
+	<div class="form-group row">
+		<label class="control-label col-sm-1">Naziv:</label> 
+		<div class="col-sm-11">
+			<input  class="form-control" style="width:250px;" ng-model="noviKlijent.nazivFirme" required></div>
+	</div>
+	<div class="form-group row">
+		<label class="control-label col-sm-1">PIB:</label> 
+		<div class="col-sm-11">
+			<input  class="form-control" style="width:250px;" ng-model="noviKlijent.pib" required></div>
+	</div>
+	<div class="form-group row">
+		<label class="control-label col-sm-1">Adresa:</label> 
+		<div class="col-sm-11">
+			<input  class="form-control" style="width:250px;" ng-model="noviKlijent.adresa" required></div>
+	</div>
+	<div class="form-group row">
+		<label class="control-label col-sm-1">Broj racuna</label> 
+		<div class="col-sm-11">
+			<input  class="form-control" style="width:250px;" ng-model="noviKlijent.brojRacuna" required></div>
+	</div>
+	<button ng-click="dodajNovogKlijenta()" class="btn btn-md btn-default">Dodaj klijenta</button>
+</div>
+
+
+<div id="racunModal" class="modal">
+	<div class="modal-content">
+		<h1>{{firma.nazivFirme}}</h1>
+		<input type="text" class="form-control" ng-model="racunSearch" placeholder="Pretraga" style="width:200px; float:right"/>
+		</br>
+		<form class="form">
+		<div class="form-group">
+			<table class="table table-striped">
+			 <thead class="thead-default">
+			 	<tr>
+			 		<td>Broj racuna</td>
+			 		<td>Datum otvaranja</td>
+			 		<td>Rezervisan novac</td>
+			 		<td>Stanje racuna</td>
+			 		<td></td>
+			 	</tr>
+			 </thead>
+			 <tbody>
+			 	<tr ng-repeat="racun in firma.racuni | filter: racunSearch">
+			 		<td>{{racun.brojRacuna}}</td>
+			 		<td>{{racun.datumOtvaranja}}</td>
+			 		<td>{{racun.rezervisanNovac}}</td>
+			 		<td>{{racun.stanjeRacuna}}</td>
+			 		<td><button ng-click="prikaziDnevnoStanje($index)" class="btn btn-md btn-default">Dnevno stanje</button></td>
+			 		<td><button ng-click="ukidanjeRacuna($index)" class="btn btn-md btn-default">Ukidanje racuna</button></td>
+			 	</tr>
+			 </tbody>
+		 </table>
+		</div>
+		</form>
+		
+		<div class="form-group row">
+		<label class="control-label col-sm-1">Broj racuna:</label> 
+		<div class="col-sm-11">
+			<input  class="form-control" style="width:250px;" ng-model="noviRacun" required></div>
+		</div>
+		<button ng-click="dodajNoviRacun()" class="btn btn-md btn-default">Dodaj racun</button>
+	
+	</div>
+	
+</div>
+
+<div id="dnevnoStanjeModal" class="modal">
+	<div class="modal-content">
+		<h1>{{racun.brojRacuna}}</h1>
+		<input type="text" class="form-control" ng-model="stanjeSearch" placeholder="Pretraga" style="width:200px; float:right"/>
+		</br>
+		<form class="form">
+		<div class="form-group">
+			<table class="table table-striped">
+			 <thead class="thead-default">
+			 	<tr>
+			 		<td>Datum stanja</td>
+			 		<td>Prethodno stanje</td>
+			 		<td>Novo stanje</td>
+			 		<td>Promet na teret</td>
+			 		<td>Promet u korist</td>
+			 		<td></td>
+			 	</tr>
+			 </thead>
+			 <tbody>
+			 	<tr ng-repeat="dnevnoStanje in racun.dnevnoStanjeRacuna | filter: stanjeSearch">
+			 		<td>{{dnevnoStanje.datumStanja}}</td>
+			 		<td>{{dnevnoStanje.prethodnoStanje}}</td>
+			 		<td>{{dnevnoStanje.novoStanje}}</td>
+			 		<td>{{dnevnoStanje.prometNaTeret}}</td>
+			 		<td>{{dnevnoStanje.prometUKorist}}</td>
+			 		<td><button ng-click="prikaziAnalitikuIzvoda($index)" class="btn btn-md btn-default">Analitika izvoda</button></td>
+			 	</tr>
+			 </tbody>
+		 </table>
+		</div>
+		</form>
+	</div>
+</div>
+
+<div id="ukidanjeModal" class="modal">
+	<div class="modal-content">
+		<h1>Ukidanje racuna: <small>{{racunZaUkidanje.brojRacuna}}</small></h1>
+		<form class="form">
+		<div class="form-group">
+			<table class="table table-striped">
+			 <thead class="thead-default">
+			 	<tr>
+			 		<td>Broj racuna</td>
+			 		<td>Datum otvaranja</td>
+			 		<td>Rezervisan novac</td>
+			 		<td>Stanje racuna</td>
+			 		<td></td>
+			 	</tr>
+			 </thead>
+			 <tbody>
+			 	<tr ng-repeat="racun in firma.racuni | filter: racunSearch">
+			 		<td>{{racunZaUkidanje.brojRacuna}}</td>
+			 		<td>{{racunZaUkidanje.datumOtvaranja}}</td>
+			 		<td>{{racunZaUkidanje.rezervisanNovac}}</td>
+			 		<td>{{racunZaUkidanje.stanjeRacuna}}</td>
+			 	</tr>
+			 </tbody>
+		 </table>
+		</div>
+		</form>
+		<!-- <input type="text" ng-model="brojRacunaZaPrenos"/> -->
+		<label class="control-label col-md-2">Broj racuna za prenos sredstava</label> 
+		<select ng-model="brojRacunaZaPrenos" class="form-control col-sm-4" style="width:200px" >
+						<option ng-repeat="racun in racuni">{{racun.brojRacuna}}</option>
+						</select>
+						
+		<button ng-click="ukiniRacun()" class="btn btn-md btn-default">Ukidanje racuna</button>
+	</div>
+</div>
+
+<div id="analitikaModal" class="modal">
+	<div class="modal-content">
+		<h1>{{racun.brojRacuna}} {{dnevnoStanje.datumStanja}}</h1>
+		<input type="text" class="form-control" ng-model="analitikaSearch" placeholder="Pretraga" style="width:200px; float:right"/>
+		</br>
+		<form class="form">
+		<div class="form-group">
+			<table class="table table-striped">
+			 <thead class="thead-default">
+			 	<tr>
+			 		<td>Datum naloga</td>
+			 		<td>Duznik</td>
+			 		<td>Racun duznika</td>
+			 		<td>Primalac</td>
+			 		<td>Racun primaoca</td>
+			 		<td>Svrha placanja</td>
+			 		<td>Iznos</td>
+			 		
+			 	</tr>
+			 </thead>
+			 <tbody>
+			 	<tr ng-repeat="nalog in dnevnoStanje.analitikaIzvoda | filter: analitikaSearch">
+			 		<td>{{nalog.datumNaloga}}</td>
+			 		<td>{{nalog.duznikNalogodavac}}</td>
+			 		<td>{{nalog.racunDuznika}}</td>
+			 		<td>{{nalog.primalacPoverilac}}</td>
+			 		<td>{{nalog.racunPrimaoca}}</td>
+			 		<td>{{nalog.svrhaPlacanja}}</td>
+			 		<td>{{nalog.iznos}}</td>
+			 	</tr>
+			 </tbody>
+		 </table>
+		</div>
+		</form>
+	</div>
+</div>

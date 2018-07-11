@@ -47,7 +47,7 @@ public class RacunController {
 			return ResponseEntity.badRequest().build();
 		}
 		
-		@DeleteMapping("/ukini")
+		@PostMapping("/ukini")
 		public ResponseEntity<UkidanjeDto> ukiniRacun(@RequestBody UkidanjeDto dto){
 			UkidanjeRacuna ukidanje = racunService.ukiniRacun(dto);
 			if (ukidanje != null) {

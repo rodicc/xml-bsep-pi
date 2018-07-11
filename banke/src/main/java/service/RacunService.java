@@ -57,7 +57,7 @@ public class RacunService {
 
 
 	public UkidanjeRacuna ukiniRacun(UkidanjeDto dto) {
-		Racun racunZaUkidanje = racunRepository.findByBrojRacuna(dto.getBrojRacunaZaUkidnaje());
+		Racun racunZaUkidanje = racunRepository.findByBrojRacuna(dto.getBrojRacunaZaUkidanje());
 		if( racunZaUkidanje != null && racunZaUkidanje.isVazeci()) {
 			
 			if(dto.getBrojRacunaZaPrenosSredstava() != null) {

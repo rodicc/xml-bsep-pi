@@ -34,7 +34,7 @@ public class KlijentController {
 		return  klijentService.sviKlijenti();
 	}
 	
-	@PostMapping("/noviKlijent")
+	@PostMapping("/novi")
 	public ResponseEntity<KlijentDto> noviKlijent(@RequestBody KlijentDto dto) {
 		Racun racun = klijentService.noviKlijent(dto);
 		if (racun != null) {
