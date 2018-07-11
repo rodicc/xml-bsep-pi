@@ -11,7 +11,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 public class TokenService {
 	private final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.RS256;
-	private final long EXPIRES_IN = 2000; // 2s
+	private final long EXPIRES_IN = 300000; // 5m
 
 	public String generateToken(String subject, PrivateKey privateKey) {
 		return Jwts.builder()

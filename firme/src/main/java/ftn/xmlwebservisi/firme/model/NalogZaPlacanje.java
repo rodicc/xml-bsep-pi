@@ -4,10 +4,14 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
@@ -36,7 +40,14 @@ public class NalogZaPlacanje {
 	private BigDecimal iznos;
 	private String oznakaValute;
 	private Boolean hitno;
+	private Boolean nijeRegulisan;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "dnevnoStanje_id")
+	@JsonBackReference(value = "stanje-nalog")
+	private DnevnoStanjeRacuna dnevnoStanje;
+	
+	
 	public NalogZaPlacanje() {
 
 	}
@@ -186,4 +197,22 @@ public class NalogZaPlacanje {
 	public void setHitno(Boolean hitno) {
 		this.hitno = hitno;
 	}
+
+	public Boolean getNijeRegulisan() {
+		return nijeRegulisan;
+	}
+
+	public void setNijeRegulisan(Boolean nijeRegulisan) {
+		this.nijeRegulisan = nijeRegulisan;
+	}
+
+	public DnevnoStanjeRacuna getDnevnoStanje() {
+		return dnevnoStanje;
+	}
+
+	public void setDnevnoStanje(DnevnoStanjeRacuna dnevnoStanje) {
+		this.dnevnoStanje = dnevnoStanje;
+	}
+	
+	
 }

@@ -18,12 +18,14 @@ import org.springframework.stereotype.Service;
 import ftn.xmlwebservisi.banke.SoapClient;
 import helpers.Mapper;
 import model.Banka;
-import model.Firma;
+import model.DnevnoStanjeRacuna;
+import model.Racun;
 import repository.BankaRepository;
-import repository.FirmaRepository;
+import repository.DnevnoStanjeRepository;
 import repository.MT900Repository;
 import repository.MT910Repository;
 import repository.NalogZaPlacanjeRepository;
+import repository.RacunRepository;
 import repository.ZahtevZaIzvodRepository;
 import soap.MT102;
 import soap.MT102Response;
@@ -51,13 +53,15 @@ public class Servis {
 	@Autowired
 	private SoapClient client;
 	@Autowired
-	private FirmaRepository firmaRepository;
+	private RacunRepository racunRepository;
 	@Autowired
 	private BankaRepository bankaRepository;
 	@Autowired
 	private MT900Repository mt900Repository;
 	@Autowired
 	private MT910Repository mt910Repository;
+	@Autowired 
+	private DnevnoStanjeRepository dnevnoStanjeRepository;
 	
 	private final Logger logger = LoggerFactory.getLogger(Servis.class);
 
@@ -66,7 +70,8 @@ public class Servis {
 		if (nalog.isHitno() || nalog.getIznos().doubleValue() >= 250000) {
 			regulisiRTGS(nalog);
 			model.NalogZaPlacanje nalogZaPlacanje = mapper.NalogZaPlacanjeSoapToEntity(nalog);
-			nalogZaPlacanjeRepository.save(nalogZaPlacanje);
+			nalogZaPlacanje.setNijeRegulisan(false);
+			this.upisiNalogZaPlacanje(nalogZaPlacanje);
 		} else {
 			regulisiClearing(nalog);
 		}
@@ -80,52 +85,53 @@ public class Servis {
 				logger.error("Aborting regulisiRTGS, got null for MT103");
 			}
 			String racunDuznika = nalog.getRacunDuznika();
-			Firma firmaKojaPlaca = firmaRepository.findByBrojRacuna(racunDuznika);
+			Racun firmaKojaPlaca = racunRepository.findByBrojRacuna(racunDuznika);
 			if(firmaKojaPlaca == null) {
 				logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", racunDuznika);
 			}
 			rezervisiNovac(firmaKojaPlaca, nalog.getIznos());
-			firmaRepository.save(firmaKojaPlaca);
+			racunRepository.save(firmaKojaPlaca);
 	
 			// centralna banka prebacuje sredstva izmedju banaka
 			MT103Response odgovor = client.sendMT103(mt103);
 			if (odgovor.getMT103() != null && odgovor.getMT900() != null && odgovor.getMT910() != null) {
 				mt900Repository.save(mapper.mt900SoapToEntity(odgovor.getMT900()));
 				mt910Repository.save(mapper.mt910SoapToEntity(odgovor.getMT910()));
-	
+				
+
 				double iznosNaloga = nalog.getIznos().doubleValue();
 				// skidanje rezervisanog novca
 				firmaKojaPlaca.setRezervisanNovac(
 						new BigDecimal(firmaKojaPlaca.getRezervisanNovac().doubleValue() - iznosNaloga));
-				firmaRepository.save(firmaKojaPlaca);
+				racunRepository.save(firmaKojaPlaca);
 	
 				// dodavanje iznosa firmi kojoj se placa
 				String racunPrimaoca = nalog.getRacunPrimaoca();
-				Firma firmaKojojSePlaca = firmaRepository.findByBrojRacuna(racunPrimaoca);
+				Racun firmaKojojSePlaca = racunRepository.findByBrojRacuna(racunPrimaoca);
 				if(firmaKojojSePlaca == null) {
 					logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", racunPrimaoca);
 				}
 				firmaKojojSePlaca
 						.setStanjeRacuna(new BigDecimal(firmaKojojSePlaca.getStanjeRacuna().doubleValue() + iznosNaloga));
-				firmaRepository.save(firmaKojojSePlaca);
+				racunRepository.save(firmaKojojSePlaca);
 	
 				// banka prebacuje sredstva od klijenta sebi
 				String swiftKodBankeDuznika = odgovor.getMT900().getSwiftKodBankeDuznika();
-				Banka bankaDuznika = bankaRepository.findBySwiftKodBanke(swiftKodBankeDuznika);
-				if(bankaDuznika == null) {
+				Racun racunBankeDuznika = bankaRepository.findBySwiftKodBanke(swiftKodBankeDuznika).getObracunskiRacun();
+				if(racunBankeDuznika == null) {
 					logger.error("BankaRepository.findBySwiftKodBanke returned null for Obj={}", swiftKodBankeDuznika);
 				}
-				bankaDuznika.setStanjeRacuna(new BigDecimal(bankaDuznika.getStanjeRacuna().doubleValue() + iznosNaloga));
-				bankaRepository.save(bankaDuznika);
+				racunBankeDuznika.setStanjeRacuna(new BigDecimal(racunBankeDuznika.getStanjeRacuna().doubleValue() + iznosNaloga));
+				racunRepository.save(racunBankeDuznika);
 	
 				// banka prebacuje na racun klijenta
-				Banka bankaPoverioca = bankaRepository.findBySwiftKodBanke(odgovor.getMT910().getSwiftKodBankePoverioca());
-				if(bankaPoverioca == null) {
+				Racun racunBankePoverioca = bankaRepository.findBySwiftKodBanke(odgovor.getMT910().getSwiftKodBankePoverioca()).getObracunskiRacun();
+				if(racunBankePoverioca == null) {
 					logger.error("BankaRepository.findBySwiftKodBanke returned null for Obj={}", odgovor.getMT910().getSwiftKodBankePoverioca());
 				}
-				bankaPoverioca
-						.setStanjeRacuna(new BigDecimal(bankaPoverioca.getStanjeRacuna().doubleValue() - iznosNaloga));
-				bankaRepository.save(bankaPoverioca);
+				racunBankePoverioca
+						.setStanjeRacuna(new BigDecimal(racunBankePoverioca.getStanjeRacuna().doubleValue() - iznosNaloga));
+				racunRepository.save(racunBankePoverioca);
 			} else {
 				logger.error("Invalid MT103Response, got null MT103={}, MT900={}, MT910={}",odgovor.getMT103(), odgovor.getMT900(), odgovor.getMT910());
 			}
@@ -136,107 +142,115 @@ public class Servis {
 	private void regulisiClearing(NalogZaPlacanje nalog) {
 		if(nalogZaPlacanjeRepository.findByIdPoruke(nalog.getIdPoruke()) == null) {
 			model.NalogZaPlacanje nalogEntity = mapper.NalogZaPlacanjeSoapToEntity(nalog);
-			nalogEntity.setNijeRegulisan(true);
-			nalogZaPlacanjeRepository.save(nalogEntity);
-			
-			// rezervacija sredstava na racunu klijenta(firme)
-			String racunDuznika = nalogEntity.getRacunDuznika();
-			model.Firma firmaDuznika = firmaRepository.findByBrojRacuna(racunDuznika);
-			if(firmaDuznika == null) {
-				logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", racunDuznika);
-			}
-			
-			double rezervisanNovacNovoStanje = firmaDuznika.getRezervisanNovac().doubleValue() 
-					+ nalogEntity.getIznos().doubleValue();
-			firmaDuznika.setRezervisanNovac(new BigDecimal(rezervisanNovacNovoStanje));
-			double novoStanjeRacuna = firmaDuznika.getStanjeRacuna().doubleValue() 
-					- nalogEntity.getIznos().doubleValue();
-			firmaDuznika.setStanjeRacuna(new BigDecimal(novoStanjeRacuna));
-			firmaRepository.save(firmaDuznika);
-			
-			String bankaDuznikaNovogNaloga = nalogEntity.getRacunDuznika().substring(0, 3);
-			String bankaPrimaocaNovogNaloga = nalogEntity.getRacunPrimaoca().substring(0, 3);
-	
-			// negerulisani nalozi sa istim bankama duznika i istim bankama primaoca
-			List<model.NalogZaPlacanje> neregulisaniNalozi = nalogZaPlacanjeRepository.nadjiSveNeregulisane(true,
-					bankaDuznikaNovogNaloga + "%", bankaPrimaocaNovogNaloga + "%");
-	
-			if (neregulisaniNalozi.size() < 3) {
-				return;
-			}
-			
-			// ukoliko ima 3 i vise naloga, radi kliring
-			MT102 mt102 = kreirajMT102(neregulisaniNalozi);
-			if(mt102 == null) {
-				logger.error("Aborting regulisiClearing, got null for MT102");
-				return;
-			}
-			MT102Response mt102Response = client.sendMT102(mt102);
-	
-			MT900 mt900Soap = mt102Response.getMT900();
-			model.MT900 mt900Entity = mapper.mt900SoapToEntity(mt900Soap);
-			mt900Repository.save(mt900Entity);
-	
-			MT910 mt910Saop = mt102Response.getMT910();
-			model.MT910 mt910Entity = mapper.mt910SoapToEntity(mt910Saop);
-			mt910Repository.save(mt910Entity);
-	
-			for (model.NalogZaPlacanje nalogZaRegulisanje : neregulisaniNalozi) {
-				nalogZaRegulisanje.setNijeRegulisan(false);
-				nalogZaPlacanjeRepository.save(nalogZaRegulisanje);
-			}
-			
-			// dodavanje sredstava na racun banke duznika
-			String oznakaBankeDuznika = racunDuznika.substring(0, 3);		
-			model.Banka bankaDuznika = bankaRepository.findByOznakaBanke(oznakaBankeDuznika);
-			if(bankaDuznika == null) {
-				logger.error("BankaRepository.findByOznakaBanke returned null for Obj={}", oznakaBankeDuznika);
-			}
-			
-			double novoStanjeBankeDuznika = bankaDuznika.getStanjeRacuna().doubleValue()
-					+ mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
-			bankaDuznika.setStanjeRacuna(new BigDecimal(novoStanjeBankeDuznika));
-			bankaRepository.save(bankaDuznika);
-			
-			// skidanje sredstava sa racuna banke primaoca
-			String racunPrimaoca = nalogEntity.getRacunPrimaoca();
-			String oznakaBankePrimaoca = racunPrimaoca.substring(0, 3);
-			model.Banka bankaPrimaoca = bankaRepository.findByOznakaBanke(oznakaBankePrimaoca);
-			if(bankaPrimaoca == null) {
-				logger.error("BankaRepository.findByOznakaBanke returned null for Obj={}", oznakaBankePrimaoca);
-			}
-			
-			double novoStanjeBankePrimaoca = bankaPrimaoca.getStanjeRacuna().doubleValue()
-					- mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
-			bankaPrimaoca.setStanjeRacuna(new BigDecimal(novoStanjeBankePrimaoca));
-			bankaRepository.save(bankaPrimaoca);
-			
-			// regulisanje stanja rezervisanog novca u okviru firmi za svako pojedinacno placanje
-			List<PojedinacnoPlacanjeMT102> pojedinacnaPlacanja = mt102.getPojedinacnoPlacanjeMT102();
-			for (PojedinacnoPlacanjeMT102 placanje : pojedinacnaPlacanja) {
-				String rDuznika = placanje.getRacunDuznika();
-				model.Firma fDuznika = firmaRepository.findByBrojRacuna(rDuznika);
-				if(fDuznika == null) {
-					logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", rDuznika);
-				}
-				double rezervisanoStanje = fDuznika.getRezervisanNovac().doubleValue()
-						- placanje.getIznos().doubleValue();
-				fDuznika.setRezervisanNovac(new BigDecimal(rezervisanoStanje));
-				firmaRepository.save(fDuznika);
-				
-				String rPrimaoca = placanje.getRacunPoverioca();
-				model.Firma fPrimaoca = firmaRepository.findByBrojRacuna(rPrimaoca);
-				if(fPrimaoca == null) {
-					logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", rPrimaoca);
-				}
-				double stanjeRacuna = fPrimaoca.getStanjeRacuna().doubleValue()
-						+ placanje.getIznos().doubleValue();
-				fPrimaoca.setStanjeRacuna(new BigDecimal(stanjeRacuna));
-				firmaRepository.save(fPrimaoca);
-			}
+			this.regulisiClearing(nalogEntity);
+			this.upisiNalogZaPlacanje(nalogEntity);
+			return;
 		}
 		logger.error("Invalid NalogZaPlacanje, duplicate entry idPoruke Obj={}", nalog.getIdPoruke());
 	}
+	
+	public void regulisiClearing(model.NalogZaPlacanje nalogEntity) {
+		nalogEntity.setNijeRegulisan(true);
+		//nalogZaPlacanjeRepository.save(nalogEntity);
+		
+		// rezervacija sredstava na racunu klijenta(firme)
+		String racunDuznika = nalogEntity.getRacunDuznika();
+		Racun firmaDuznika = racunRepository.findByBrojRacuna(racunDuznika);
+		if(firmaDuznika == null) {
+			logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", racunDuznika);
+		}
+		
+		double rezervisanNovacNovoStanje = firmaDuznika.getRezervisanNovac().doubleValue() 
+				+ nalogEntity.getIznos().doubleValue();
+		firmaDuznika.setRezervisanNovac(new BigDecimal(rezervisanNovacNovoStanje));
+		double novoStanjeRacuna = firmaDuznika.getStanjeRacuna().doubleValue() 
+				- nalogEntity.getIznos().doubleValue();
+		firmaDuznika.setStanjeRacuna(new BigDecimal(novoStanjeRacuna));
+		racunRepository.save(firmaDuznika);
+		
+		String bankaDuznikaNovogNaloga = nalogEntity.getRacunDuznika().substring(0, 3);
+		String bankaPrimaocaNovogNaloga = nalogEntity.getRacunPrimaoca().substring(0, 3);
+
+		// negerulisani nalozi sa istim bankama duznika i istim bankama primaoca
+		List<model.NalogZaPlacanje> neregulisaniNalozi = nalogZaPlacanjeRepository.nadjiSveNeregulisane(true,
+				bankaDuznikaNovogNaloga + "%", bankaPrimaocaNovogNaloga + "%");
+
+		if (neregulisaniNalozi.size() < 3) {
+			return;
+		}
+		
+		// ukoliko ima 3 i vise naloga, radi kliring
+		MT102 mt102 = kreirajMT102(neregulisaniNalozi);
+		if(mt102 == null) {
+			logger.error("Aborting regulisiClearing, got null for MT102");
+			return;
+		}
+		MT102Response mt102Response = client.sendMT102(mt102);
+
+		MT900 mt900Soap = mt102Response.getMT900();
+		model.MT900 mt900Entity = mapper.mt900SoapToEntity(mt900Soap);
+		mt900Repository.save(mt900Entity);
+
+		MT910 mt910Saop = mt102Response.getMT910();
+		model.MT910 mt910Entity = mapper.mt910SoapToEntity(mt910Saop);
+		mt910Repository.save(mt910Entity);
+
+		for (model.NalogZaPlacanje nalogZaRegulisanje : neregulisaniNalozi) {
+			nalogZaRegulisanje.setNijeRegulisan(false);
+			nalogZaPlacanjeRepository.save(nalogZaRegulisanje);
+		}
+		
+		// dodavanje sredstava na racun banke duznika
+		String oznakaBankeDuznika = racunDuznika.substring(0, 3);		
+		Racun racunBankaeDuznika = bankaRepository.findByOznakaBanke(oznakaBankeDuznika).getObracunskiRacun();
+		if(racunBankaeDuznika == null) {
+			logger.error("BankaRepository.findByOznakaBanke returned null for Obj={}", oznakaBankeDuznika);
+		}
+		
+		double novoStanjeBankeDuznika = racunBankaeDuznika.getStanjeRacuna().doubleValue()
+				+ mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
+		racunBankaeDuznika.setStanjeRacuna(new BigDecimal(novoStanjeBankeDuznika));
+		racunRepository.save(racunBankaeDuznika);
+		
+		// skidanje sredstava sa racuna banke primaoca
+		String racunPrimaoca = nalogEntity.getRacunPrimaoca();
+		String oznakaBankePrimaoca = racunPrimaoca.substring(0, 3);
+		Racun racunBankePrimaoca = bankaRepository.findByOznakaBanke(oznakaBankePrimaoca).getObracunskiRacun();
+		if(racunBankePrimaoca == null) {
+			logger.error("BankaRepository.findByOznakaBanke returned null for Obj={}", oznakaBankePrimaoca);
+		}
+		
+		double novoStanjeBankePrimaoca = racunBankePrimaoca.getStanjeRacuna().doubleValue()
+				- mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
+		racunBankePrimaoca.setStanjeRacuna(new BigDecimal(novoStanjeBankePrimaoca));
+		racunRepository.save(racunBankePrimaoca);
+		
+		// regulisanje stanja rezervisanog novca u okviru firmi za svako pojedinacno placanje
+		List<PojedinacnoPlacanjeMT102> pojedinacnaPlacanja = mt102.getPojedinacnoPlacanjeMT102();
+		for (PojedinacnoPlacanjeMT102 placanje : pojedinacnaPlacanja) {
+			String rDuznika = placanje.getRacunDuznika();
+			Racun fDuznika = racunRepository.findByBrojRacuna(rDuznika);
+			if(fDuznika == null) {
+				logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", rDuznika);
+			}
+			double rezervisanoStanje = fDuznika.getRezervisanNovac().doubleValue()
+					- placanje.getIznos().doubleValue();
+			fDuznika.setRezervisanNovac(new BigDecimal(rezervisanoStanje));
+			racunRepository.save(fDuznika);
+			
+			String rPrimaoca = placanje.getRacunPoverioca();
+			Racun fPrimaoca = racunRepository.findByBrojRacuna(rPrimaoca);
+			if(fPrimaoca == null) {
+				logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", rPrimaoca);
+			}
+			double stanjeRacuna = fPrimaoca.getStanjeRacuna().doubleValue()
+					+ placanje.getIznos().doubleValue();
+			fPrimaoca.setStanjeRacuna(new BigDecimal(stanjeRacuna));
+			racunRepository.save(fPrimaoca);
+		}
+	}
+	
+	
 
 	private MT103 kreirajMT103(NalogZaPlacanje nalog) {
 		MT103 mt103 = new MT103();
@@ -257,10 +271,10 @@ public class Servis {
 			return null;
 		}
 		mt103.setSwiftKodBankeDuznika(bankaDuznika.getSwiftKodBanke());
-		mt103.setObracunskiRacunBankeDuznika(bankaDuznika.getObracunskiRacun());
+		mt103.setObracunskiRacunBankeDuznika(bankaDuznika.getObracunskiRacun().getBrojRacuna());
 		
 		mt103.setSwiftKodBankePoverioca(bankaPoverioca.getSwiftKodBanke());
-		mt103.setObracunskiRacunBankePoverioca(bankaPoverioca.getObracunskiRacun());
+		mt103.setObracunskiRacunBankePoverioca(bankaPoverioca.getObracunskiRacun().getBrojRacuna());
 
 		mt103.setDuznikNalogodavac(nalog.getDuznikNalogodavac());
 		mt103.setSvrhaPlacanja(nalog.getSvrhaPlacanja());
@@ -302,10 +316,10 @@ public class Servis {
 		zaglavlje.setIdPoruke(UUID.randomUUID().toString());
 
 		zaglavlje.setSwiftKodBankeDuznika(bankaDuznika.getSwiftKodBanke());
-		zaglavlje.setObracunskiRacunBankeDuznika(bankaDuznika.getObracunskiRacun());
+		zaglavlje.setObracunskiRacunBankeDuznika(bankaDuznika.getObracunskiRacun().getBrojRacuna());
 
 		zaglavlje.setSwiftKodBankePoverioca(bankaPoverioca.getSwiftKodBanke());
-		zaglavlje.setObracunskiRacunBankePoverioca(bankaPoverioca.getObracunskiRacun());
+		zaglavlje.setObracunskiRacunBankePoverioca(bankaPoverioca.getObracunskiRacun().getBrojRacuna());
 
 		// racunanje iznosa
 		double ukupanIznos = 0;
@@ -353,12 +367,58 @@ public class Servis {
 		}
 		return mt102;
 	}
+	
+	private void upisiNalogZaPlacanje(model.NalogZaPlacanje nalog) {
+		
+		DnevnoStanjeRacuna dnevnoStanjeRacunaDuznika = null;
+		try {
+			dnevnoStanjeRacunaDuznika = dnevnoStanjeRepository.nadjiPoDatumuIRacunu(nalog.getDatumNaloga(), nalog.getRacunDuznika());
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if( dnevnoStanjeRacunaDuznika == null) {
+			
+			dnevnoStanjeRacunaDuznika = new DnevnoStanjeRacuna(nalog.getDatumNaloga(), racunRepository.findByBrojRacuna(nalog.getRacunDuznika()));
+		}
+		dnevnoStanjeRacunaDuznika.setPrethodnoStanje(dnevnoStanjeRacunaDuznika.getNovoStanje());
+		dnevnoStanjeRacunaDuznika.setPrometNaTeret(dnevnoStanjeRacunaDuznika.getPrometNaTeret().add(nalog.getIznos()));
+		dnevnoStanjeRacunaDuznika.setNovoStanje(dnevnoStanjeRacunaDuznika.getNovoStanje().subtract(nalog.getIznos()));
+		
+		DnevnoStanjeRacuna dnevnoStanjeRacunaPrimaoca = dnevnoStanjeRepository.nadjiPoDatumuIRacunu(nalog.getDatumNaloga(), nalog.getRacunPrimaoca());
+		if( dnevnoStanjeRacunaPrimaoca == null) {
+			dnevnoStanjeRacunaPrimaoca = new DnevnoStanjeRacuna(nalog.getDatumNaloga(), racunRepository.findByBrojRacuna(nalog.getRacunPrimaoca()));
+		}
+		dnevnoStanjeRacunaPrimaoca.setPrethodnoStanje(dnevnoStanjeRacunaPrimaoca.getNovoStanje());
+		dnevnoStanjeRacunaPrimaoca.setPrometUKorist(dnevnoStanjeRacunaPrimaoca.getPrometUKorist().add(nalog.getIznos()));
+		dnevnoStanjeRacunaPrimaoca.setNovoStanje(dnevnoStanjeRacunaPrimaoca.getNovoStanje().add(nalog.getIznos()));
+		
+		//Veze naloga za placanje sa dnevnim stanjima racuna duznika i primaoca
+		List<DnevnoStanjeRacuna> dnevnaStanjaNaloga = nalog.getDnevnoStanje();
+		dnevnaStanjaNaloga.add(dnevnoStanjeRacunaPrimaoca);
+		dnevnaStanjaNaloga.add(dnevnoStanjeRacunaDuznika);
+		nalog.setDnevnoStanje(dnevnaStanjaNaloga);
+		nalogZaPlacanjeRepository.save(nalog);
+		
+		//Upisivanje naloga u dnevna stanja duznika i primaoca
+		List<model.NalogZaPlacanje> analitikaIzvodaPrimaoca = dnevnoStanjeRacunaPrimaoca.getAnalitikaIzvoda();
+		analitikaIzvodaPrimaoca.add(nalog);
+		dnevnoStanjeRacunaPrimaoca.setAnalitikaIzvoda(analitikaIzvodaPrimaoca);
+		dnevnoStanjeRepository.save(dnevnoStanjeRacunaPrimaoca);
+		
+		List<model.NalogZaPlacanje> analitikaIzvodaDuznika = dnevnoStanjeRacunaDuznika.getAnalitikaIzvoda();
+		analitikaIzvodaDuznika.add(nalog);
+		dnevnoStanjeRacunaDuznika.setAnalitikaIzvoda(analitikaIzvodaDuznika);
+		dnevnoStanjeRepository.save(dnevnoStanjeRacunaDuznika);
+		
+		
+	}
 
-	private void rezervisiNovac(Firma firma, BigDecimal iznos) {
-		double rezervisanNovac = firma.getRezervisanNovac().doubleValue() + iznos.doubleValue();
-		firma.setRezervisanNovac(new BigDecimal(rezervisanNovac));
-		double novoStanjeRacuna = firma.getStanjeRacuna().doubleValue() - iznos.doubleValue();
-		firma.setStanjeRacuna(new BigDecimal(novoStanjeRacuna));
+	private void rezervisiNovac(Racun racunFirme, BigDecimal iznos) {
+		double rezervisanNovac = racunFirme.getRezervisanNovac().doubleValue() + iznos.doubleValue();
+		racunFirme.setRezervisanNovac(new BigDecimal(rezervisanNovac));
+		double novoStanjeRacuna = racunFirme.getStanjeRacuna().doubleValue() - iznos.doubleValue();
+		racunFirme.setStanjeRacuna(new BigDecimal(novoStanjeRacuna));
 	}
 
 	public Presek regulisiZahtevZaIzvod(ZahtevZaIzvod zahtev) {
@@ -433,7 +493,7 @@ public class Servis {
 				}
 			}
 			String brojRacuna = zahtev.getBrojRacuna();
-			Firma firma = firmaRepository.findByBrojRacuna(brojRacuna);
+			Racun firma = racunRepository.findByBrojRacuna(brojRacuna);
 			if(firma == null) {
 				logger.error("FirmaRepository.findByBrojRacuna() returned null for Obj={}", brojRacuna);
 			}

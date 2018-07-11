@@ -73,6 +73,9 @@ public class SoapEndpoint {
 		} catch (JAXBException e) {
 			logger.error("Invalid encryption element: Obj={}", posaljiNalogZaPlacanjeRequest, e);
 			e.printStackTrace();
+		}  catch (Exception e) {
+			
+			e.printStackTrace();
 		} finally {
 			try {
 				inStream.close();

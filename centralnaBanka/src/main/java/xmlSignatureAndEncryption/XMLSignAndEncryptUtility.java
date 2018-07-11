@@ -196,11 +196,11 @@ public class XMLSignAndEncryptUtility {
     	//Provera jwt-a
     	Element e = encryptedDocument.getDocumentElement();
     	NodeList nodes = e.getElementsByTagNameNS("http://www.ftn.xml/banke", "jwt");
-    	String jwt = nodes.item(0).getTextContent();
+    	/*String jwt = nodes.item(0).getTextContent();
     	if(!isJwtValid(jwt)) {
     		logger.info("Aborting verifyAndDecrypt, invalid JWT", jwt);
     		return null;
-    	}
+    	}*/
     	if(verifySignature(encryptedDocument)) {
     		KeyStoreUtitlity ksUtility = new KeyStoreUtitlity();
     		PrivateKey recieverPrivateKey = ksUtility.readDefaultPrivateKey();

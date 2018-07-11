@@ -7,8 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -32,7 +30,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.UUID;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.bouncycastle.asn1.ASN1Boolean;
@@ -41,8 +38,6 @@ import org.bouncycastle.asn1.DERIA5String;
 import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.asn1.pkcs.Attribute;
 import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x500.X500NameBuilder;
-import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x509.AccessDescription;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.CRLReason;
@@ -70,7 +65,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import model.certificateGenerator.CertificateDto;
 import model.certificateGenerator.OCSPResponseStatus;
 import xml.ftn.banke.RevocationRequestDto;
 
@@ -400,34 +394,6 @@ public class CertificateService {
 		}
 		 
 		return null;
-	}
-	
-	private KeyPair generateKeyPair() {
-        try {
-			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA"); 
-			SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
-			keyGen.initialize(2048, random);
-			return keyGen.generateKeyPair();
-        } catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (NoSuchProviderException e) {
-			e.printStackTrace();
-		}
-        return null;
-	}
-	
-	private X500Name generateX500Name(CertificateDto certificate) {
-		X500NameBuilder builder = new X500NameBuilder(BCStyle.INSTANCE);
-	    builder.addRDN(BCStyle.CN, certificate.getCommonName());
-	    builder.addRDN(BCStyle.SURNAME, certificate.getSurname());
-	    builder.addRDN(BCStyle.GIVENNAME, certificate.getGivenName());
-	    builder.addRDN(BCStyle.O, certificate.getOrganisation());
-	    builder.addRDN(BCStyle.C, certificate.getCountry());
-	    builder.addRDN(BCStyle.E,certificate.getEmail());
-	    String uid = UUID.randomUUID().toString();
-	    builder.addRDN(BCStyle.UID, uid);
-
-		return builder.build();
 	}
 
 	

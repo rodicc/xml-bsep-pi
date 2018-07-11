@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(scanBasePackages= {"service", "helpers", "ftn.xmlwebservisi.banke", "xml.ftn.banke"})
+@SpringBootApplication(scanBasePackages= {"service", "helpers", "ftn.xmlwebservisi.banke", "xml.ftn.banke", "controller"})
 @EnableJpaRepositories("repository")
 @EntityScan("model")
 public class BankeApplication {

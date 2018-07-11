@@ -1,10 +1,9 @@
 package model;
 
-import java.math.BigDecimal;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Banka {
@@ -13,9 +12,10 @@ public class Banka {
 	@GeneratedValue
 	private int id;
 	private String nazivBanke;
-	private BigDecimal stanjeRacuna;
+	@OneToOne
+	private Racun obracunskiRacun;
+	
 	private String swiftKodBanke;
-	private String obracunskiRacun;
 	private String oznakaBanke;
 	
 	public int getId() {
@@ -30,22 +30,17 @@ public class Banka {
 	public void setNazivBanke(String nazivBanke) {
 		this.nazivBanke = nazivBanke;
 	}
-	public BigDecimal getStanjeRacuna() {
-		return stanjeRacuna;
-	}
-	public void setStanjeRacuna(BigDecimal stanjeRacuna) {
-		this.stanjeRacuna = stanjeRacuna;
-	}
+	
 	public String getSwiftKodBanke() {
 		return swiftKodBanke;
 	}
 	public void setSwiftKodBanke(String swiftKodBanke) {
 		this.swiftKodBanke = swiftKodBanke;
 	}
-	public String getObracunskiRacun() {
+	public Racun getObracunskiRacun() {
 		return obracunskiRacun;
 	}
-	public void setObracunskiRacun(String obracunskiRacun) {
+	public void setObracunskiRacun(Racun obracunskiRacun) {
 		this.obracunskiRacun = obracunskiRacun;
 	}
 	public String getOznakaBanke() {

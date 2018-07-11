@@ -1,11 +1,16 @@
 package ftn.xmlwebservisi.firme.model;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Firma {
@@ -16,11 +21,13 @@ public class Firma {
 	private String nazivFirme;
 	private String adresa;
 	private String pib;
-	private String brojRacuna;
-	private BigDecimal stanjeRacuna;
-	private BigDecimal rezervisanNovac;
+	
+	@OneToMany(mappedBy = "firma", cascade = CascadeType.ALL)
+	@JsonManagedReference(value = "firma-racun")
+	private List<Racun> racuni;	
 
 	public Firma() {
+		this.racuni = new ArrayList<>();
 	}
 
 	public Integer getId() {
@@ -54,30 +61,9 @@ public class Firma {
 	public void setPib(String pib) {
 		this.pib = pib;
 	}
-
-	public String getBrojRacuna() {
-		return brojRacuna;
-	}
-
-	public void setBrojRacuna(String brojRacuna) {
-		this.brojRacuna = brojRacuna;
-	}
-
-	public BigDecimal getStanjeRacuna() {
-		return stanjeRacuna;
-	}
-
-	public void setStanjeRacuna(BigDecimal stanjeRacuna) {
-		this.stanjeRacuna = stanjeRacuna;
-	}
-
-	public BigDecimal getRezervisanNovac() {
-		return rezervisanNovac;
-	}
-
-	public void setRezervisanNovac(BigDecimal rezervisanNovac) {
-		this.rezervisanNovac = rezervisanNovac;
-	}
 	
+	
+
+
 	
 }

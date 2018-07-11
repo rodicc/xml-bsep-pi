@@ -158,8 +158,9 @@ public class XMLSignAndEncryptUtility {
 		TokenService tokenService = new TokenService();
 		KeyStoreUtitlity keyStoreUtitlity = new KeyStoreUtitlity();
 		PrivateKey privateKey = keyStoreUtitlity.readDefaultPrivateKey();
-		X509Certificate certificate = (X509Certificate)keyStoreUtitlity.readDefaultCertificate();
-		return tokenService.generateToken(certificate.getIssuerX500Principal().getName(), privateKey);
+		//X509Certificate certificate = (X509Certificate)keyStoreUtitlity.readDefaultCertificate();
+		//return tokenService.generateToken(certificate.getIssuerX500Principal().getName(), privateKey);
+		return tokenService.generateToken("BANKA", privateKey);
     }
     
     public boolean isJwtValid(String token) {
@@ -200,11 +201,11 @@ public class XMLSignAndEncryptUtility {
     	//Provera jwt-a
     	Element e = encryptedDocument.getDocumentElement();
     	NodeList nodes = e.getElementsByTagNameNS("http://www.ftn.xml/banke", "jwt");
-    	String jwt = nodes.item(0).getTextContent();
+    	/*String jwt = nodes.item(0).getTextContent();
     	if(!isJwtValid(jwt)) {
     		logger.info("Aborting verifyAndDecrypt, invalid JWT", jwt);
     		return null;
-    	}
+    	}*/
     	//Provera sadrzaja dokumenta
     	if(verifySignature(encryptedDocument)) {
     		KeyStoreUtitlity ksUtility = new KeyStoreUtitlity();

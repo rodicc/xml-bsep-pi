@@ -12,10 +12,12 @@ import org.springframework.stereotype.Service;
 import helpers.Mapper;
 import model.Banka;
 import model.PojedinacnoPlacanjeMT102;
+import model.Racun;
 import repository.BankaRepository;
 import repository.MT102Repository;
 import repository.MT103Repository;
 import repository.PojedincanoPlacanjeMT102Repository;
+import repository.RacunRepository;
 import repository.ZaglavljeMT102Repository;
 import xml.ftn.centralnabanka.MT102;
 import xml.ftn.centralnabanka.MT102Response;
@@ -39,6 +41,8 @@ public class Servis {
 	private PojedincanoPlacanjeMT102Repository pojedinacnoPlacanjeMT102Repository;
 	@Autowired
 	private BankaRepository bankaRepository;
+	@Autowired
+	private RacunRepository racunRepository;
 	
 	private final Logger logger = LoggerFactory.getLogger(Servis.class);
 	
@@ -66,12 +70,16 @@ public class Servis {
 			logger.error("Aborting regulisi MT102");
 			return null;
 		}
-		double novoStanjeBankeDuznika = bankaDuznika.getStanjeRacuna().doubleValue() - mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
-		bankaDuznika.setStanjeRacuna(new BigDecimal(novoStanjeBankeDuznika));
-		double novoStanjeBankePoverioca = bankaPoverioca.getStanjeRacuna().doubleValue() + mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
-		bankaPoverioca.setStanjeRacuna(new BigDecimal(novoStanjeBankePoverioca));
-		bankaRepository.save(bankaDuznika);
-		bankaRepository.save(bankaPoverioca);
+		Racun racunBankeDuznika = racunRepository.findByBrojRacuna(bankaDuznika.getObracunskiRacun().getBrojRacuna());
+		
+		double novoStanjeBankeDuznika = racunBankeDuznika.getStanjeRacuna().doubleValue() - mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
+		racunBankeDuznika.setStanjeRacuna(new BigDecimal(novoStanjeBankeDuznika));
+		
+		Racun racunBankePoverioca = racunRepository.findByBrojRacuna(bankaPoverioca.getObracunskiRacun().getBrojRacuna());
+		double novoStanjeBankePoverioca = racunBankePoverioca.getStanjeRacuna().doubleValue() + mt102.getZaglavljeMT102().getUkupanIznos().doubleValue();
+		racunBankePoverioca.setStanjeRacuna(new BigDecimal(novoStanjeBankePoverioca));
+		racunRepository.save(racunBankeDuznika);
+		racunRepository.save(racunBankePoverioca);
 		
 		MT102Response response = new MT102Response();
 		response.setMT102(mt102Soap);
@@ -116,11 +124,14 @@ public class Servis {
 			return null;
 		}
 		
-		bankaDuznika.setStanjeRacuna(new BigDecimal(bankaDuznika.getStanjeRacuna().doubleValue() - mt103Soap.getIznos().doubleValue()));
-		bankaRepository.save(bankaDuznika);
+		Racun racunBankeDuznika = racunRepository.findByBrojRacuna(bankaDuznika.getObracunskiRacun().getBrojRacuna());
+		racunBankeDuznika.setStanjeRacuna(new BigDecimal(racunBankeDuznika.getStanjeRacuna().doubleValue() - mt103Soap.getIznos().doubleValue()));
 		
-		bankaPoverioca.setStanjeRacuna(new BigDecimal(bankaPoverioca.getStanjeRacuna().doubleValue() + mt103Soap.getIznos().doubleValue()));
-		bankaRepository.save(bankaPoverioca);
+		Racun racunBankePoverioca = racunRepository.findByBrojRacuna(bankaPoverioca.getObracunskiRacun().getBrojRacuna());
+		racunBankePoverioca.setStanjeRacuna(new BigDecimal(racunBankePoverioca.getStanjeRacuna().doubleValue() + mt103Soap.getIznos().doubleValue()));
+	
+		racunRepository.save(racunBankeDuznika);
+		racunRepository.save(racunBankePoverioca);
 		
 		MT103Response response = new MT103Response();
 		response.setMT103(mt103Soap);
