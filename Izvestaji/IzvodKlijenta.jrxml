@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="IzvodKlijenta" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="d504b29d-8d4d-4e49-8f78-087d69f8a6d7">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="begin_date" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="end_date" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="br_racuna" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     nalog_za_placanje.`datum_naloga` AS nalog_za_placanje_datum_naloga,
+     nalog_za_placanje.`duznik_nalogodavac` AS nalog_za_placanje_duznik_nalogodavac,
+     nalog_za_placanje.`iznos` AS nalog_za_placanje_iznos,
+     nalog_za_placanje.`primalac_poverilac` AS nalog_za_placanje_primalac_poverilac,
+     nalog_za_placanje.`racun_duznika` AS nalog_za_placanje_racun_duznika,
+     nalog_za_placanje.`racun_primaoca` AS nalog_za_placanje_racun_primaoca,
+     nalog_za_placanje.`oznaka_valute` AS nalog_za_placanje_oznaka_valute
+FROM
+     `nalog_za_placanje` nalog_za_placanje
+WHERE
+      nalog_za_placanje.`datum_naloga`
+      BETWEEN  $P{begin_date} AND $P{end_date}  AND
+      (nalog_za_placanje.`racun_duznika`  LIKE $P{br_racuna} OR
+      nalog_za_placanje.`racun_primaoca`  LIKE $P{br_racuna})
+ORDER BY
+      nalog_za_placanje.`datum_naloga`]]>
+	</queryString>
+	<field name="nalog_za_placanje_datum_naloga" class="java.sql.Timestamp"/>
+	<field name="nalog_za_placanje_duznik_nalogodavac" class="java.lang.String"/>
+	<field name="nalog_za_placanje_iznos" class="java.math.BigDecimal"/>
+	<field name="nalog_za_placanje_primalac_poverilac" class="java.lang.String"/>
+	<field name="nalog_za_placanje_racun_duznika" class="java.lang.String"/>
+	<field name="nalog_za_placanje_racun_primaoca" class="java.lang.String"/>
+	<field name="nalog_za_placanje_oznaka_valute" class="java.lang.String"/>
+	<pageHeader>
+		<band height="110" splitType="Stretch">
+			<staticText>
+				<reportElement x="10" y="0" width="43" height="17" uuid="6fdf1055-9f49-4b1e-8542-da7f6a19a198"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Datum:]]></text>
+			</staticText>
+			<textField pattern="dd.MM.yyyy">
+				<reportElement x="53" y="0" width="111" height="17" uuid="57b201ef-b671-4c39-b614-9410affcfd21"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="524" y="0" width="31" height="20" uuid="a8719afb-0f16-47d0-a9bc-80f46452713d"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="476" y="0" width="48" height="20" uuid="2828be7a-16f3-495b-b5c9-d1102683d6ec"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Strana:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="20" width="190" height="21" uuid="ed6a9ca0-71ec-4b46-81f9-941de689fa93"/>
+				<textElement>
+					<font size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[ Izvod transakcija za racun:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="41" width="27" height="20" uuid="aac2a93a-2dd0-45ab-be1e-a5c092055728"/>
+				<textElement>
+					<font size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Od:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="138" y="41" width="26" height="20" uuid="395ff780-4849-4b08-95c6-2747204f145b"/>
+				<textElement>
+					<font size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Do:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="80" y="89" width="37" height="20" uuid="da0965ad-13dc-4beb-adb0-0cc42cff7e73"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Dužnik]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="164" y="89" width="64" height="20" uuid="27ee552e-6f82-4b4d-963c-e992a031500b"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rac. dužnika]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="264" y="89" width="48" height="20" uuid="11043ba1-57d6-4528-9ff9-a2f5ed541924"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Primalac]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="355" y="89" width="76" height="20" uuid="0655e9ad-2b29-48cd-aaf9-6060f52ae6d2"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rac. primaoca]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="444" y="89" width="32" height="20" uuid="33839c99-10ed-49a0-86f9-f1ed2aa990aa"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Valuta]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="89" width="38" height="20" uuid="4f84043e-5dfc-41b0-b7cb-61aaac19e1b9"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Datum]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="494" y="89" width="30" height="20" uuid="5165ebd7-6d75-4960-b6c6-be876b344fdb"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Iznos]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="190" y="21" width="146" height="20" uuid="55a88c84-b254-4a7d-ae6e-0896b45c754d"/>
+				<textElement>
+					<font size="14" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{br_racuna}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="27" y="41" width="111" height="20" uuid="b5c53a80-55bd-4873-b5db-82ea7c5fc554"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{begin_date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="164" y="41" width="111" height="20" uuid="489f0c0d-1ee7-405b-8df7-fd77750d5dd6"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{end_date}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="26" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="58" height="20" uuid="d11ab01f-057e-4ffa-99be-7f6ed44101f6"/>
+				<textFieldExpression><![CDATA[$F{nalog_za_placanje_datum_naloga}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="58" y="0" width="85" height="20" uuid="d719c64b-34fc-4a5e-b19a-6529481c2287"/>
+				<textFieldExpression><![CDATA[$F{nalog_za_placanje_duznik_nalogodavac}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="476" y="0" width="78" height="20" uuid="58ff8cdf-78d1-4f79-8e06-06c9f651f9c9"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{nalog_za_placanje_iznos}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="251" y="0" width="85" height="20" uuid="6a894a64-ecb7-4867-8620-9f66e097f379"/>
+				<textFieldExpression><![CDATA[$F{nalog_za_placanje_primalac_poverilac}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="143" y="0" width="108" height="20" uuid="8e2f472a-7bad-4598-9a2f-1248e69d045c"/>
+				<textFieldExpression><![CDATA[$F{nalog_za_placanje_racun_duznika}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="336" y="0" width="108" height="20" uuid="d5600e36-6ced-4266-b991-40a38ee21305"/>
+				<textFieldExpression><![CDATA[$F{nalog_za_placanje_racun_primaoca}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="0" width="32" height="20" uuid="41f00f7b-8f29-4887-8136-c74a1ad30524"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$F{nalog_za_placanje_oznaka_valute}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

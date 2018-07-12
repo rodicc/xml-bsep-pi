@@ -1,9 +1,17 @@
 package model;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class Banka {
@@ -18,6 +26,14 @@ public class Banka {
 	private String swiftKodBanke;
 	private String oznakaBanke;
 	
+	@OneToMany(mappedBy = "banka_owner", cascade = CascadeType.ALL)
+	@JsonManagedReference(value = "racuniKlijenata")
+	private List<Racun> racuniKlijenata;
+	
+	public Banka() {
+		super();
+		this.racuniKlijenata = new ArrayList<>();
+	}
 	public int getId() {
 		return id;
 	}

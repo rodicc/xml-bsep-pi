@@ -35,10 +35,10 @@ public class KlijentController {
 	}
 	
 	@PostMapping("/novi")
-	public ResponseEntity<KlijentDto> noviKlijent(@RequestBody KlijentDto dto) {
-		Racun racun = klijentService.noviKlijent(dto);
-		if (racun != null) {
-			return new ResponseEntity<>(dto, HttpStatus.OK);
+	public ResponseEntity<Firma> noviKlijent(@RequestBody KlijentDto dto) {
+		Firma firma = klijentService.noviKlijent(dto);
+		if (firma != null) {
+			return new ResponseEntity<>(firma, HttpStatus.OK);
 		}
 		return ResponseEntity.badRequest().build();
 	}

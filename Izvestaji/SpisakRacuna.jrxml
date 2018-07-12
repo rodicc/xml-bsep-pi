@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SpisakRacuna" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" whenResourceMissingType="Empty" uuid="187f9346-7b14-4a1e-ad18-f68642597637">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="br_racuna" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     racun.`broj_racuna` AS racun_broj_racuna,
+     racun.`datum_otvaranja` AS racun_datum_otvaranja,
+     racun.`rezervisan_novac` AS racun_rezervisan_novac,
+     racun.`stanje_racuna` AS racun_stanje_racuna
+FROM
+     `racun` racun]]>
+	</queryString>
+	<field name="racun_broj_racuna" class="java.lang.String"/>
+	<field name="racun_datum_otvaranja" class="java.sql.Timestamp"/>
+	<field name="racun_rezervisan_novac" class="java.math.BigDecimal"/>
+	<field name="racun_stanje_racuna" class="java.math.BigDecimal"/>
+	<pageHeader>
+		<band height="153" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="42" height="20" uuid="16a9c733-4447-4c9a-b7e7-fa3d656c2d9f"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Datum:]]></text>
+			</staticText>
+			<textField pattern="dd.MM.yyyy">
+				<reportElement x="42" y="0" width="108" height="20" uuid="7e81fd8e-c09e-48fa-a2be-b6ff2bab6dc4"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="516" y="0" width="39" height="20" uuid="c7fea81c-50aa-4525-b328-f87e080a9cf6"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="45" width="100" height="20" uuid="0c8cae3b-922b-49c3-8780-f2697223cf28"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Racun banke:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="181" y="86" width="173" height="20" uuid="8c2780bc-54fd-4d89-afa2-d8063fbe2a9b"/>
+				<textElement>
+					<font size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Listing aktivnih racuna]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="474" y="0" width="42" height="20" uuid="80c42cb3-8420-457f-a9f2-c1c4ec123e6f"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Strana:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="133" width="100" height="20" uuid="e0943d8c-5127-4a7d-b896-964522e03f85"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Broj racuna]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="139" y="133" width="100" height="20" uuid="51e4f7ba-695a-4b8f-892e-913ddcda7955"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Datum otvaranja]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="292" y="133" width="100" height="20" uuid="c18bffea-d86e-4d45-aac1-e8088acffc4e"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Rezervisan novac]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="428" y="133" width="100" height="20" uuid="6d311bd8-b398-4e06-9b2b-f585c3e775c8"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Stanje racuna]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="100" y="45" width="100" height="20" uuid="e46849fb-cc79-4fe4-90b6-07ba35b9a3ba"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{br_racuna}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement x="139" y="0" width="100" height="20" uuid="804a4824-87a2-4196-bfd6-7afb1b2cf6ef"/>
+				<textFieldExpression><![CDATA[$F{racun_datum_otvaranja}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="4ffc3399-9fc4-4e4f-a985-2876321d60fd"/>
+				<textFieldExpression><![CDATA[$F{racun_broj_racuna}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="292" y="0" width="100" height="20" uuid="de5873b2-d847-4fce-93a5-e1272716168b"/>
+				<textFieldExpression><![CDATA[$F{racun_rezervisan_novac}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="428" y="0" width="100" height="20" uuid="142890e3-e801-47cb-bf35-809826f36221"/>
+				<textFieldExpression><![CDATA[$F{racun_stanje_racuna}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

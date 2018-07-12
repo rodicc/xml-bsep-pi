@@ -6,22 +6,24 @@ angular.module("app")
 	$scope.firma = {};
 	$scope.racun = {};
 	$scope.ukidanjeDto = {};
+	$scope.racunZaUkidanje = {};
 	
-	 Service.sviKlijenti()
+	 $scope.getKlijenti = function(){
+		 Service.sviKlijenti()
+	
 	 	.then(function(response){
 	 		$scope.klijenti = response.data;
 	 	});
+	 }; $scope.getKlijenti();
 	 
-	 Service.sviRacuni()
+	 $scope.getRacuni = function(){
+		 Service.sviRacuni()
+	 
 	 	.then(function(response){
 	 		$scope.racuni = response.data;
 	 	});
-	
-	/* $scope.prikaziRacune = function(index){
-		 console.log($scope.klijenti[index].racuni[0].brojRacuna);
-	 }*/
-	 
-	 
+	 }; $scope.getRacuni();
+
 	 
 	 var racunModal = document.getElementById('racunModal');
 	 var dnevnoStanjeModal = document.getElementById('dnevnoStanjeModal');
@@ -31,21 +33,18 @@ angular.module("app")
 	 $scope.prikaziRacune = function(index) {
 		 	$scope.firma = $scope.klijenti[index];
 		 	
-		 	console.log($scope.firma.racuni[0].brojRacuna);
 		 	racunModal.style.display = "block";
 	}
 	 
 	 $scope.prikaziDnevnoStanje = function(index) {
 		 	$scope.racun = $scope.firma.racuni[index];
 		 	
-		 	console.log($scope.racun);
 		 	dnevnoStanjeModal.style.display = "block";
 	}
 	 
 	 $scope.prikaziAnalitikuIzvoda = function(index) {
 		 	$scope.dnevnoStanje = $scope.racun.dnevnoStanjeRacuna[index];
 		 	
-		 	console.log($scope.dnevnoStanje);
 		 	analitikaModal.style.display = "block";
 	}
 	 
@@ -59,11 +58,16 @@ angular.module("app")
 				 brojRacunaZaUkidanje : $scope.racunZaUkidanje.brojRacuna,
 				 brojRacunaZaPrenosSredstava : $scope.brojRacunaZaPrenos
 		 }
-		 console.log(dto);
 		Service.ukiniRacun(dto)
 			.then(function(response){
-				
+			ukidanjeModal.style.display = "none";
+			for(var i = 0; i < $scope.firma.racuni.lenght; i++){
+				if($scope.firma.racuni[i].brojRacuna == $scope.racunZaUkidanje.brojRacuna){
+					$scope.firma.racuni.splice(i,1);
+				}
+			}
 		})
+		$scope.racunZaUkidanje = {};
 		 
 	 }
 	 
@@ -73,13 +77,16 @@ angular.module("app")
 				 firmaId : $scope.firma.id
 		 }
 		 Service.noviRacun(dto).then(function(response){
-			 
+			 $scope.racuni.push(response.data);
+			 $scope.firma.racuni.push(response.data);
 		 })
+		 $scope.noviRacun = "";
 	 }
 	 
 	 $scope.dodajNovogKlijenta = function(){
 		 Service.noviKlijent($scope.noviKlijent).then(function(response){
-			 
+			 $scope.klijenti.push(response.data);
+			 $scope.racuni.push(response.data.racuni);
 		 })
 		 $scope.noviKlijent = {};
 	 }

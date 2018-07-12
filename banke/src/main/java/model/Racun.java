@@ -39,8 +39,21 @@ public class Racun {
 	@JsonBackReference
 	private Firma firma;
 	
+	public Banka getBanka_owner() {
+		return banka_owner;
+	}
+
+	public void setBanka_owner(Banka banka_owner) {
+		this.banka_owner = banka_owner;
+	}
+
 	@OneToOne(mappedBy = "obracunskiRacun")
 	private Banka banka;
+	
+	@ManyToOne
+	@JoinColumn(name = "banka_id")
+	@JsonBackReference
+	private Banka banka_owner;
 	
 	
 	@OneToOne

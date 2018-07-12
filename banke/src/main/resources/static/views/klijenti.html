@@ -70,8 +70,10 @@
 			 		<td>{{racun.datumOtvaranja}}</td>
 			 		<td>{{racun.rezervisanNovac}}</td>
 			 		<td>{{racun.stanjeRacuna}}</td>
-			 		<td><button ng-click="prikaziDnevnoStanje($index)" class="btn btn-md btn-default">Dnevno stanje</button></td>
-			 		<td><button ng-click="ukidanjeRacuna($index)" class="btn btn-md btn-default">Ukidanje racuna</button></td>
+			 		<td><button ng-if="racun.vazeci" ng-click="prikaziDnevnoStanje($index)" class="btn btn-md btn-default">Dnevno stanje</button>
+			 			<span ng-if="!racun.vazeci">Racun je ugasen</span>
+			 		</td>
+			 		<td><button ng-if="racun.vazeci" ng-click="ukidanjeRacuna($index)" class="btn btn-md btn-default">Ukidanje racuna</button></td>
 			 	</tr>
 			 </tbody>
 		 </table>
@@ -139,7 +141,7 @@
 			 	</tr>
 			 </thead>
 			 <tbody>
-			 	<tr ng-repeat="racun in firma.racuni | filter: racunSearch">
+			 	<tr>
 			 		<td>{{racunZaUkidanje.brojRacuna}}</td>
 			 		<td>{{racunZaUkidanje.datumOtvaranja}}</td>
 			 		<td>{{racunZaUkidanje.rezervisanNovac}}</td>
@@ -152,7 +154,7 @@
 		<!-- <input type="text" ng-model="brojRacunaZaPrenos"/> -->
 		<label class="control-label col-md-2">Broj racuna za prenos sredstava</label> 
 		<select ng-model="brojRacunaZaPrenos" class="form-control col-sm-4" style="width:200px" >
-						<option ng-repeat="racun in racuni">{{racun.brojRacuna}}</option>
+						<option ng-repeat="racun in racuni | filter: '!' + racunZaUkidanje.brojRacuna " >{{racun.brojRacuna}}</option>
 						</select>
 						
 		<button ng-click="ukiniRacun()" class="btn btn-md btn-default">Ukidanje racuna</button>

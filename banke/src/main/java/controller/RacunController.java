@@ -39,10 +39,10 @@ public class RacunController {
 		}
 		
 		@PostMapping("/novi")
-		public ResponseEntity<RacunDto> noviRacun(@RequestBody RacunDto dto) {
+		public ResponseEntity<Racun> noviRacun(@RequestBody RacunDto dto) {
 			Racun racun = racunService.noviRacun(dto);
 			if (racun != null) {
-				return new ResponseEntity<>(dto, HttpStatus.OK);
+				return new ResponseEntity<>(racun, HttpStatus.OK);
 			}
 			return ResponseEntity.badRequest().build();
 		}

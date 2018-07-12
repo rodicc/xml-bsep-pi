@@ -13,6 +13,7 @@ public class BankeApplication {
 	
 	public static void main(String[] args) {
 		SpringApplication.run(BankeApplication.class, args);
+		
 	}
 	
 	

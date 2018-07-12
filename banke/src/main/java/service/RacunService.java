@@ -47,7 +47,7 @@ public class RacunService {
 			}
 			racun.setBrojRacuna(dto.getBrojRacuna());
 			racun.setFirma(firmaRepository.findById(dto.getFirmaId()));
-			racun.setBanka(banka);
+			racun.setBanka_owner(banka);
 			racunRepository.save(racun);
 			return racun;
 		}

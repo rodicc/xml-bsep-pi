@@ -22,7 +22,7 @@ public class KlijentService {
 	@Autowired
 	BankaRepository bankaRepository;
 	
-	public Racun noviKlijent(KlijentDto dto) {
+	public Firma noviKlijent(KlijentDto dto) {
 		if(dto.getBrojRacuna() != null && 
 				dto.getAdresa() != null &&
 				dto.getNazivFirme() != null && 
@@ -36,12 +36,12 @@ public class KlijentService {
 			}
 			racun.setBrojRacuna(dto.getBrojRacuna());
 			racun.setFirma(firma);
-			racun.setBanka(banka);
+			racun.setBanka_owner(banka);
 			ArrayList<Racun> racuni = new ArrayList<>();
 			racuni.add(racun);
 			firma.setRacuni(racuni);
 			firmaRepository.save(firma);
-			return racun;
+			return firma;
 		}
 		return null;
 	}
