@@ -23,6 +23,14 @@ angular.module("app")
 		
 		noviKlijent : function(dto){
 			return $http.post("/klijenti/novi", dto);
+		},
+		
+		izvestajBanke : function(brRacuna){
+			return $http.post("/izvestaj/spisakRacuna", brRacuna);
+		},
+		
+		izvestajKlijenta : function(dto){
+			return $http.post("/izvestaj/izvodKlijenta", dto);
 		}
 		
 		

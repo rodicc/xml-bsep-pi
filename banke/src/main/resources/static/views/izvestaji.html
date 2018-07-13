@@ -1,0 +1,31 @@
+<h1 style="margin:30px">Izvestaji</h1>
+<div class="panel panel-default"  style="padding:20px; margin:30px;">
+	<h3>Spisak racuna banke</h3>
+	<br/>
+	<div class="form-group row">
+		<label class="control-label col-md-1">Broj racuna banke:</label>
+		<div class="col-md-11">
+			<input  class="form-control" ng-model="brRacunaBanke" required style="width:250px"></div>
+	</div>
+	<button class="btn btn-default" ng-click="generisiIzvestajBanke()">Generisi izvestaj</button>
+</div>
+
+<div class="panel panel-default"  style="padding:20px; margin:30px;">
+	<h3>Izvod transakcija klijenta</h3>
+	<br/>
+	<div class="form-group row">
+		<label class="control-label col-sm-1">Broj racuna klijenta:</label>
+		<div class="col-sm-11">
+			<input  class="form-control" ng-model="izvodKlijenta.br_racuna" required style="width:250px"></div>
+		</div>
+	<div class="form-group row">
+		<div class="col-sm-1">			
+		<label class="control-label">Od:</label></div>
+		<div class="col-sm-2">
+			<input class="form-control" type="date" ng-model="izvodKlijenta.beginDate"  size="8" required style="width:250px"></div>
+		<div class="col-sm-1">		
+			<label class="control-label">Do:</label></div>
+		<div class="col-sm-4"><input class="form-control" type="date" ng-model="izvodKlijenta.endDate"  size="8" required style="width:250px"></div>			
+	</div>
+	<button class="btn btn-default" ng-click="generisiIzvestajKlijenta()">Generisi izvestaj</button>
+</div>

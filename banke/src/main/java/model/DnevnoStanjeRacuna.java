@@ -16,7 +16,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 public class DnevnoStanjeRacuna {
@@ -35,7 +34,7 @@ public class DnevnoStanjeRacuna {
 	@JsonBackReference
 	private Racun racun;
 	
-	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "dnevnoStanje", cascade =  CascadeType.ALL )
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "dnevnoStanje", cascade =  {CascadeType.ALL })
 	//@JsonManagedReference(value = "stanje-nalog")
 	private List<NalogZaPlacanje> analitikaIzvoda;
 	

@@ -3,10 +3,12 @@ angular.module("app")
 	
 	$scope.klijenti = [];
 	$scope.racuni = [];
+	
 	$scope.firma = {};
 	$scope.racun = {};
 	$scope.ukidanjeDto = {};
 	$scope.racunZaUkidanje = {};
+	$scope.ukinutiRacuni = [];
 	
 	 $scope.getKlijenti = function(){
 		 Service.sviKlijenti()
@@ -24,6 +26,13 @@ angular.module("app")
 	 	});
 	 }; $scope.getRacuni();
 
+	 $scope.getUkinutiRacuni = function(){
+		 Service.sviUkinutiRacuni()
+	 
+	 	.then(function(response){
+	 		$scope.ukinutiRacuni = response.data;
+	 	});
+	 }; $scope.getUkinutiRacuni();
 	 
 	 var racunModal = document.getElementById('racunModal');
 	 var dnevnoStanjeModal = document.getElementById('dnevnoStanjeModal');
@@ -32,42 +41,48 @@ angular.module("app")
 	 
 	 $scope.prikaziRacune = function(index) {
 		 	$scope.firma = $scope.klijenti[index];
-		 	
+		 	$scope.firma.indexAtParent = index;
 		 	racunModal.style.display = "block";
 	}
 	 
 	 $scope.prikaziDnevnoStanje = function(index) {
-		 	$scope.racun = $scope.firma.racuni[index];
-		 	
+		 	if($scope.firma.racuni != undefined){
+		 		$scope.racun = $scope.firma.racuni[index];
+		 	} else {
+		 		$scope.racun = $scope.racuni[index];
+		 	}
+		 	$scope.racun.indexAtParent = index;
 		 	dnevnoStanjeModal.style.display = "block";
 	}
 	 
 	 $scope.prikaziAnalitikuIzvoda = function(index) {
 		 	$scope.dnevnoStanje = $scope.racun.dnevnoStanjeRacuna[index];
-		 	
+		 	$scope.dnevnoStanje.indexAtParent = index;
 		 	analitikaModal.style.display = "block";
 	}
 	 
 	 $scope.ukidanjeRacuna = function(index) {
-		 $scope.racunZaUkidanje = $scope.firma.racuni[index];
+		 if($scope.firma.racuni != undefined){
+			 $scope.racunZaUkidanje = $scope.firma.racuni[index];
+		 } else {
+			 $scope.racunZaUkidanje = $scope.racuni[index];
+		 }
+		 $scope.racunZaUkidanje.indexAtParent = index;
 		 ukidanjeModal.style.display = "block";
 	 }
 	 
-	 $scope.ukiniRacun = function() {
+	 $scope.ukiniRacun = function(index) {
 		 var dto = {
 				 brojRacunaZaUkidanje : $scope.racunZaUkidanje.brojRacuna,
 				 brojRacunaZaPrenosSredstava : $scope.brojRacunaZaPrenos
 		 }
 		Service.ukiniRacun(dto)
 			.then(function(response){
+			$scope.firma.racuni[index].vazeci = false;
 			ukidanjeModal.style.display = "none";
-			for(var i = 0; i < $scope.firma.racuni.lenght; i++){
-				if($scope.firma.racuni[i].brojRacuna == $scope.racunZaUkidanje.brojRacuna){
-					$scope.firma.racuni.splice(i,1);
-				}
-			}
 		})
 		$scope.racunZaUkidanje = {};
+		$scope.brojRacunaZaPrenos = "";
 		 
 	 }
 	 
@@ -91,14 +106,30 @@ angular.module("app")
 		 $scope.noviKlijent = {};
 	 }
 	 
+	 $scope.generisiIzvestajBanke = function(){
+		 Service.izvestajBanke($scope.brRacunaBanke).then(function(response){
+			console.log("izvestaj banke");
+		 })
+		 $scope.brRacunaBanke = "";
+	 }
+	 
+	 $scope.generisiIzvestajKlijenta = function(){
+		 Service.izvestajKlijenta($scope.izvodKlijenta).then(function(response){
+			console.log("izvestaj klijenta");
+		 })
+		 $scope.izvodKlijenta = {};
+	 }
 	 
 	 window.onclick = function(event) {
 		    if (event.target == racunModal) {
 		        racunModal.style.display = "none";
+		        $scope.firma = {};
 		    } else  if (event.target == dnevnoStanjeModal) {
 		        dnevnoStanjeModal.style.display = "none";
+		        $scope.racun = {};
 		    } else  if (event.target == analitikaModal) {
 		    	analitikaModal.style.display = "none";
+		    	$scope.dnevnoStanje = {};
 		    } else  if (event.target == ukidanjeModal) {
 		    	ukidanjeModal.style.display = "none";
 		    }

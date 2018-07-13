@@ -397,8 +397,8 @@ public class Servis {
 		List<DnevnoStanjeRacuna> dnevnaStanjaNaloga = nalog.getDnevnoStanje();
 		dnevnaStanjaNaloga.add(dnevnoStanjeRacunaPrimaoca);
 		dnevnaStanjaNaloga.add(dnevnoStanjeRacunaDuznika);
-		nalog.setDnevnoStanje(dnevnaStanjaNaloga);
-		nalogZaPlacanjeRepository.save(nalog);
+		nalog.setDnevnoStanje(dnevnaStanjaNaloga);	
+		//nalogZaPlacanjeRepository.save(nalog);     //treba kad je nov, ne treba kad vec ima
 		
 		//Upisivanje naloga u dnevna stanja duznika i primaoca
 		List<model.NalogZaPlacanje> analitikaIzvodaPrimaoca = dnevnoStanjeRacunaPrimaoca.getAnalitikaIzvoda();
@@ -409,7 +409,7 @@ public class Servis {
 		List<model.NalogZaPlacanje> analitikaIzvodaDuznika = dnevnoStanjeRacunaDuznika.getAnalitikaIzvoda();
 		analitikaIzvodaDuznika.add(nalog);
 		dnevnoStanjeRacunaDuznika.setAnalitikaIzvoda(analitikaIzvodaDuznika);
-		dnevnoStanjeRepository.save(dnevnoStanjeRacunaDuznika);
+		//dnevnoStanjeRepository.save(dnevnoStanjeRacunaDuznika);
 		
 		
 	}

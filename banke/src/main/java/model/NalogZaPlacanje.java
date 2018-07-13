@@ -45,7 +45,7 @@ public class NalogZaPlacanje {
 	private Boolean hitno;
 	private Boolean nijeRegulisan;
 
-	@ManyToMany
+	@ManyToMany(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE})
 	@JoinColumn(name = "dnevnoStanje_id")
 	//@JsonBackReference
 	private List<DnevnoStanjeRacuna> dnevnoStanje;

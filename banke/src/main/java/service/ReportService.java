@@ -5,15 +5,21 @@ import java.sql.DriverManager;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import dto.ReportDto;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import repository.BankaRepository;
 
 @Service
 public class ReportService {
+	
+	@Autowired
+	BankaRepository bankaRepository;
+	
 	private Connection DBConnection;
 	
 	public boolean izvodKlijenta() {
@@ -23,9 +29,10 @@ public class ReportService {
 	public boolean spisakRacuna(String brRacunaBanke) {
 		try {
 			DBConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/xmldb", "root", "root");
-			
+			int id = bankaRepository.findByOznakaBanke(brRacunaBanke.substring(0,3)).getId();
 			Map<String, Object> params = new HashMap<String,Object>();
-			params.put("br_racuna", brRacunaBanke);
+			params.put("racunBanke", brRacunaBanke);
+			params.put("id_banke", id);
 			
 			JasperPrint jp = JasperFillManager.fillReport(getClass().getResource("/SpisakRacuna.jasper").openStream(), params, DBConnection);
 			JasperExportManager.exportReportToPdfFile(jp, "./spisak_racuna_"+brRacunaBanke+".pdf");
@@ -45,11 +52,11 @@ public class ReportService {
 			
 			Map<String, Object> params = new HashMap<String,Object>();
 			params.put("br_racuna", dto.getBr_racuna());
-			params.put("beginDate", dto.getBeginDate());
-			params.put("endDate", dto.getEndDate());
+			params.put("begin_date", dto.getBeginDate());
+			params.put("end_date", dto.getEndDate());
 			
 			JasperPrint jp = JasperFillManager.fillReport(getClass().getResource("/IzvodKlijenta.jasper").openStream(), params, DBConnection);
-			JasperExportManager.exportReportToPdfFile(jp, "./spisak_racuna_"+dto.getBr_racuna()+".pdf");
+			JasperExportManager.exportReportToPdfFile(jp, "./izvod_klijenta_"+dto.getBr_racuna()+".pdf");
 			
 			DBConnection.close();
 			return true;

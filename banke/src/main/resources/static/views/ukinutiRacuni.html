@@ -1,1 +1,30 @@
-<h1>ukinuti racuni</h1>
+<h1 style="margin:30px">Pregled ukinutih racuna</h1>
+<div class="panel panel-default"  style="padding:20px; margin:30px;">
+<input type="text" class="form-control" ng-model="racunSearch" placeholder="Pretraga" style="width:200px; float:right"/>
+		</br>
+		<form class="form">
+		<div class="form-group">
+			<table class="table table-striped">
+			 <thead class="thead-default">
+			 	<tr>
+			 		<td>Broj racuna</td>
+			 		<td>Sredstva prebacena na racun</td>
+			 		<td>Datum otvaranja</td>
+			 		<td>Datum ukidanja</td>
+			 		<td></td>
+			 	</tr>
+			 </thead>
+			 <tbody>
+			 	<tr ng-repeat="racun in ukinutiRacuni | filter: racunSearch">
+			 		<td>{{racun.brojRacuna}}</td>
+			 		<td>{{racun.ukidanjeRacuna.racunNaKojiSePrebacujuSredstva}}</td>
+			 		<td>{{racun.datumOtvaranja}}</td>
+			 		<td>{{racun.ukidanjeRacuna.datumUkidanja}}</td>
+			 	</tr>
+			 </tbody>
+		 </table>
+		</div>
+		</form>
+		
+		
+</div>

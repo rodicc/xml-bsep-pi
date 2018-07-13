@@ -1,6 +1,5 @@
-
+<h1 style="margin:30px">Pregled klijenata</h1>
 <div class="panel panel-default"  style="padding:20px; margin:30px;">
-<h1>Klijenti</h1>
 	<input type="text" class="form-control" ng-model="firmaSearch" placeholder="Pretraga" style="width:200px; float:right"/>
 	</br>
 		<table class="table table-striped">
@@ -157,7 +156,7 @@
 						<option ng-repeat="racun in racuni | filter: '!' + racunZaUkidanje.brojRacuna " >{{racun.brojRacuna}}</option>
 						</select>
 						
-		<button ng-click="ukiniRacun()" class="btn btn-md btn-default">Ukidanje racuna</button>
+		<button ng-click="ukiniRacun(racunZaUkidanje.indexAtParent)" class="btn btn-md btn-default">Ukidanje racuna</button>
 	</div>
 </div>
 

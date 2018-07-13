@@ -97,13 +97,21 @@ public class RacunService {
 
 	public List<Racun> sviRacuni() {
 		List<Racun> result = new ArrayList<>();
-		racunRepository.findByVazeci(true).forEach(result :: add);
+		for(Racun racun : racunRepository.findByVazeci(true)) {
+			if (racun.getBanka() == null) {
+				result.add(racun);
+			}		
+		}
 		return result;
 	}
 	
 	public List<Racun> sviUkinutiRacuni() {
 		List<Racun> result = new ArrayList<>();
-		racunRepository.findByVazeci(false).forEach(result :: add);
+		for(Racun racun : racunRepository.findByVazeci(false)) {
+			if (racun.getBanka() == null) {
+				result.add(racun);
+			}		
+		}
 		return result;
 	}
 	

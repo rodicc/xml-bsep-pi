@@ -57,6 +57,7 @@ public class Racun {
 	
 	
 	@OneToOne
+	@JsonManagedReference
 	private UkidanjeRacuna ukidanjeRacuna;
 	
 	@OneToMany(mappedBy = "racun", cascade = CascadeType.ALL)
